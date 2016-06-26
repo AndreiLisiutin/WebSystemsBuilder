@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebSystemsBuilder.Server;
 
-namespace WebSystemsBuilder
+namespace WebSystemsBuilder.ClientWeb
 {
     public class _TestController : Controller
     {
