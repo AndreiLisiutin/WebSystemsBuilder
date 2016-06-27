@@ -14,6 +14,8 @@ namespace WebSystemsBuilder.Server.Models
         [Key]
         [Column("control_id")]
         public int ControlID { get; set; }
+        [Column("form_id")]
+        public int FormID { get; set; }
         [Column("control_type_id")]
         public int ControlTypeID { get; set; }
         [Column("control_id_parent")]

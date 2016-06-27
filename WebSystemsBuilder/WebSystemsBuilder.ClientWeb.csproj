@@ -147,6 +147,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\FormGeneration\FormMetaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\_Base\BaseController.cs" />
     <Compile Include="Controllers\_Test\_TestController.cs" />

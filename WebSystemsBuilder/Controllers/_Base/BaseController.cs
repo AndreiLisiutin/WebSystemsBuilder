@@ -17,31 +17,31 @@ namespace WebSystemsBuilder.ClientWeb
         protected IPackageManager _packageManager;
 
         #region IPackageManager
-        IRequestPackage CreateRequestPackage()
+        protected IRequestPackage CreateRequestPackage()
         {
             return this._packageManager.CreateRequestPackage();
         }
-        IRequestPackage<T> CreateRequestPackage<T>()
+        protected IRequestPackage<T> CreateRequestPackage<T>()
         {
             return this._packageManager.CreateRequestPackage<T>();
         }
-        IResponsePackage CreateResponsePackage()
+        protected IResponsePackage CreateResponsePackage()
         {
             return this._packageManager.CreateResponsePackage();
         }
-        IResponsePackage CreateResponsePackage(Exception ex)
+        protected IResponsePackage CreateResponsePackage(Exception ex)
         {
             return this._packageManager.CreateResponsePackage(ex);
         }
-        IResponsePackage<T> CreateResponsePackage<T>()
+        protected IResponsePackage<T> CreateResponsePackage<T>()
         {
             return this._packageManager.CreateResponsePackage<T>();
         }
-        IResponsePackage<T> CreateResponsePackage<T>(Exception ex)
+        protected IResponsePackage<T> CreateResponsePackage<T>(Exception ex)
         {
             return this._packageManager.CreateResponsePackage<T>(ex);
         }
-        IResponsePackage<T> CreateResponsePackage<T>(T data)
+        protected IResponsePackage<T> CreateResponsePackage<T>(T data)
         {
             return this._packageManager.CreateResponsePackage<T>(data);
         }

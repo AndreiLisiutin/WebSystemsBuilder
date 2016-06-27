@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,12 @@ namespace WebSystemsBuilder.Server
             Database.SetInitializer<WebBuilderEFContext>(new NullDatabaseInitializer<WebBuilderEFContext>());
         }
 
-        public WebBuilderEFContext() : base("WebBuilder")
+        public WebBuilderEFContext()
+            : base("WebBuilder")
+        {
+        }
+        public WebBuilderEFContext(DbConnection connection)
+            : base(connection, false)
         {
         }
 
