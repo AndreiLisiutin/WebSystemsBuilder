@@ -20,11 +20,11 @@
             success: function (objServerResponse) {
                 win.body.unmask();
                 var jsonResp = Ext.decode(objServerResponse.responseText);
-                if (jsonResp.resultCode == 0) {
-                    var dictionaryFields = jsonResp.resultData;
+                if (jsonResp.Code == 0) {
+                    var dictionaryFields = jsonResp.Data;
                     grid_dictionary = _this.buildGridPanel(win, dictionaryFields, dictionaryID, isEditable);
                 } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.resultCode);
+                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.Code);
                 }
             },
             failure: function (objServerResponse) {
@@ -78,7 +78,7 @@
                 success: function (objServerResponse) {
                     win.body.unmask();
                     var jsonResp = Ext.decode(objServerResponse.responseText);
-                    if (jsonResp.resultCode == 0) {
+                    if (jsonResp.Code == 0) {
                         grid.getStore().load({
                             params: {
                                 dictionaryID: dictionaryID
@@ -86,7 +86,7 @@
                         });
                         result = true;
                     } else {
-                        WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.resultCode);
+                        WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.Code);
                     }
                 },
                 failure: function (objServerResponse) {
@@ -146,8 +146,8 @@
                 },
                 reader: {
                     type: 'json',
-                    root: 'resultData',
-                    successProperty: 'resultCode'
+                    root: 'Data',
+                    successProperty: 'Code'
                 }
             }
         });

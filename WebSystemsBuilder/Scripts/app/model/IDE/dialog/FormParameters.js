@@ -1,9 +1,9 @@
-﻿Ext.define('WebSystemsBuilder.model.editor.dialog.FormParameters', {
+﻿Ext.define('WebSystemsBuilder.model.IDE.dialog.FormParameters', {
     extend: 'Ext.data.Model',
     fields: []
 });
 
-Ext.define('WebSystemsBuilder.model.editor.dialog.FormParametersIn', {
+Ext.define('WebSystemsBuilder.model.IDE.dialog.FormParametersIn', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',
@@ -13,7 +13,7 @@ Ext.define('WebSystemsBuilder.model.editor.dialog.FormParametersIn', {
     ]
 });
 
-Ext.define('WebSystemsBuilder.model.editor.dialog.FormParametersOut', {
+Ext.define('WebSystemsBuilder.model.IDE.dialog.FormParametersOut', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',

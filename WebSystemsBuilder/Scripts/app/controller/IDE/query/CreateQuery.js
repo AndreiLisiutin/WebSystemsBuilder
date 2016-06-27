@@ -76,8 +76,8 @@
                 success: function (objServerResponse) {
                     var jsonResp = Ext.decode(objServerResponse.responseText);
                     win.body.unmask();
-                    if (jsonResp.resultCode == 0){
-                        var obj = jsonResp.resultData;
+                    if (jsonResp.Code == 0){
+                        var obj = jsonResp.Data;
                         query.setValue(obj.queryType['sqlText']);
                     } else {
                         WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, -1);
@@ -179,7 +179,7 @@
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 win.body.unmask();
-                if (jsonResp.resultCode == 0){
+                if (jsonResp.Code == 0){
                     // Сгененировать событие, сообщающее основной форме о том,
                     // что запрос сохранен
                     win.fireEvent('QuerySaved', win, jsonResp.resultID);

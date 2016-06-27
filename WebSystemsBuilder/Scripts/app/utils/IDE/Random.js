@@ -1,4 +1,4 @@
-Ext.define('WebSystemsBuilder.editor.Random', {
+Ext.define('WebSystemsBuilder.utils.IDE.Random', {
     singleton: true,
     usedNumbers: undefined,
     init:function(){

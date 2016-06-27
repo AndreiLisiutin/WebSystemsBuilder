@@ -1,18 +1,18 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.dialog.FormParameters', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.dialog.FormParameters', {
     extend:'Ext.data.Store',
     fields:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.dialog.FormParametersIn', {
+Ext.define('WebSystemsBuilder.store.IDE.dialog.FormParametersIn', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.dialog.FormParametersIn',
+    model: 'WebSystemsBuilder.model.IDE.dialog.FormParametersIn',
     autoLoad: false,
     data:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.dialog.FormParametersOut', {
+Ext.define('WebSystemsBuilder.store.IDE.dialog.FormParametersOut', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.dialog.FormParametersOut',
+    model: 'WebSystemsBuilder.model.IDE.dialog.FormParametersOut',
     autoLoad: false,
     data:[]
 });

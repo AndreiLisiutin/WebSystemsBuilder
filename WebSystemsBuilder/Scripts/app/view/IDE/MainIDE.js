@@ -2,10 +2,11 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
     extend: 'Ext.window.Window',
     alias: 'widget.MainIDE',
     name: 'MainIDE',
+    autoShow: false,
 
     modal: true,
     constrain: true,
-    title: 'Визуальный редактор форм',
+    title: 'IDE For Web Systems Builder',
 
     height: 800,
     width: 1200,
@@ -21,155 +22,34 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
     outParams: undefined,
 
     layout: {
-        type: 'border'
+        type: 'fit'
     },
 
     initComponent: function () {
         var me = this;
 
-        var componentsStore = Ext.create('WebSystemsBuilder.store.editor.Components');
-        var groupsStore = Ext.create('WebSystemsBuilder.store.editor.Groups');
-        var treeStore = Ext.create('WebSystemsBuilder.store.editor.TreeStore');
-        var queryStore = Ext.create('WebSystemsBuilder.store.editor.query.FormQuery');
-        var queryFieldStore = Ext.create('WebSystemsBuilder.store.editor.QueryField');
-        var queryKeyFieldStore = Ext.create('WebSystemsBuilder.store.editor.QueryField');
-        var dictionaryFieldStore = Ext.create('WebSystemsBuilder.store.editor.DictionaryField');
-        var eventsStore = Ext.create('WebSystemsBuilder.store.editor.event.ComponentEvent');
+        var controlTypeGroupStore = Ext.create('WebSystemsBuilder.store.IDE.ControlTypeGroup');
+        var controlTypesStore = Ext.create('WebSystemsBuilder.store.IDE.ControlType');
+        var projectInspectorStore = Ext.create('WebSystemsBuilder.store.IDE.ProjectInspector');
+        var queryStore = Ext.create('WebSystemsBuilder.store.IDE.query.FormQuery');
+        var queryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
+        var queryKeyFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
+        var dictionaryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.DictionaryField');
+        var eventsStore = Ext.create('WebSystemsBuilder.store.IDE.event.ComponentEvent');
 
         Ext.applyIf(me, {
-
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'top',
-                    items: [
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Форма',
-                            action: 'onForm',
-                            border: true,
-                            icon: 'Scripts/resources/icons/form.png',
-                            iconAlign: 'top',
-                            width: 80,
-                            arrowAlign: 'right',
-                            menu: [
-                                {
-                                    xtype: 'menuitem',
-                                    action: 'onNewForm',
-                                    icon: 'Scripts/resources/icons/create_16.png',
-                                    border: true,
-                                    iconAlign: 'left',
-                                    scale: 'medium',
-                                    text: 'Новая форма'
-                                },
-                                {
-                                    xtype: 'menuitem',
-                                    action: 'onOpenForm',
-                                    icon: 'Scripts/resources/icons/open_16.png',
-                                    border: true,
-                                    iconAlign: 'left',
-                                    scale: 'medium',
-                                    text: 'Открыть форму'
-                                },
-                                {
-                                    xtype: 'menuitem',
-                                    action: 'onSaveForm',
-                                    icon: 'Scripts/resources/icons/save_16.png',
-                                    border: true,
-                                    iconAlign: 'left',
-                                    scale: 'medium',
-                                    text: 'Сохранить форму'
-                                },
-                                {
-                                    xtype: 'menuitem',
-                                    action: 'onRenameForm',
-                                    icon: 'Scripts/resources/icons/edit_16.png',
-                                    border: true,
-                                    iconAlign: 'left',
-                                    scale: 'medium',
-                                    text: 'Переименовать форму'
-                                },
-                                {
-                                    xtype: 'menuitem',
-                                    action: 'onFormParams',
-                                    icon: 'Scripts/resources/icons/up_down.png',
-                                    border: true,
-                                    iconAlign: 'left',
-                                    scale: 'medium',
-                                    text: 'Параметры формы'
-                                },
-                                {
-                                    xtype: 'menuitem',
-                                    action: 'onClose',
-                                    icon: 'Scripts/resources/icons/close_16.png',
-                                    border: true,
-                                    iconAlign: 'left',
-                                    scale: 'medium',
-                                    text: 'Закрыть'
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'tbseparator'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Новая форма',
-                            action: 'onNewForm',
-                            border: true,
-                            icon: 'Scripts/resources/icons/new.png',
-                            iconAlign: 'top'
-                        },
-                        {
-                            xtype: 'tbseparator'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Открыть форму',
-                            action: 'onOpenForm',
-                            border: true,
-                            icon: 'Scripts/resources/icons/open3.png',
-                            iconAlign: 'top'
-                        },
-                        {
-                            xtype: 'tbseparator'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Сохранить форму',
-                            action: 'onSaveForm',
-                            border: true,
-                            icon: 'Scripts/resources/icons/save.png',
-                            iconAlign: 'top'
-                        },
-                        {
-                            xtype: 'tbfill'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Закрыть',
-                            action: 'onClose',
-                            border: true,
-                            icon: 'Scripts/resources/icons/close.png',
-                            iconAlign: 'top'
-                        }
-                    ]
-                }
-            ],
-
             items: [
-//======================================================================================================================
+                {
+                    xtype: 'panel',
+                    layout: 'border',
+                    items: [
+                        //======================================================================================================================
 //                                               Компоненты
 //======================================================================================================================
                 {
                     xtype: 'panel',
                     name: 'componentsPanel',
-                    title: 'Компоненты',
+                    title: 'Components',
                     region: 'west',
                     collapsible: true,
                     collapsed: false,
@@ -187,7 +67,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                 {
                                     xtype: 'textfield',
                                     name: 'filter',
-                                    emptyText: 'Фильтр...'
+                                    emptyText: 'Filter...'
                                 }
                             ]
                         },
@@ -207,24 +87,12 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             header: false,
                             hideCollapseTool: true,
 
-                            store: groupsStore,
-                            requires: [
-                                'Ext.grid.feature.Grouping'
-                            ],
-                            features: [
-                                {
-                                    ftype: 'grouping',
-                                    groupHeaderTpl: '{groupValue}',
-                                    startCollapsed: false,
-                                    collapsible: false,
-                                    id: 'groupsGrouping'
-                                }
-                            ],
+                            store: controlTypeGroupStore,
 
                             columns: [
                                 {
                                     flex: 1,
-                                    dataIndex: 'name'
+                                    dataIndex: 'Name'
                                 }
                             ]
                         },
@@ -253,7 +121,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             },
 
                             // выбор строки, изменение dragZone
-                            store: componentsStore,
+                            store: controlTypesStore,
                             selModel: Ext.create('Ext.selection.RowModel', { mode: "SINGLE", ignoreRightMouseSelection: true }),
                             listeners: {
                                 beforeselect: function (_grid, record, index, eOpts) {
@@ -282,15 +150,17 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             columns: [
                                 {
                                     width: 25,
-                                    dataIndex: 'icon',
+                                    dataIndex: 'Icon',
                                     align: 'left',
-                                    renderer: renderIcon
+                                    renderer: function (value) {
+                                        return value ? '<img style="vertical-align: middle" src="' + value + '">' : null;
+                                    }
                                 },
                                 {
                                     flex: 1,
-                                    dataIndex: 'component',
-                                    renderer: function (val) {
-                                        return '<span style="vertical-align: bottom;">' + val + '</span>';
+                                    dataIndex: 'Name',
+                                    renderer: function (value, metaData, record) {
+                                        return '<span style="vertical-align: bottom;">' + value + '</span>';
                                     }
                                 },
                                 {
@@ -299,11 +169,11 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                     align: 'center',
                                     renderer: function (value, metaData, record, row, col, store, gridView) {
                                         var grid = this;
-                                        var name = '<b>Компонент:&nbsp</b> ' + record.get('component') + '<br>';
-                                        var group = '<b>Группа:&nbsp</b> ' + record.get('group') + '<br>';
-                                        var desc = '<b>Описание:&nbsp</b> ' + record.get('description') + '';
+                                        var name = '<b>Component:&nbsp</b> ' + record.get('Name') + '<br>';
+                                        var group = '<b>Group:&nbsp</b> ' + record.get('Group') + '<br>';
+                                        var desc = '<b>Description:&nbsp</b> ' + record.get('Description') + '';
                                         metaData.tdAttr = 'data-qtip="' + name + group + desc + '"';
-                                        return renderIcon(grid.infoIcon);
+                                        return grid.infoIcon ? '<img style="vertical-align: middle" src="' + grid.infoIcon + '">' : null;
                                     }
                                 }
                             ]
@@ -334,7 +204,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                     xtype: 'button',
                                     scale: 'small',
                                     action: 'onLabel',
-                                    text: 'Сгенерированное JSON представление',
+                                    text: 'Generated JSON view',
                                     hidden: true,
                                     readOnly: true,
                                     border: false
@@ -345,7 +215,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                 {
                                     xtype: 'button',
                                     scale: 'small',
-                                    text: 'Дизайн',
+                                    text: 'Design',
                                     action: 'onDesign',
                                     enableToggle: true,
                                     toggleGroup: 'DesignOrCode',
@@ -354,7 +224,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                 {
                                     xtype: 'button',
                                     scale: 'small',
-                                    text: 'Код',
+                                    text: 'Code',
                                     action: 'onCode',
                                     enableToggle: true,
                                     toggleGroup: 'DesignOrCode',
@@ -440,7 +310,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                 {
                     xtype: 'panel',
                     name: 'projectPanel',
-                    title: 'Инспектор проекта',
+                    title: 'Project Inspector',
                     region: 'east',
                     layout: 'border',
                     split: true,
@@ -454,7 +324,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             useArrows: true,
                             flex: 1,
                             rootVisible: true,
-                            store: treeStore,
+                            store: projectInspectorStore,
                             listeners: {
                                 itemclick: function (tree, record, item, index, e, eOpts) {
                                     try {
@@ -508,7 +378,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         {
                                             xtype: 'textfield',
                                             name: 'propertyFilter',
-                                            emptyText: 'Фильтр...'
+                                            emptyText: 'Filter...'
                                         }
                                     ]
                                 },
@@ -523,7 +393,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         {
                                             xtype: 'propertygrid',
                                             name: 'properties',
-                                            title: 'Свойства',
+                                            title: 'Properties',
                                             flex: 1,
                                             bodyStyle: {
                                                 'border-width': '1 0 0 0'
@@ -532,8 +402,8 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                             listeners: {
                                                 beforerender: function () {
                                                     var cols = this.getView().getHeaderCt().getGridColumns();
-                                                    cols[0].setText("Свойство");
-                                                    cols[1].setText("Значение");
+                                                    cols[0].setText("Property");
+                                                    cols[1].setText("Value");
                                                 },
                                                 'beforeedit': {
                                                     fn: function (e) {
@@ -551,7 +421,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         {
                                             xtype: 'gridpanel',
                                             name: 'events',
-                                            title: 'События',
+                                            title: 'Events',
                                             flex: 1,
                                             bodyStyle: {
                                                 'border-width': '1 0 0 0'
@@ -561,11 +431,11 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                 {
                                                     xtype: 'gridcolumn',
                                                     flex: 1,
-                                                    text: 'Событие',
+                                                    text: 'Event',
                                                     dataIndex: 'name'
                                                 },
                                                 {
-                                                    text: 'Обработчик',
+                                                    text: 'Handler',
                                                     xtype: 'gridcolumn',
                                                     resizable: false,
                                                     dataIndex: 'hasHandler',
@@ -573,9 +443,9 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                     sortable: false,
                                                     renderer: function (val, meta, record) {
                                                         if (record.get('actions') && record.get('actions').length > 0) {
-                                                            return 'есть';
+                                                            return 'Yes';
                                                         } else {
-                                                            return 'нет';
+                                                            return 'No';
                                                         }
                                                     }
                                                 }
@@ -624,7 +494,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                             xtype: 'panel',
                                             padding: 2,
                                             flex: 1,
-                                            title: 'Данные',
+                                            title: 'Data',
                                             name: 'data',
                                             layout: 'anchor',
                                             items: [
@@ -758,6 +628,131 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                             ]
                                         }
                                     ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+                    ],
+                    dockedItems: [
+                        {
+                            xtype: 'toolbar',
+                            dock: 'top',
+                            items: [
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Form',
+                                    action: 'onForm',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/form.png',
+                                    iconAlign: 'top',
+                                    width: 80,
+                                    arrowAlign: 'right',
+                                    menu: [
+                                        {
+                                            xtype: 'menuitem',
+                                            action: 'onNewForm',
+                                            icon: 'Scripts/resources/icons/create_16.png',
+                                            border: true,
+                                            iconAlign: 'left',
+                                            scale: 'medium',
+                                            text: 'New'
+                                        },
+                                        {
+                                            xtype: 'menuitem',
+                                            action: 'onOpenForm',
+                                            icon: 'Scripts/resources/icons/open_16.png',
+                                            border: true,
+                                            iconAlign: 'left',
+                                            scale: 'medium',
+                                            text: 'Open'
+                                        },
+                                        {
+                                            xtype: 'menuitem',
+                                            action: 'onSaveForm',
+                                            icon: 'Scripts/resources/icons/save_16.png',
+                                            border: true,
+                                            iconAlign: 'left',
+                                            scale: 'medium',
+                                            text: 'Save'
+                                        },
+                                        {
+                                            xtype: 'menuitem',
+                                            action: 'onRenameForm',
+                                            icon: 'Scripts/resources/icons/edit_16.png',
+                                            border: true,
+                                            iconAlign: 'left',
+                                            scale: 'medium',
+                                            text: 'Refactor'
+                                        },
+                                        {
+                                            xtype: 'menuitem',
+                                            action: 'onFormParams',
+                                            icon: 'Scripts/resources/icons/up_down.png',
+                                            border: true,
+                                            iconAlign: 'left',
+                                            scale: 'medium',
+                                            text: 'Parameters'
+                                        },
+                                        {
+                                            xtype: 'menuitem',
+                                            action: 'onClose',
+                                            icon: 'Scripts/resources/icons/close_16.png',
+                                            border: true,
+                                            iconAlign: 'left',
+                                            scale: 'medium',
+                                            text: 'Close'
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'New Form',
+                                    action: 'onNewForm',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/new.png',
+                                    iconAlign: 'top'
+                                },
+                                {
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Open Form',
+                                    action: 'onOpenForm',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/open3.png',
+                                    iconAlign: 'top'
+                                },
+                                {
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Save Form',
+                                    action: 'onSaveForm',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/save.png',
+                                    iconAlign: 'top'
+                                },
+                                {
+                                    xtype: 'tbfill'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Close',
+                                    action: 'onClose',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/close.png',
+                                    iconAlign: 'top'
                                 }
                             ]
                         }

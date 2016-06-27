@@ -18,8 +18,8 @@
             },
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
-                if (jsonResp.resultCode == 0) {
-                    var window = jsonResp.resultData;
+                if (jsonResp.Code == 0) {
+                    var window = jsonResp.Data;
                     console.log(window);
                     window = _this._parseBuildFormResult(window, formInParameters);
                     _this._initializeDictionaryObject(window);
@@ -30,7 +30,7 @@
                     window.show();
                     newWin = window;
                 } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.resultCode);
+                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.Code);
                 }
             },
             failure: function (objServerResponse) {
@@ -146,11 +146,11 @@
             },
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
-                if (jsonResp.resultCode == 0) {
-                    var obj = jsonResp.resultData;
+                if (jsonResp.Code == 0) {
+                    var obj = jsonResp.Data;
                     window.DICTIONARY_OBJECT = obj;
                 } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.resultCode);
+                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.Code);
                 }
             },
             failure: function (objServerResponse) {
@@ -322,8 +322,8 @@
                 },
                 reader: {
                     type: 'json',
-                    root: 'resultData',
-                    successProperty: 'resultCode'
+                    root: 'Data',
+                    successProperty: 'Code'
                 }
             }
         });
@@ -385,8 +385,8 @@
                 },
                 reader: {
                     type: 'json',
-                    root: 'resultData',
-                    successProperty: 'resultCode'
+                    root: 'Data',
+                    successProperty: 'Code'
                 }
             }
         });
@@ -462,10 +462,10 @@
             },
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
-                if (jsonResp.resultCode == 0) {
-                    result = jsonResp.resultData;
+                if (jsonResp.Code == 0) {
+                    result = jsonResp.Data;
                 } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.resultCode);
+                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.Code);
                 }
             },
             failure: function (objServerResponse) {

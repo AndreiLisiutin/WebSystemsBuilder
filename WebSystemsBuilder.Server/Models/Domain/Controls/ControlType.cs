@@ -18,5 +18,9 @@ namespace WebSystemsBuilder.Server.Models
         public string Name { get; set; }
         [Column("control_type_group_id")]
         public int ControlTypeGroupID { get; set; }
+        [Column("description")]
+        public string Description { get; set; }
+        [Column("extjs_class")]
+        public string ExtJsClass { get; set; }
     }
 }

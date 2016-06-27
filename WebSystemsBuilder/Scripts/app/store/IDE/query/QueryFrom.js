@@ -1,18 +1,18 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.query.QueryFrom', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.query.QueryFrom', {
     extend:'Ext.data.Store',
     fields:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.query.AllDictionary', {
+Ext.define('WebSystemsBuilder.store.IDE.query.AllDictionary', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.Dictionary',
+    model: 'WebSystemsBuilder.model.IDE.query.Dictionary',
     autoLoad: false,
     data:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.query.Dictionary', {
+Ext.define('WebSystemsBuilder.store.IDE.query.Dictionary', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.Dictionary',
+    model: 'WebSystemsBuilder.model.IDE.query.Dictionary',
     autoLoad: false,
 
     proxy: {
@@ -24,15 +24,15 @@ Ext.define('WebSystemsBuilder.store.editor.query.Dictionary', {
 
         reader: {
             type: 'json',
-            root: 'resultData',
-            successProperty: 'resultCode'
+            root: 'Data',
+            successProperty: 'Code'
         }
     }
 });
 
-Ext.define('WebSystemsBuilder.store.editor.query.Field', {
+Ext.define('WebSystemsBuilder.store.IDE.query.Field', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.Field',
+    model: 'WebSystemsBuilder.model.IDE.query.Field',
     autoLoad: false,
 
     proxy: {
@@ -44,8 +44,8 @@ Ext.define('WebSystemsBuilder.store.editor.query.Field', {
 
         reader: {
             type: 'json',
-            root: 'resultData',
-            successProperty: 'resultCode'
+            root: 'Data',
+            successProperty: 'Code'
         }
     }
 });

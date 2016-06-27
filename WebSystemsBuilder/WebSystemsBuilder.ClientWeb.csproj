@@ -149,6 +149,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\FormGeneration\FormMetaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IDE\MainIDEController.cs" />
     <Compile Include="Controllers\_Base\BaseController.cs" />
     <Compile Include="Controllers\_Test\_TestController.cs" />
     <Compile Include="Global.asax.cs">
@@ -159,7 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\app.js" />
     <Content Include="Scripts\app\controller\IDE\common\ComboForm.js" />
     <Content Include="Scripts\app\controller\IDE\dialog\CreateFormDialog.js" />
@@ -181,7 +181,7 @@
     <Content Include="Scripts\app\model\IDE\event\ActionHandler.js" />
     <Content Include="Scripts\app\model\IDE\event\ComponentEvent.js" />
     <Content Include="Scripts\app\model\IDE\event\EventAction.js" />
-    <Content Include="Scripts\app\model\IDE\FormEditor.js" />
+    <Content Include="Scripts\app\model\IDE\MainIDE.js" />
     <Content Include="Scripts\app\model\IDE\query\CreateQuery.js" />
     <Content Include="Scripts\app\model\IDE\query\FormQuery.js" />
     <Content Include="Scripts\app\model\IDE\query\QueryFrom.js" />
@@ -190,7 +190,7 @@
     <Content Include="Scripts\app\store\IDE\event\ActionHandler.js" />
     <Content Include="Scripts\app\store\IDE\event\ComponentEvent.js" />
     <Content Include="Scripts\app\store\IDE\event\EventAction.js" />
-    <Content Include="Scripts\app\store\IDE\FormEditor.js" />
+    <Content Include="Scripts\app\store\IDE\MainIDE.js" />
     <Content Include="Scripts\app\store\IDE\query\CreateQuery.js" />
     <Content Include="Scripts\app\store\IDE\query\FormQuery.js" />
     <Content Include="Scripts\app\store\IDE\query\QueryFrom.js" />
@@ -217,9 +217,9 @@
     <Content Include="Scripts\app\utils\components\WindowFactory.js" />
     <Content Include="Scripts\app\utils\ControllerLoader.js" />
     <Content Include="Scripts\app\utils\DefaultConfiguration.js" />
-    <Content Include="Scripts\app\utils\editor\AddedQueries.js" />
-    <Content Include="Scripts\app\utils\editor\Focused.js" />
-    <Content Include="Scripts\app\utils\editor\Random.js" />
+    <Content Include="Scripts\app\utils\IDE\Queries.js" />
+    <Content Include="Scripts\app\utils\IDE\Focused.js" />
+    <Content Include="Scripts\app\utils\IDE\Random.js" />
     <Content Include="Scripts\app\utils\formGenerator\dictionaries\DictionariesDynamicGrid.js" />
     <Content Include="Scripts\app\utils\formGenerator\GeneratorEventsFactory.js" />
     <Content Include="Scripts\app\utils\formGenerator\GeneratorFormFactory.js" />

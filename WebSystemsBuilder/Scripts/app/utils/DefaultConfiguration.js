@@ -7,50 +7,8 @@
         }
     },
 
-    keyPressF12: function (panel) {
-        var _this = this;
-        new Ext.util.KeyMap({
-            target: panel.getEl(),
-            eventName: 'keyup',
-            binding: [
-                {
-                    key: Ext.EventObject.F12,
-                    ctrl: true,
-                    shift: true,
-                    fn: function (keyCode, e) {
-
-                        var selectedRecord = panel.getSelectionModel().getSelection()[0];
-                        if (!selectedRecord) {
-                            return;
-                        }
-                        var raw = selectedRecord.raw;
-                        Ext.create('Ext.window.Window', {
-                            title: 'Содержимое строки',
-                            width: 500,
-                            height: 600,
-                            maximizable: true,
-                            modal: true,
-                            constrain: true,
-                            layout: 'fit',
-                            items: [
-                                {
-                                    xtype: 'textareafield',
-                                    margin: '-2 0 -2 0',
-                                    readOnly: true,
-                                    value: _this.iterateObjectAlphabetically(raw)
-                                }
-                            ]
-                        }).show();
-                    },
-                    scope: panel
-                }
-            ]
-        });
-    },
-
     iterateObjectAlphabetically: function (obj) {
         var arr = [], i;
-
 
         for (i in obj) {
             if (obj.hasOwnProperty(i)) {
@@ -79,7 +37,8 @@
             getDragText: function () {
                 if (this.dragField) {
                     var fieldValue = this.dragData.records[0].get(this.dragField);
-                    var iconValue = renderIcon(this.dragData.records[0].get(this.iconField));
+                    var icon = this.dragData.records[0].get(this.iconField);
+                    var iconValue = icon ? '<img style="vertical-align: middle" src="' + icon + '">' : null;
                     return Ext.String.format(this.dragText, '&nbsp&nbsp' + iconValue + '&nbsp&nbsp' + fieldValue);
                 } else {
                     return '';
@@ -265,8 +224,6 @@
                     return _this;
                 },
                 labelSeparator: '',
-                editable: false,
-                typeAhead: true,
                 forceSelection: true,
                 enableKeyEvents: true
             });
@@ -323,7 +280,6 @@
 
                         if (sender.format == 'd.m.Y') {
                             //точки расставляются автоматически
-                            //TODO:покрасивше допилить
                             if ((newValue.length == 4 || newValue.length == 7)
                                 && newValue[newValue.length - 1] == '.' && newValue[newValue.length - 2] == '.') {
                                 newValue = newValue.substring(0, newValue.length - 2);
@@ -349,35 +305,35 @@
 
 
         // Для того, чтобы можно было передавать сложные объекты в grid.getStore().load({params:...});
-        Ext.override(Ext.data.proxy.Ajax, {
-            doRequest: function (operation, callback, scope) {
-                var writer = this.getWriter(),
-                    request = this.buildRequest(operation, callback, scope);
+        //Ext.override(Ext.data.proxy.Ajax, {
+        //    doRequest: function (operation, callback, scope) {
+        //        var writer = this.getWriter(),
+        //            request = this.buildRequest(operation, callback, scope);
 
-                if (operation.allowWrite()) {
-                    request = writer.write(request);
-                }
+        //        if (operation.allowWrite()) {
+        //            request = writer.write(request);
+        //        }
 
-                Ext.apply(request, {
-                    headers: this.headers,
-                    timeout: this.timeout,
-                    scope: this,
-                    callback: this.createRequestCallback(request, operation, callback, scope),
-                    method: this.getMethod(request),
-                    disableCaching: false // explicitly set it to false, ServerProxy handles caching
-                });
+        //        Ext.apply(request, {
+        //            headers: this.headers,
+        //            timeout: this.timeout,
+        //            scope: this,
+        //            callback: this.createRequestCallback(request, operation, callback, scope),
+        //            method: this.getMethod(request),
+        //            disableCaching: false // explicitly set it to false, ServerProxy handles caching
+        //        });
 
-                //Added... jsonData is handled already
-                if (this.jsonData) {
-                    request.jsonData = Ext.encode(request.params);
-                    delete request.params;
-                }
+        //        //Added... jsonData is handled already
+        //        if (this.jsonData) {
+        //            request.jsonData = Ext.encode(request.params);
+        //            delete request.params;
+        //        }
 
-                Ext.Ajax.request(request);
+        //        Ext.Ajax.request(request);
 
-                return request;
-            }
-        });
+        //        return request;
+        //    }
+        //});
 
         if (Ext.tip.QuickTip) {
             Ext.apply(Ext.tip.QuickTip.prototype, {
@@ -401,27 +357,7 @@
                 constructor: function (config) {
                     var _this = this;
                     _gridPanelConstructor.call(_this, config);
-
-                    _this.on('afterrender', function (grid) {
-                        thisthis.keyPressF12(grid);
-                    });
-
-                    return _this;
-                }
-            });
-        }
-
-        if (Ext.tree.Panel) {
-            var _gridPanelConstructor = Ext.tree.Panel.prototype.constructor;
-            Ext.apply(Ext.tree.Panel.prototype, {
-                constructor: function (config) {
-                    var _this = this;
-                    _gridPanelConstructor.call(_this, config);
-
-                    _this.on('afterrender', function (tree) {
-                        thisthis.keyPressF12(tree);
-                    });
-
+                    
                     return _this;
                 }
             });
@@ -436,9 +372,20 @@
         /**
          * Replaces all occurrences of a substring in a string
          */
-        String.prototype.replaceAll = function (token, newToken) {
-            return this.split(token).join(newToken);
-        };
+        if (typeof String.prototype.replaceAll != 'function') {
+            String.prototype.replaceAll = function (token, newToken) {
+                return this.split(token).join(newToken);
+            };
+        }
+        /**
+         * Функция возвращает логическое значение, определяющее, начинается ли текущая строка со строки str
+         * @param str Начальная подстрока для проверки
+         */
+        if (typeof String.prototype.startsWith != 'function') {
+            String.prototype.startsWith = function (str) {
+                return this.indexOf(str) == 0;
+            };
+        }
 
         /**
          * Provides a convenient method for performing basic date arithmetic. This method
@@ -497,8 +444,6 @@
                         return false;
                     }
                 }
-                //            requires: ['OSO.utils.EventHandler'],
-                //            mixins: ['OSO.utils.EventHandler']
             });
         }
 
@@ -510,14 +455,7 @@
                 }
             })
         }
-
-
-        if (Ext.window.Window) {
-            Ext.apply(Ext.window.Window.prototype, {
-                onEsc: Ext.emptyFn
-            });
-        }
-
+        
         Ext.override(Ext.data.Connection, {
             onComplete: function (request) {
                 var me = this,

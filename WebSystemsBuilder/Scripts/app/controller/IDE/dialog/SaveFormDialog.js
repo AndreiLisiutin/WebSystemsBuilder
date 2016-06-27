@@ -40,7 +40,7 @@
                 success: function (objServerResponse) {
                     var jsonResp = Ext.decode(objServerResponse.responseText);
                     win.body.unmask();
-                    if (jsonResp.resultCode == 0){
+                    if (jsonResp.Code == 0){
                         // Сгененировать событие, сообщающее основной форме о том,
                         // что форма сохранена (как элемент в целом) и можно сохранять все компоненты формы
                         win.fireEvent('FormIsReadyToSave', win, jsonResp.resultID, form.getValue());

@@ -1,6 +1,8 @@
 ﻿Ext.define('WebSystemsBuilder.utils.ControllerLoader', {
     singleton: true,
     load: function (controller) {
-        return WebSystemsBuilder.getApplication().getController(controller);
+        var app = WebSystemsBuilder.getApplication();
+        loadedController = app.getController(controller);        
+        return loadedController;
     }
 });

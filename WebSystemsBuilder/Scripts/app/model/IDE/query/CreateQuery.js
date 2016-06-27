@@ -1,9 +1,9 @@
-﻿Ext.define('WebSystemsBuilder.model.editor.query.CreateQuery', {
+﻿Ext.define('WebSystemsBuilder.model.IDE.query.CreateQuery', {
     extend: 'Ext.data.Model',
     fields: []
 });
 
-Ext.define('WebSystemsBuilder.model.editor.query.From', {
+Ext.define('WebSystemsBuilder.model.IDE.query.From', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',
@@ -14,7 +14,7 @@ Ext.define('WebSystemsBuilder.model.editor.query.From', {
     ]
 });
 
-Ext.define('WebSystemsBuilder.model.editor.query.Select', {
+Ext.define('WebSystemsBuilder.model.IDE.query.Select', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',
@@ -26,7 +26,7 @@ Ext.define('WebSystemsBuilder.model.editor.query.Select', {
     ]
 });
 
-Ext.define('WebSystemsBuilder.model.editor.query.Where', {
+Ext.define('WebSystemsBuilder.model.IDE.query.Where', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',

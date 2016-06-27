@@ -1,12 +1,12 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.event.ActionHandler', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.event.ActionHandler', {
     extend:'Ext.data.Store',
     fields:[]
 });
 
 // Список действий события
-Ext.define('WebSystemsBuilder.store.editor.event.Handler', {
+Ext.define('WebSystemsBuilder.store.IDE.event.Handler', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.event.Handler',
+    model: 'WebSystemsBuilder.model.IDE.event.Handler',
     autoLoad: false,
 
     proxy: {
@@ -18,15 +18,15 @@ Ext.define('WebSystemsBuilder.store.editor.event.Handler', {
 
         reader: {
             type: 'json',
-            root: 'resultData',
-            successProperty: 'resultCode'
+            root: 'Data',
+            successProperty: 'Code'
         }
     }
 });
 
-Ext.define('WebSystemsBuilder.store.editor.event.HandlerParams', {
+Ext.define('WebSystemsBuilder.store.IDE.event.HandlerParams', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.event.HandlerParams',
+    model: 'WebSystemsBuilder.model.IDE.event.HandlerParams',
     autoLoad: false,
 
     proxy: {
@@ -38,8 +38,8 @@ Ext.define('WebSystemsBuilder.store.editor.event.HandlerParams', {
 
         reader: {
             type: 'json',
-            root: 'resultData',
-            successProperty: 'resultCode'
+            root: 'Data',
+            successProperty: 'Code'
         }
     }
 });

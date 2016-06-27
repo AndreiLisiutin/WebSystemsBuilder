@@ -1,4 +1,4 @@
-Ext.define('WebSystemsBuilder.editor.Focused', {
+Ext.define('WebSystemsBuilder.utils.IDE.Focused', {
     singleton: true,
     focusedCmp: undefined,
     getFocusedCmp: function () {

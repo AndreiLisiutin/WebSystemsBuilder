@@ -1,11 +1,11 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.dialog.OpenFormDialog', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.dialog.OpenFormDialog', {
     extend:'Ext.data.Store',
     fields:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.dialog.Form', {
+Ext.define('WebSystemsBuilder.store.IDE.dialog.Form', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.dialog.Form',
+    model: 'WebSystemsBuilder.model.IDE.dialog.Form',
     autoLoad: false,
 
     proxy: {
@@ -17,8 +17,8 @@ Ext.define('WebSystemsBuilder.store.editor.dialog.Form', {
 
         reader: {
             type: 'json',
-            root: 'resultData',
-            successProperty: 'resultCode'
+            root: 'Data',
+            successProperty: 'Code'
         }
     }
 });
