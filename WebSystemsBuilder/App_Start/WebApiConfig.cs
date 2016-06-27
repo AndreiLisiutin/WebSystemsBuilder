@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 
-namespace WebSystemsBuilder
+namespace WebSystemsBuilder.ClientWeb
 {
     public static class WebApiConfig
     {
