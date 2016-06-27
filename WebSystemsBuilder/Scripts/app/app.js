@@ -1,22 +1,32 @@
-/**
- * The main application class. This is the ideal place to handle application launch and
- * initialization details.
- */
 Ext.application({
     extend: 'Ext.app.Application',
     requires: [
-        'IDE.view.main.Main'
+        'WebSystemsBuilder.view.main.MainForm'
     ],
     
-    name: 'IDE',
+    name: 'WebSystemsBuilder',
     appFolder: 'Scripts/app',
 
-    // The name of the initial view to create. With the classic toolkit this class
-    // will gain a "viewport" plugin if it does not extend Ext.Viewport. With the
-    // modern toolkit, the main view will be added to the Viewport.
-    mainView: 'IDE.view.main.Main',
+    controllers: [
+        'WebSystemsBuilder.controller.main.MainForm'
+    ],
+    requires: [
+        'WebSystemsBuilder.utils.DefaultConfiguration',
+        'WebSystemsBuilder.utils.Windows',
+        'WebSystemsBuilder.utils.MessageBox',
+        'WebSystemsBuilder.utils.ControllerLoader'
+    ],
+
+    init: function() {
+        WebSystemsBuilder.utils.DefaultConfiguration.defineConfiguration();
+    },
 
     launch: function () {
-        // TODO - Launch the application
+        Ext.create('Ext.container.Viewport', {
+            layout: 'fit',
+            items: {
+                xtype: 'MainForm'
+            }
+        }).show();
     }
 });
