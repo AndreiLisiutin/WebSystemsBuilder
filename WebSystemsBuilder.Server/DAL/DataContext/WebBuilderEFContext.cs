@@ -20,8 +20,8 @@ namespace WebSystemsBuilder.Server
             : base(connectionString)
         {
         }
-        public WebBuilderEFContext(DbConnection connection)
-            : base(connection, false)
+        public WebBuilderEFContext(DbConnection connection, bool contextOwnsConnection = true)
+            : base(connection, contextOwnsConnection)
         {
         }
 

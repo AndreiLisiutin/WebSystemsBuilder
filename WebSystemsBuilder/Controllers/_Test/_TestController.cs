@@ -24,6 +24,18 @@ namespace WebSystemsBuilder.ClientWeb
                 return Json(ex, JsonRequestBehavior.AllowGet);
             }
         }
+        public ActionResult TestQuery()
+        {
+            try 
+            {
+                var result = new QueryTypeBLL().GetQueryTypeByID(1);
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex, JsonRequestBehavior.AllowGet);
+            }
+        }
         public ActionResult TestErrorsHandling()
         {
             throw new Exception("Test");
