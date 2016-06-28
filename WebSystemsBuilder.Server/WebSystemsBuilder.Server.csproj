@@ -87,6 +87,8 @@
     <Compile Include="Models\Domain\Queries\QueryTypeIn.cs" />
     <Compile Include="Models\Domain\Queries\QueryTypeColumn.cs" />
     <Compile Include="Models\Domain\Queries\QueryType.cs" />
+    <Compile Include="Models\Domain\Tables\Column.cs" />
+    <Compile Include="Models\Domain\Tables\Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\InfrastructurePackages\BaseRequestPackage.cs" />
     <Compile Include="Utilities\InfrastructurePackages\BaseResponsePackage.cs" />
