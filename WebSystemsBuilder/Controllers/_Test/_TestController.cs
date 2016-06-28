@@ -13,11 +13,23 @@ namespace WebSystemsBuilder.ClientWeb
         {
             try 
             {
-                using (var db = new WebBuilderEFContext())
+                using (var db = new WebBuilderEFContext("WebBuilder"))
                 {
                     db.ControlTypes.ToList();
                     return Json("OK", JsonRequestBehavior.AllowGet);
                 }
+            }
+            catch (Exception ex)
+            {
+                return Json(ex, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult TestQuery()
+        {
+            try 
+            {
+                var result = new QueryTypeBLL().GetQueryTypeByID(1);
+                return Json(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

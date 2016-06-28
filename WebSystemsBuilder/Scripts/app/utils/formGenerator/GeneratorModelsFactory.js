@@ -36,7 +36,6 @@
                 };
                 break;
             case DomainValueTypes.Decimal:
-                return
                 return {
                     xtype: 'numberfield'
                 };

@@ -8,19 +8,15 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    [Table("wb_form", Schema = "public")]
-    public class Form
+    [Table("wb_table", Schema = "public")]
+    public class Table
     {
         [Key]
-        [Column("form_id")]
-        public int FormID { get; set; }
-        /// <summary> Actually, Not Null
-        /// </summary>
-        [Column("control_id_root")]
-        public int? ControlIDRoot { get; set; }
+        [Column("table_id")]
+        public int TableID { get; set; }
         [Column("name")]
         public string Name { get; set; }
-        [Column("description")]
-        public string Description { get; set; }
+        [Column("physical_table")]
+        public string PhysicalTable { get; set; }
     }
 }

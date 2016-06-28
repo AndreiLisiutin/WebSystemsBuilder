@@ -16,12 +16,12 @@ namespace WebSystemsBuilder.Server
             Database.SetInitializer<WebBuilderEFContext>(new NullDatabaseInitializer<WebBuilderEFContext>());
         }
 
-        public WebBuilderEFContext()
-            : base("WebBuilder")
+        public WebBuilderEFContext(string connectionString)
+            : base(connectionString)
         {
         }
-        public WebBuilderEFContext(DbConnection connection)
-            : base(connection, false)
+        public WebBuilderEFContext(DbConnection connection, bool contextOwnsConnection = true)
+            : base(connection, contextOwnsConnection)
         {
         }
 
@@ -35,5 +35,15 @@ namespace WebSystemsBuilder.Server
         public DbSet<FormParameter> FormParameters { get; set; }
         public DbSet<PropertyType> PropertyTypes { get; set; }
         public DbSet<PropertyValueType> PropertyValueTypes { get; set; }
+
+        public DbSet<QueryType> QueryTypes { get; set; }
+        public DbSet<QueryTypeColumn> QueryTypeColumns { get; set; }
+        public DbSet<QueryTypeIn> QueryTypeIns { get; set; }
+        public DbSet<QueryTypeOut> QueryTypeOuts { get; set; }
+        public DbSet<QueryTypePart> QueryTypeParts { get; set; }
+        public DbSet<QueryTypeTable> QueryTypeTables { get; set; }
+
+        public DbSet<Table> Tables { get; set; }
+        public DbSet<Column> Columns { get; set; }
     }
 }

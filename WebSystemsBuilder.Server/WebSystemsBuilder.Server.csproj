@@ -52,6 +52,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -62,13 +63,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BLL\ConnectionFactory.cs" />
-    <Compile Include="BLL\FormGeneration\FormMetaDescriptionsBLL.cs" />
+    <Compile Include="BLL\FormGeneration\QueryTypeBLL.cs" />
+    <Compile Include="BLL\FormGeneration\ValueTypesBLL.cs" />
+    <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeGroupBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeBLL.cs" />
+    <Compile Include="BLL\ValueTypeEnum.cs" />
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
+    <Compile Include="Models\Business\FormGeneration\QueryType\QueryTypeColumnInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\QueryType\QueryTypeOutInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\QueryType\QueryTypeInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\ControlInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\FormInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\PropertyInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\QueryType\QueryTypeInInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\QueryType\QueryTypeTableInstance.cs" />
+    <Compile Include="Models\Business\IDE\PropertyInstance.cs" />
     <Compile Include="Models\Business\IDE\ControlTypeInctance.cs" />
     <Compile Include="Models\Domain\Controls\ValueType.cs" />
     <Compile Include="Models\Domain\Controls\PropertyType.cs" />
@@ -80,7 +89,17 @@
     <Compile Include="Models\Domain\Controls\ControlTypeDependency.cs" />
     <Compile Include="Models\Domain\Controls\ControlType.cs" />
     <Compile Include="Models\Domain\Controls\Control.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeTable.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypePart.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeOut.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeIn.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeColumn.cs" />
+    <Compile Include="Models\Domain\Queries\QueryType.cs" />
+    <Compile Include="Models\Domain\Tables\Column.cs" />
+    <Compile Include="Models\Domain\Tables\Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\Exceptions\ValueTypeCastException.cs" />
+    <Compile Include="Utilities\Exceptions\FormGenerationException.cs" />
     <Compile Include="Utilities\InfrastructurePackages\BaseRequestPackage.cs" />
     <Compile Include="Utilities\InfrastructurePackages\BaseResponsePackage.cs" />
     <Compile Include="Utilities\InfrastructurePackages\PackageManager\BasePackageManager.cs" />
