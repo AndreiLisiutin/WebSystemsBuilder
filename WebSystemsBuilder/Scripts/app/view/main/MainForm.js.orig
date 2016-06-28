@@ -1,12 +1,46 @@
 Ext.define('WebSystemsBuilder.view.main.MainForm', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.MainForm',
+<<<<<<< HEAD
+=======
     name: 'MainForm',
+>>>>>>> 33ee8a102a28c6b85e1fb002b8ca7a8d9bf03363
 
     requires: [
         'Ext.plugin.Viewport'
     ],
 
+<<<<<<< HEAD
+    items: [
+        {
+            xtype: 'container',
+            margin: '20 0 0 40',
+            layout: {
+                align: 'stretch',
+                type: 'hbox'
+            },
+            items: [
+                {
+                    xtype: 'button',
+                    width: 100,
+                    text: 'IDE',
+                    iconAlign: 'top',
+                    action: 'onOpenIDE',
+                    icon: 'Scripts/resources/icons/process.png'
+                },
+                {
+                    xtype: 'button',
+                    width: 100,
+                    text: 'Test',
+                    iconAlign: 'top',
+                    name:'test',
+                    icon: 'Scripts/resources/icons/process.png'
+                }
+            ]
+        }
+    ]
+});
+=======
     initComponent: function () {
         var me = this;
 
@@ -27,14 +61,6 @@ Ext.define('WebSystemsBuilder.view.main.MainForm', {
                             iconAlign: 'top',
                             action: 'onOpenIDE',
                             icon: 'Scripts/resources/icons/process.png'
-                },
-                {
-                    xtype: 'button',
-                    width: 100,
-                    text: 'Test',
-                    iconAlign: 'top',
-                    name:'test',
-                    icon: 'Scripts/resources/icons/process.png'
                         }
                     ]
                 }
@@ -44,3 +70,4 @@ Ext.define('WebSystemsBuilder.view.main.MainForm', {
         me.callParent(arguments);
     }
 });
+>>>>>>> 33ee8a102a28c6b85e1fb002b8ca7a8d9bf03363

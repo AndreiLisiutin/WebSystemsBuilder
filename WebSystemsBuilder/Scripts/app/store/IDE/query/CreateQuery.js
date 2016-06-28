@@ -1,25 +1,25 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.query.CreateQuery', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.query.CreateQuery', {
     extend:'Ext.data.Store',
     fields:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.query.From', {
+Ext.define('WebSystemsBuilder.store.IDE.query.From', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.From',
+    model: 'WebSystemsBuilder.model.IDE.query.From',
     autoLoad: false,
     data:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.query.Select', {
+Ext.define('WebSystemsBuilder.store.IDE.query.Select', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.Select',
+    model: 'WebSystemsBuilder.model.IDE.query.Select',
     autoLoad: false,
     data:[]
 });
 
-Ext.define('WebSystemsBuilder.store.editor.query.Where', {
+Ext.define('WebSystemsBuilder.store.IDE.query.Where', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.Where',
+    model: 'WebSystemsBuilder.model.IDE.query.Where',
     autoLoad: false,
     data:[]
 });

@@ -8,8 +8,8 @@ Ext.define('WebSystemsBuilder.utils.MessageBox', {
         this.callParent(arguments);
     },
 
-    show: function (message, bt, resultCode) {
-        return this.showEx(message, bt, resultCode, {});
+    show: function (message, bt, Code) {
+        return this.showEx(message, bt, Code, {});
     },
 
     error: function (message, fn) {
@@ -60,7 +60,7 @@ Ext.define('WebSystemsBuilder.utils.MessageBox', {
         });
     },
 
-    showEx: function (message, bt, resultCode, cfg) {
+    showEx: function (message, bt, Code, cfg) {
         var buttons = bt == undefined ? Ext.Msg.OK : bt;
         var title;
         if (bt != undefined && bt == Ext.Msg.OK) {
@@ -70,7 +70,7 @@ Ext.define('WebSystemsBuilder.utils.MessageBox', {
             title = 'Подтверждение';
         }
         var icon;
-        switch (resultCode) {
+        switch (Code) {
             case 0:
                 icon = Ext.MessageBox.INFO;
                 break;

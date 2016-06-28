@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.model.editor.query.FormQuery', {
+﻿Ext.define('WebSystemsBuilder.model.IDE.query.FormQuery', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',

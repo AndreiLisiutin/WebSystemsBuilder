@@ -1,15 +1,9 @@
 Ext.application({
     extend: 'Ext.app.Application',
-    requires: [
-        'WebSystemsBuilder.view.main.MainForm'
-    ],
-    
+
     name: 'WebSystemsBuilder',
     appFolder: 'Scripts/app',
 
-    controllers: [
-        'WebSystemsBuilder.controller.main.MainForm'
-    ],
     requires: [
         'WebSystemsBuilder.utils.DefaultConfiguration',
         'WebSystemsBuilder.utils.Windows',
@@ -22,6 +16,7 @@ Ext.application({
     },
 
     launch: function () {
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.main.MainForm');
         Ext.create('Ext.container.Viewport', {
             layout: 'fit',
             items: {

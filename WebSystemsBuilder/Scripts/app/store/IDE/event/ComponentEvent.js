@@ -1,5 +1,5 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.event.ComponentEvent', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.event.ComponentEvent', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.event.ComponentEvent',
+    model: 'WebSystemsBuilder.model.IDE.event.ComponentEvent',
     data:[]
 });

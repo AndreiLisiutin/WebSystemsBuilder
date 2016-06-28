@@ -1,9 +1,9 @@
-﻿Ext.define('WebSystemsBuilder.model.editor.event.ActionHandler', {
+﻿Ext.define('WebSystemsBuilder.model.IDE.event.ActionHandler', {
     extend: 'Ext.data.Model',
     fields: []
 });
 
-Ext.define('WebSystemsBuilder.model.editor.event.Handler', {
+Ext.define('WebSystemsBuilder.model.IDE.event.Handler', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',
@@ -12,7 +12,7 @@ Ext.define('WebSystemsBuilder.model.editor.event.Handler', {
     ]
 });
 
-Ext.define('WebSystemsBuilder.model.editor.event.HandlerParams', {
+Ext.define('WebSystemsBuilder.model.IDE.event.HandlerParams', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',

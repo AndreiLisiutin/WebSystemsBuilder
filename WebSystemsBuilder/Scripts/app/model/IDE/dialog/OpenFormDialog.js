@@ -1,9 +1,9 @@
-﻿Ext.define('WebSystemsBuilder.model.editor.dialog.OpenFormDialog', {
+﻿Ext.define('WebSystemsBuilder.model.IDE.dialog.OpenFormDialog', {
     extend: 'Ext.data.Model',
     fields: []
 });
 
-Ext.define('WebSystemsBuilder.model.editor.dialog.Form', {
+Ext.define('WebSystemsBuilder.model.IDE.dialog.Form', {
     extend: 'Ext.data.Model',
     fields: [
         'ID',

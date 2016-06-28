@@ -1,4 +1,4 @@
-Ext.define('WebSystemsBuilder.editor.Queries', {
+Ext.define('WebSystemsBuilder.utils.IDE.Queries', {
     singleton: true,
     queries: undefined,
     init:function(){

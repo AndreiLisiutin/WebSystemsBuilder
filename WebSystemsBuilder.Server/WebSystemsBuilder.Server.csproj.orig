@@ -62,10 +62,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BLL\ConnectionFactory.cs" />
+<<<<<<< HEAD
     <Compile Include="BLL\FormGeneration\ValueTypesBLL.cs" />
     <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
+=======
+    <Compile Include="BLL\FormGeneration\FormMetaDescriptionsBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeGroupBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeBLL.cs" />
+>>>>>>> 33ee8a102a28c6b85e1fb002b8ca7a8d9bf03363
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
     <Compile Include="Models\Business\FormGeneration\ControlInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\FormInstance.cs" />

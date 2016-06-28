@@ -1,6 +1,6 @@
-﻿Ext.define('WebSystemsBuilder.store.editor.query.FormQuery', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.query.FormQuery', {
     extend:'Ext.data.Store',
-    model:'WebSystemsBuilder.model.editor.query.FormQuery',
+    model: 'WebSystemsBuilder.model.IDE.query.FormQuery',
     autoLoad: false,
     data:[]
 });

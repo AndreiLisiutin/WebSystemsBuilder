@@ -170,10 +170,10 @@ Ext.define('Actions', {
             success: function (objServerResponse) {
                 win.body.unmask();
                 var jsonResp = Ext.decode(objServerResponse.responseText);
-                if (jsonResp.resultCode == 0) {
+                if (jsonResp.Code == 0) {
                     pkFormField.setValue(jsonResp.resultID);
                 } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.resultCode);
+                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, jsonResp.Code);
                 }
             },
             failure: function (objServerResponse) {
