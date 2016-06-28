@@ -69,7 +69,7 @@
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
     <Compile Include="Models\Business\FormGeneration\ControlInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\FormInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\PropertyInstance.cs" />
+    <Compile Include="Models\Business\IDE\PropertyInstance.cs" />
     <Compile Include="Models\Business\IDE\ControlTypeInctance.cs" />
     <Compile Include="Models\Domain\Controls\ValueType.cs" />
     <Compile Include="Models\Domain\Controls\PropertyType.cs" />
