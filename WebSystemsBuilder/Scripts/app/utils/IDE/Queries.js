@@ -1,5 +1,7 @@
 Ext.define('WebSystemsBuilder.utils.IDE.Queries', {
     singleton: true,
+    alternateClassName: ['Queries'],
+
     queries: undefined,
     init:function(){
         this.queries = [];

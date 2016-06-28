@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.dialog.FormParametersExplorer', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.dialog.FormParametersExplorer', {
     extend: 'Ext.window.Window',
     alias: 'widget.FormParametersExplorer',
     name: 'FormParametersExplorer',

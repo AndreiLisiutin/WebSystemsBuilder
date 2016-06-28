@@ -52,7 +52,7 @@ Ext.define('WebSystemsBuilder.store.IDE.ProjectInspector', {
         name: 'root',
         id: 'root',
         text: 'View',
-        icon: 'Scripts/resources/icons/editor/w.png',
+        icon: 'Scripts/resources/icons/IDE/w.png',
         children: []
     }
 });

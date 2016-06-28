@@ -16,13 +16,20 @@ Ext.define('WebSystemsBuilder.model.IDE.ControlType', {
     fields: [
         'ControlType',
         'ControlTypeGroup',
-        
         {
             name: 'ControlTypeGroupID',
             convert: function (v, record) {
                 var controlType = record.get('ControlType');
                 if (!controlType) return null;
                 return controlType.ControlTypeGroupID;
+            }
+        },
+        {
+            name: 'ControlTypeID',
+            convert: function (v, record) {
+                var controlType = record.get('ControlType');
+                if (!controlType) return null;
+                return controlType.ControlTypeID;
             }
         },
         {
@@ -65,7 +72,7 @@ Ext.define('WebSystemsBuilder.model.IDE.ControlType', {
                 if (!controlType) return null;
 
                 var name = controlType.Name.toLowerCase();
-                var path = "Scripts/resources/icons/editor/";
+                var path = "Scripts/resources/icons/IDE/";
                 var png = ".png";
                 if (name.startsWith("container")) {
                     return path + "container" + png;
@@ -74,8 +81,6 @@ Ext.define('WebSystemsBuilder.model.IDE.ControlType', {
                 }
             }
         }
-        
-
         //'properties',
         //'queryParams',
         //'childComponents',

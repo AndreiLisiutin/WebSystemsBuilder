@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.dialog.FormParameters', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.dialog.FormParameters', {
     extend: 'Ext.window.Window',
     alias: 'widget.FormParameters',
     name: 'FormParameters',
@@ -24,8 +24,8 @@
     initComponent: function () {
         var me = this;
 
-        var inParamsStore = Ext.create('WebSystemsBuilder.store.editor.dialog.FormParametersIn');
-        var outParamsStore = Ext.create('WebSystemsBuilder.store.editor.dialog.FormParametersOut');
+        var inParamsStore = Ext.create('WebSystemsBuilder.store.IDE.dialog.FormParametersIn');
+        var outParamsStore = Ext.create('WebSystemsBuilder.store.IDE.dialog.FormParametersOut');
 
         Ext.applyIf(me, {
 

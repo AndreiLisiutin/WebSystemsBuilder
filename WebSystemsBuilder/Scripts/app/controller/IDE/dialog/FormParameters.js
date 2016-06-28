@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.dialog.FormParameters', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.dialog.FormParameters', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.dialog.FormParameters'
+        'WebSystemsBuilder.view.IDE.dialog.FormParameters'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.dialog.FormParameters'
+        'WebSystemsBuilder.store.IDE.dialog.FormParameters'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.dialog.FormParameters'
+        'WebSystemsBuilder.model.IDE.dialog.FormParameters'
     ],
 
     init: function () {
@@ -73,7 +73,7 @@
             };
             data.push(item);
         });
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.dialog.FormParametersExplorer');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.FormParametersExplorer');
         var formParametersExplorer = WebSystemsBuilder.utils.Windows.open('FormParametersExplorer', {
             data:data
         }, null, true);
@@ -107,7 +107,7 @@
             };
             data.push(item);
         });
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.dialog.FormParametersExplorer');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.FormParametersExplorer');
         var formParametersExplorer = WebSystemsBuilder.utils.Windows.open('FormParametersExplorer', {
             data:data
         }, null, true);

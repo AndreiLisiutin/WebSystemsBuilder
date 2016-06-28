@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.query.QuerySelect', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.QuerySelect', {
     extend: 'Ext.window.Window',
     alias: 'widget.QuerySelect',
     name: 'QuerySelect',
@@ -24,8 +24,8 @@
     initComponent: function () {
         var me = this;
 
-        var dictionaryStore = Ext.create('WebSystemsBuilder.store.editor.query.AllDictionary');
-        var fieldStore = Ext.create('WebSystemsBuilder.store.editor.query.Field');
+        var dictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.AllDictionary');
+        var fieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
 
         Ext.applyIf(me, {
 

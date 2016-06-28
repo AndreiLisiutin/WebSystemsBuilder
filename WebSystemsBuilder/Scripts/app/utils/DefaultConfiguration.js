@@ -38,7 +38,7 @@
                 if (this.dragField) {
                     var fieldValue = this.dragData.records[0].get(this.dragField);
                     var icon = this.dragData.records[0].get(this.iconField);
-                    var iconValue = icon ? '<img style="vertical-align: middle" src="' + icon + '">' : null;
+                    var iconValue = icon ? '<img style="vertical-align: middle" src="' + icon + '">' : '';
                     return Ext.String.format(this.dragText, '&nbsp&nbsp' + iconValue + '&nbsp&nbsp' + fieldValue);
                 } else {
                     return '';

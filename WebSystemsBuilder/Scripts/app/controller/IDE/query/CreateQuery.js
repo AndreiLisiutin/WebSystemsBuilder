@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.query.CreateQuery', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.query.CreateQuery', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.query.CreateQuery'
+        'WebSystemsBuilder.view.IDE.query.CreateQuery'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.query.CreateQuery'
+        'WebSystemsBuilder.model.IDE.query.CreateQuery'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.query.CreateQuery'
+        'WebSystemsBuilder.store.IDE.query.CreateQuery'
     ],
 
     init: function () {
@@ -202,7 +202,7 @@
     onAddDictionary: function (btn) {
         var win = btn.up('window');
         var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.query.QueryFrom');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryFrom');
         var queryFrom = WebSystemsBuilder.utils.Windows.open('QueryFrom',
             {
                 dictionaries: dictsGrid.getStore().data.items
@@ -251,7 +251,7 @@
         var win = btn.up('window');
         var fieldsGrid = win.down('gridpanel[name=selectGrid]');
         var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.query.QuerySelect');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QuerySelect');
         var queryFrom = WebSystemsBuilder.utils.Windows.open('QuerySelect',
             {
                 dictionaries: dictsGrid.getStore().data.items
@@ -297,7 +297,7 @@
         var fieldsGrid = win.down('gridpanel[name=selectGrid]');
         var dictsGrid = win.down('gridpanel[name=fromGrid]');
         var condGrid = win.down('gridpanel[name=whereGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.query.QueryWhere');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryWhere');
         var queryWhere = WebSystemsBuilder.utils.Windows.open('QueryWhere',
             {
                 dictionaries: dictsGrid.getStore().data.items

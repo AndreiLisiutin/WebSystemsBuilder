@@ -1,17 +1,14 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.dialog.CreateFormDialog', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.dialog.CreateFormDialog', {
     extend: 'Ext.app.Controller',
-
     views: [
-        'WebSystemsBuilder.view.editor.dialog.CreateFormDialog'
+        'WebSystemsBuilder.view.IDE.dialog.CreateFormDialog'
     ],
-
-    stores: [
-        'WebSystemsBuilder.store.editor.query.QueryFrom'
-    ],
-
-    models: [
-        'WebSystemsBuilder.model.editor.query.QueryFrom'
-    ],
+    //stores: [
+    //    'WebSystemsBuilder.store.IDE.query.QueryFrom'
+    //],
+    //models: [
+    //    'WebSystemsBuilder.model.IDE.query.QueryFrom'
+    //],
 
     init: function () {
         this.control({
@@ -28,46 +25,48 @@
     },
 
     /**
-     * Функция загрузки формы (afterrender)
+     * Load form (afterrender)
+     * @param current window (CreateFormDialog)
      */
-    onLoad:function(win){
-        var dictionary = win.down('combobox[name=dictionary]');
-        win.body.mask('Загрузка...');
-        dictionary.getStore().load({
-            callback:function(){
-                win.body.unmask();
-            }
-        });
+    onLoad: function (win) {
+        //var dictionary = win.down('combobox[name=dictionary]');
+        //win.body.mask('Загрузка...');
+        //dictionary.getStore().load({
+        //    callback:function(){
+        //        win.body.unmask();
+        //    }
+        //});
     },
 
     /**
-     * Функция открытия выбранной формы
-     * @param btn Кнопка "Открыть", вызвавшая событие
+     * Create new form ("Create" button click)
+     * @param "Create" button
      */
-    onCreateForm:function(btn){
-        var win = btn.up('window');
+    onCreateForm: function (btn) {
+        var win = btn.up('CreateFormDialog');
         var formName = win.down('textfield[name=formName]');
-        var dictionary = win.down('combobox[name=dictionary]');
-        if (!formName.getValue()){
-            var error = 'Введите название новой формы.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-        } else {
-            // Сгененировать событие, сообщающее основной форме о том,
-            // что форма готова к созданию
-            win.fireEvent('FormIsReadyToCreate', win, formName.getValue(), dictionary.getValue());
-            this.onClose(btn);
+        var description = win.down('textareafield[name=description]');
+
+        if (!formName.getValue()) {
+            var error = 'Type form name';
+            WebSystemsBuilder.utils.MessageBox.error(error);
         }
+        if (!description.getValue()) {
+            var error = 'Type form description';
+            WebSystemsBuilder.utils.MessageBox.error(error);
+        }
+        
+        // Fire event to main IDE form
+        win.fireEvent('FormIsReadyToCreate', formName.getValue(), description.getValue());
+        win.close();
     },
 
     /**
-     * Функция акрытия формы.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * Close form ("Close" button click)
+     * @param "Close" button
      */
     onClose: function (btn) {
-        var win = btn.up('CreateFormDialog');
-        if (win && win.close) {
-            win.close();
-        }
+        btn.up('CreateFormDialog').close();
     }
 
 });

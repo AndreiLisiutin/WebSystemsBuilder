@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.dialog.OpenFormDialog', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.dialog.OpenFormDialog', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.dialog.OpenFormDialog'
+        'WebSystemsBuilder.view.IDE.dialog.OpenFormDialog'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.dialog.OpenFormDialog'
+        'WebSystemsBuilder.model.IDE.dialog.OpenFormDialog'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.dialog.OpenFormDialog'
+        'WebSystemsBuilder.store.IDE.dialog.OpenFormDialog'
     ],
 
     init: function () {

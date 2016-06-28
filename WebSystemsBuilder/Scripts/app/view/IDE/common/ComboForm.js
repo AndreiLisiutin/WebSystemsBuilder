@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.common.ComboForm', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.common.ComboForm', {
     extend: 'Ext.window.Window',
     alias: 'widget.ComboForm',
     name: 'ComboForm',

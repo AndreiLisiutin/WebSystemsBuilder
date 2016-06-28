@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.event.ActionHandler', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.event.ActionHandler', {
     extend: 'Ext.window.Window',
     alias: 'widget.ActionHandler',
     name: 'ActionHandler',
@@ -22,8 +22,8 @@
     initComponent: function () {
         var me = this;
 
-        var handlerStore = Ext.create('WebSystemsBuilder.store.editor.event.Handler');
-        var paramsStore = Ext.create('WebSystemsBuilder.store.editor.event.HandlerParams');
+        var handlerStore = Ext.create('WebSystemsBuilder.store.IDE.event.Handler');
+        var paramsStore = Ext.create('WebSystemsBuilder.store.IDE.event.HandlerParams');
 
         Ext.applyIf(me, {
 

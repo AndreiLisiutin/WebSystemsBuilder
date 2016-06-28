@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.event.EventAction', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.event.EventAction', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.event.EventAction'
+        'WebSystemsBuilder.view.IDE.event.EventAction'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.event.EventAction'
+        'WebSystemsBuilder.model.IDE.event.EventAction'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.event.EventAction'
+        'WebSystemsBuilder.store.IDE.event.EventAction'
     ],
 
     init: function () {
@@ -86,7 +86,7 @@
     onAddAction: function (btn) {
         var win = btn.up('window');
         var actionGrid = win.down('gridpanel[name=actionGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.event.ActionHandler');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.ActionHandler');
         var actionHandler = WebSystemsBuilder.utils.Windows.open('ActionHandler', {
             params:undefined,
             form:win.form

@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.query.QueryWhere', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.query.QueryWhere', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.query.QueryWhere'
+        'WebSystemsBuilder.view.IDE.query.QueryWhere'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.query.QueryFrom'
+        'WebSystemsBuilder.model.IDE.query.QueryFrom'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.query.QueryFrom'
+        'WebSystemsBuilder.store.IDE.query.QueryFrom'
     ],
 
     init: function () {
@@ -162,7 +162,7 @@
         // Сгененировать событие, сообщающее основной форме о том,
         // что условие готово к сохранению
         var newWhere = {
-            ID:WebSystemsBuilder.editor.Random.get(),
+            ID:WebSystemsBuilder.IDE.Random.get(),
             firstField:{
                 table:{
                     ID:addDict.getValue(),

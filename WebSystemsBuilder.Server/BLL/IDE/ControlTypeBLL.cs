@@ -21,5 +21,13 @@ namespace WebSystemsBuilder.Server
                 return controlTypes;
             }
         }
+        
+        public List<ControlTypeDependency> GetControlTypeDependencies()
+        {
+            using (var db = this.CreateContext())
+            {
+                return db.ControlTypeDependencies.ToList();
+            }
+        }
     }
 }
