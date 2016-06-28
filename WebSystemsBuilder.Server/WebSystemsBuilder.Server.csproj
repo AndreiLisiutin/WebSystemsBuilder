@@ -62,7 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BLL\ConnectionFactory.cs" />
-    <Compile Include="BLL\FormGeneration\FormMetaDescriptionsBLL.cs" />
+    <Compile Include="BLL\FormGeneration\ValueTypesBLL.cs" />
+    <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
     <Compile Include="Models\Business\FormGeneration\ControlInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\FormInstance.cs" />
@@ -77,6 +78,12 @@
     <Compile Include="Models\Domain\Controls\ControlTypeDependency.cs" />
     <Compile Include="Models\Domain\Controls\ControlType.cs" />
     <Compile Include="Models\Domain\Controls\Control.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeTable.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypePart.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeOut.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeIn.cs" />
+    <Compile Include="Models\Domain\Queries\QueryTypeColumn.cs" />
+    <Compile Include="Models\Domain\Queries\QueryType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\InfrastructurePackages\BaseRequestPackage.cs" />
     <Compile Include="Utilities\InfrastructurePackages\BaseResponsePackage.cs" />

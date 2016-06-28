@@ -12,8 +12,8 @@ namespace WebSystemsBuilder.ClientWeb
     {
         public ActionResult GetFormMetaDescriptions(int formID)
         {
-            FormInstance formInstance = new FormMetaDescriptionsBLL().GetFormMetaDescriptions(formID);
-            return Json(this.CreateResponsePackage(formInstance));
+            FormInstance formInstance = new FormMetaBLL().GetFormMetaDescriptions(formID);
+            return Json(this.CreateResponsePackage(formInstance), JsonRequestBehavior.AllowGet);
         }
     }
 }

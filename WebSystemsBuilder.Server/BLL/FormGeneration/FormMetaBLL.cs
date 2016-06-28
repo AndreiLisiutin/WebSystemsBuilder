@@ -7,7 +7,7 @@ using WebSystemsBuilder.Server.Models;
 
 namespace WebSystemsBuilder.Server
 {
-    public class FormMetaDescriptionsBLL : ConnectionFactory
+    public class FormMetaBLL : ConnectionFactory
     {
         public FormInstance GetFormMetaDescriptions(int formID)
         {

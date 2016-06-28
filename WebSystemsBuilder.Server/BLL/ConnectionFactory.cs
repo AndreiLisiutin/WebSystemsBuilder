@@ -16,7 +16,7 @@ namespace WebSystemsBuilder.Server
         
         public WebBuilderEFContext CreateContext()
         {
-            return new WebBuilderEFContext(this.CreateConnection());
+            return new WebBuilderEFContext("WebBuilder");
         }
     }
 }

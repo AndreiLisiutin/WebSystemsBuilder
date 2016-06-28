@@ -22,6 +22,14 @@ Ext.define('WebSystemsBuilder.view.main.MainForm', {
                     iconAlign: 'top',
                     action: 'onOpenIDE',
                     icon: 'Scripts/resources/icons/process.png'
+                },
+                {
+                    xtype: 'button',
+                    width: 100,
+                    text: 'Test',
+                    iconAlign: 'top',
+                    name:'test',
+                    icon: 'Scripts/resources/icons/process.png'
                 }
             ]
         }
