@@ -12,6 +12,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ToolbarFactory', {
             minWidth: 20,
             minHeight: 20,
             resizable: true,
+            isComponent: true,
             dock: 'right'
         });
     }

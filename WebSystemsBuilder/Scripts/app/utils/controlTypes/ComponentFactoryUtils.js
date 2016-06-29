@@ -35,15 +35,20 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
 
                 var mousedComponent = MousedComponentsIDE.getMousedComponents()[0];
                 var draggedCmp = ddSource.dragData.records[0];
+                var storeClone = CommonUtils.deepCloneStore(ddSource.view.getStore());
+                var draggedClone = storeClone.findRecord('ControlTypeID', draggedCmp.get('ControlTypeID'));
+
                 // Info about current component
                 var componentInfo = {
-                    ControlTypeGroupID: draggedCmp.get('ControlTypeGroupID'),
-                    ControlTypeID: draggedCmp.get('ControlTypeID'),
-                    Group: draggedCmp.get('Group'),
-                    Name: draggedCmp.get('Name'),
-                    Description: draggedCmp.get('Description'),
-                    ExtJsClass: draggedCmp.get('ExtJsClass'),
-                    Icon: draggedCmp.get('Icon')
+                    ControlTypeGroupID: draggedClone.get('ControlTypeGroupID'),
+                    ControlTypeID: draggedClone.get('ControlTypeID'),
+                    Group: draggedClone.get('Group'),
+                    Name: draggedClone.get('Name'),
+                    Description: draggedClone.get('Description'),
+                    ExtJsClass: draggedClone.get('ExtJsClass'),
+                    Properties: draggedClone.get('Properties'),
+                    PropertiesList: draggedClone.get('PropertiesList'),
+                    Icon: draggedClone.get('Icon')
                 };
 
                 // Get factory by control type ID

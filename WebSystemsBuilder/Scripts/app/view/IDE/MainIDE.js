@@ -275,12 +275,12 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                     listeners: {
                                         itemclick: function (tree, record, item, index, e, eOpts) {
                                             try {
-                                                var name = record.get('id');
-                                                var win = tree.up('window[name=MainIDE]');
+                                                var uniqueID = record.get('id');
+                                                var win = tree.up('MainIDE');
                                                 var form = win.down('form[name=mainPanel]');
-                                                var element = form.query('component[name=' + name + ']')[0];
+                                                var element = form.query('component[uniqueID=' + uniqueID + ']')[0];
                                                 if (element) {
-                                                    Ext.FocusManager.fireEvent('componentfocus', Ext.FocusManager, element);
+                                                    win.fireEvent('IDEComponentFocused', win, element);
                                                 }
                                             } catch (ex) {
                                                 console.log('Tree item click error. Element to focus :' + element + ' Error info: ' + ex);

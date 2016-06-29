@@ -16,6 +16,8 @@ Ext.define('WebSystemsBuilder.model.IDE.ControlType', {
     fields: [
         'ControlType',
         'ControlTypeGroup',
+        'Properties',
+        'PropertiesList',
         {
             name: 'ControlTypeGroupID',
             convert: function (v, record) {

@@ -1,0 +1,1 @@
+DELETE FROM public.wb_control_type_dependency WHERE control_type_id_child = 4 AND control_type_id_parent NOT IN (1, 5, 7) 

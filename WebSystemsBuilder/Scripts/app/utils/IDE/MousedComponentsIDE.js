@@ -12,6 +12,13 @@ Ext.define('WebSystemsBuilder.utils.IDE.MousedComponentsIDE', {
         return this.MousedStack;
     },
 
+    getUpperMousedComponent: function () {
+        if (this.MousedStack.length > 0) {
+            return this.MousedStack[0];
+        }
+        return null;
+    },
+
     pushMousedComponent: function (component) {
         if (component) {
             this.MousedStack.push(component);

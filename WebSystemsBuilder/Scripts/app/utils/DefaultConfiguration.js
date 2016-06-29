@@ -165,6 +165,105 @@
             });
         }
 
+        var focusFunc = function (me, selectText, delay, callback, scope) {
+            var focusTarget, focusElDom, containerScrollTop;
+
+            if ((!me.focusable && !me.isContainer) || me.destroyed || me.destroying) {
+                return;
+            }
+
+            // If delay is wanted, queue a call to this function.
+            if (delay) {
+                me.getFocusTask().delay(Ext.isNumber(delay) ? delay : 10, me.focus, me, [selectText, false, callback, scope]);
+                return me;
+            }
+
+            // An immediate focus call must cancel any outstanding delayed focus calls.
+            me.cancelFocus();
+
+            // Assignment in conditional here to avoid calling getFocusEl()
+            // if me.canFocus() returns false
+            if (me.canFocus()) {
+                if (focusTarget = me.getFocusEl()) {
+
+                    // getFocusEl might return a Component if a Container wishes to delegate focus to a
+                    // descendant via its defaultFocus configuration.
+                    if (focusTarget.isComponent) {
+                        return focusTarget.focus(selectText, delay, callback, scope);
+                    }
+
+                    focusElDom = focusTarget.dom;
+
+                    // If it was an Element with a dom property
+                    if (focusElDom) {
+                        if (me.floating) {
+                            containerScrollTop = me.container.dom.scrollTop;
+                        }
+
+                        // Focus the element.
+                        // The Ext.event.publisher.Focus publisher listens for global focus changes and
+                        // The ComponentManager responds by invoking the onFocusEnter and onFocusLeave methods
+                        // of the components involved.
+                        focusElDom.focus();
+
+                        if (selectText) {
+                            if (Ext.isArray(selectText)) {
+                                if (me.selectText) {
+                                    me.selectText.apply(me, selectText);
+                                }
+                            } else if (focusElDom.select) {
+                                // This method both focuses and selects the element.
+                                focusElDom.select();
+                            } else if (me.selectText) {
+                                me.selectText();
+                            }
+                        }
+
+                        // Call the callback when focus is done
+                        Ext.callback(callback, scope);
+                    }
+
+                    // Focusing a floating Component brings it to the front of its stack.
+                    // this is performed by its zIndexManager. Pass preventFocus true to avoid recursion.
+                    if (me.floating) {
+                        if (containerScrollTop !== undefined) {
+                            me.container.dom.scrollTop = containerScrollTop;
+                        }
+                    }
+                }
+            }
+            else {
+                // If we are asked to focus while not able to focus though disablement/invisibility etc,
+                // focus may revert to document.body if the current focus is being hidden or destroyed.
+                // This must be avoided, both for the convenience of keyboard users, and also
+                // for when focus is tracked within a tree, such as below an expanded ComboBox.
+                focusTarget = me.findFocusTarget();
+
+                if (focusTarget) {
+                    return focusTarget.focus(selectText, delay, callback, scope);
+                }
+            }
+
+            return me;
+        };
+
+        if (Ext.toolbar.Toolbar) {
+            Ext.apply(Ext.toolbar.Toolbar.prototype, {
+                focus: function(selectText, delay, callback, scope) {
+                    var me = this;
+                    return focusFunc(me, selectText, delay, callback, scope);
+                }
+            });
+        }
+        if (Ext.grid.Panel) {
+            Ext.apply(Ext.grid.Panel.prototype, {
+                focus: function(selectText, delay, callback, scope) {
+                    var me = this;
+                    return focusFunc(me, selectText, delay, callback, scope);
+                }
+            });
+        }
+
         if (Ext.form.field.ComboBox) {
             var _comboBoxConstructor = Ext.form.field.ComboBox.prototype.constructor;
             Ext.apply(Ext.form.field.ComboBox.prototype, {
@@ -357,7 +456,7 @@
                 constructor: function (config) {
                     var _this = this;
                     _gridPanelConstructor.call(_this, config);
-                    
+
                     return _this;
                 }
             });
@@ -455,7 +554,7 @@
                 }
             })
         }
-        
+
         Ext.override(Ext.data.Connection, {
             onComplete: function (request) {
                 var me = this,

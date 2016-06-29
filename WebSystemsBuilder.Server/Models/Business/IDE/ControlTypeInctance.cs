@@ -8,15 +8,9 @@ namespace WebSystemsBuilder.Server.Models
 {
     public class ControlTypeInstance
     {
-        public ControlTypeInstance() { }
-
-        public ControlTypeInstance(ControlType ControlType, ControlTypeGroup ControlTypeGroup)
-        {
-            this.ControlType = ControlType;
-            this.ControlTypeGroup = ControlTypeGroup;
-        }
-
         public ControlType ControlType { get; set; }
         public ControlTypeGroup ControlTypeGroup { get; set; }
+        public List<PropertyTypeInstance> PropertiesList { get;set; }
+        public Dictionary<string, object> Properties { get; set; }
     }
 }

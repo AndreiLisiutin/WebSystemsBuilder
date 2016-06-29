@@ -97,27 +97,29 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
-    onIDEComponentFocused: function(win, focusedComponent) {
+    onIDEComponentFocused: function (win, focusedComponent) {
         var propertiesPanel = win.down('panel[name=propertiesPanel]');
         var propertiesGrid = win.down('propertygrid[name=properties]');
         var propertiesOwner = win.down('panel[name=propertiesOwner]');
+        var tree = win.down('treepanel');
 
         if (focusedComponent) {
             Focused.setFocusedCmp(focusedComponent);
             propertiesOwner.update(
-                '<span style="margin:3px;position:absolute;">' +
+                    '<span style="margin:3px;position:absolute;">' +
                     CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
                     focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
                     '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
-                '</span>'
+                    '</span>'
             );
-//            propertiesGrid.setSource(focusedComponent.record.get('properties'));
-//            propertiesGrid.customEditors = focusedComponent.record.get('sourceConfig');
-//            var treeEl = tree.getRootNode().findChild('id', focusedComponent.record.get('Name'), true);
-//            if (treeEl) {
-//                tree.getSelectionModel().select(treeEl);
-//            }
-//            propertiesPanel.setDisabled(false);
+
+            var treeNode = tree.getRootNode().findChild('id', focusedComponent.componentInfo.uniqueID, true);
+            if (treeNode) {
+                tree.getSelectionModel().select(treeNode);
+            }
+
+            propertiesGrid.setSource(focusedComponent.componentInfo.Properties);
+            propertiesPanel.setDisabled(false);
 
 //            var panel = win.down('panel[name=data]');
 //            var loaded1 = false, loaded2 = false;
@@ -174,57 +176,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
     },
 
-    onMainPanelRender: function (form) {
-        var body = form.body;
-        var win = form.up('window');
-        var gridComponents = win.down('gridpanel[name=components]');
-        var propertiesGrid = win.down('propertygrid[name=properties]');
-
-        form.formPanelDropTarget = new Ext.dd.DropTarget(body, {
-            ddGroup: 1,
-            allowDrop: true,
-            notifyOver: function (ddSource, e, data) {
-                var draggedCmp = ddSource.dragData.records[0];
-                var draggedControlTypeID = draggedCmp.get('ControlTypeID');
-                if (draggedControlTypeID == 1 && !form.down('[name=senchawin]')) {
-                    this.allowDrop = true;
-                    return Ext.baseCSSPrefix + 'dd-drop-ok';
-                } else {
-                    this.allowDrop = false;
-                    return Ext.baseCSSPrefix + 'dd-drop-nodrop';
-                }
-            },
-            notifyDrop: function (ddSource, e, data) {
-                if (!this.allowDrop) {
-                    return false;
-                }
-
-                var draggedCmp = ddSource.dragData.records[0];
-
-                // Info about current component
-                var componentInfo = {
-                    ControlTypeGroupID: draggedCmp.get('ControlTypeGroupID'),
-                    ControlTypeID: draggedCmp.get('ControlTypeID'),
-                    Group: draggedCmp.get('Group'),
-                    Name: draggedCmp.get('Name'),
-                    Description: draggedCmp.get('Description'),
-                    ExtJsClass: draggedCmp.get('ExtJsClass'),
-                    Icon: draggedCmp.get('Icon')
-                };
-
-                if (componentInfo.ControlTypeID == 1) {
-                    var factory = ComponentFactoryUtils.getFactory(componentInfo.ControlTypeID);
-                    var item = factory.get(win, form, componentInfo);
-                    form.add(item.show());
-                    win.fireEvent('ComponentAdded', win, null, item);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-    },
-
     /**
      * ������� ������������� ����������� ����� ������������ ���������. ���������� ����� ����� �������� ����� (afterrender).
      * � ������ ������� ���������� ��������� �������� ��������� � �������� ���� ��������� �����,
@@ -235,7 +186,34 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * @param win
      */
     onLoad: function (win) {
-        Ext.getBody().on("contextmenu", Ext.emptyFn, null, { preventDefault: true });
+        Ext.getBody().on('contextmenu', function (e) {
+            e.preventDefault();
+            var focused = Focused.getFocusedCmp();
+            var moused = MousedComponentsIDE.getUpperMousedComponent();
+            if (focused && moused && moused == focused) {
+                var menu = ComponentFactoryUtils.getContextMenu();
+                menu.down('menuitem[action=onDelete]').on('click', function () {
+                    Focused.clearFocusedCmp();
+                    win.fireEvent('ComponentRemoved', win, focused.up(), focused);
+
+                    // Get factory by control type ID
+                    var ControlTypeID = focused.componentInfo.ControlTypeID;
+                    var factory = ComponentFactoryUtils.getFactory(ControlTypeID);
+                    factory.onRemoveComponent(focused.up(), focused);
+                });
+                menu.showAt(e.getXY());
+            }
+        }, null, { preventDefault: true });
+
+        Ext.getBody().on('click', function (e) {
+            e.preventDefault();
+            var focused = Focused.getFocusedCmp();
+            var moused = MousedComponentsIDE.getUpperMousedComponent();
+            if (moused) {
+                win.fireEvent('IDEComponentFocused', win, moused);
+            }
+        }, null, { preventDefault: true });
+
         var _this = this;
         var componentsPanel = win.down('panel[name=componentsPanel]');
         var projectPanel = win.down('panel[name=projectPanel]');
@@ -278,7 +256,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 callback: function (records, objServerResponse, success) {
                     var jsonResp = Ext.decode(objServerResponse._response.responseText);
                     if (jsonResp.Code == 0) {
-                        // �������� ������ "���"
+                        // Select "All" group
                         componentGroupGrid.getSelectionModel().select(componentGroupGrid.getStore().findRecord('ControlTypeGroupID', -1));
 
                     } else {
@@ -351,6 +329,61 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         win.on('ComponentRemoved', _this.onRemoveComponent);
     },
 
+    onMainPanelRender: function (form) {
+        var body = form.body;
+        var win = form.up('window');
+        var gridComponents = win.down('gridpanel[name=components]');
+        var propertiesGrid = win.down('propertygrid[name=properties]');
+
+        form.formPanelDropTarget = new Ext.dd.DropTarget(body, {
+            ddGroup: 1,
+            allowDrop: true,
+            notifyOver: function (ddSource, e, data) {
+                var draggedCmp = ddSource.dragData.records[0];
+                var draggedControlTypeID = draggedCmp.get('ControlTypeID');
+                if (draggedControlTypeID == 1 && !form.down()) {
+                    this.allowDrop = true;
+                    return Ext.baseCSSPrefix + 'dd-drop-ok';
+                } else {
+                    this.allowDrop = false;
+                    return Ext.baseCSSPrefix + 'dd-drop-nodrop';
+                }
+            },
+            notifyDrop: function (ddSource, e, data) {
+                if (!this.allowDrop) {
+                    return false;
+                }
+
+                var draggedCmp = ddSource.dragData.records[0];
+                var storeClone = CommonUtils.deepCloneStore(ddSource.view.getStore());
+                var draggedClone = storeClone.findRecord('ControlTypeID', draggedCmp.get('ControlTypeID'));
+
+                // Info about current component
+                var componentInfo = {
+                    ControlTypeGroupID: draggedClone.get('ControlTypeGroupID'),
+                    ControlTypeID: draggedClone.get('ControlTypeID'),
+                    Group: draggedClone.get('Group'),
+                    Name: draggedClone.get('Name'),
+                    Description: draggedClone.get('Description'),
+                    ExtJsClass: draggedClone.get('ExtJsClass'),
+                    Properties: draggedClone.get('Properties'),
+                    PropertiesList: draggedClone.get('PropertiesList'),
+                    Icon: draggedClone.get('Icon')
+                };
+
+                if (componentInfo.ControlTypeID == 1) {
+                    var factory = ComponentFactoryUtils.getFactory(componentInfo.ControlTypeID);
+                    var item = factory.get(win, form, componentInfo);
+                    form.add(item.show());
+                    win.fireEvent('ComponentAdded', win, null, item);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    },
+
     //============================================== Save designed form ==============================================
 
     /**
@@ -382,7 +415,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
 
         // ����������� ������� ����������
         var orderNumber = 0;
-        var deleteID = [];
         var fn = function (item, parent) {
             orderNumber++;
             var current = {
@@ -650,38 +682,114 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
+    /**
+     * Show code of designed form
+     * Calls getJsonForm
+     * @param btn
+     */
+    onCode: function (btn) {
+        var win = btn.up('window');
+        var mainContainer = win.down('form[name=mainContainer]');
+        var form = mainContainer.down('form[name=mainPanel]');
+        var codeText = mainContainer.down('textareafield[name=codeText]');
+        var btnLabel = win.down('button[action=onLabel]');
 
-    //==================================================================================================================
-    //===================================================�������========================================================
-    //==================================================================================================================
+        if (!form.down()) {
+            console.warn('Form is empty.');
+            return;
+        }
+
+        // delete empty properties function
+        var fnDeleteEmptyProperties = function (item) {
+            for (var prop in item) {
+                if (!(item[prop] instanceof Array)) {
+                    var isEmpty = item[prop] == null || typeof item[prop] == 'undefined' || item[prop].toString().trim() == '';
+                    var isHiddenProperties = prop == 'ControlTypeID' || prop == 'id';
+                    if (isHiddenProperties) {
+                        delete item[prop];
+                    }
+                }
+            }
+            for (var prop in item) {
+                if (item[prop] instanceof Array) {
+                    if (item[prop] != null || item[prop].length > 0) {
+                        item[prop].forEach(function (x) {
+                            fnDeleteEmptyProperties(x);
+                        });
+                    }
+                }
+            }
+        };
+
+        // JSON representation of the form
+        var obj = this.getJsonForm(form);
+        // delete som key words and other bad things
+        fnDeleteEmptyProperties(obj);
+
+        form.hide();
+        codeText.show();
+        btnLabel.show();
+        codeText.setValue(JSON.stringify(obj, null, '\t'));
+    },
 
     /**
-     * �������� JSON ������ �����
+     * Show design panel
+     * @param btn
+     */
+    onDesign: function (btn) {
+        var win = btn.up('window');
+        var mainContainer = win.down('form[name=mainContainer]');
+        var form = mainContainer.down('form[name=mainPanel]');
+        var codeText = mainContainer.down('textareafield[name=codeText]');
+        var btnLabel = win.down('button[action=onLabel]');
+
+        codeText.hide();
+        form.show();
+        btnLabel.hide();
+    },
+
+    /**
+     * Get JSON representation of the form
      * @private
-     * @param form �����
-     * @return {*} JSON ������
+     * @param form designed form
+     * @return {*} JSON representation of the form
      */
     getJsonForm: function (form) {
         var win = form.up('window');
-        var localWindow = form.down('[name=senchawin]');
-        var availableComponents = ['button', 'combobox', 'container', 'datecolumn', 'datefield', 'fieldset', 'gridcolumn', 'gridpanel', 'numbercolumn', 'numberfield',
-            'panel', 'tab', 'tabpanel', 'textfield', 'toolbar'];
+        var localWindow = form.down();
+        var availableComponents = [
+            'button', 'combobox', 'container', 'datecolumn', 'datefield', 'fieldset',
+            'gridcolumn', 'gridpanel', 'numbercolumn', 'numberfield',
+            'panel', 'tab', 'tabpanel', 'textfield', 'toolbar'
+        ];
 
+        var getDefaultValue = function(componentInfo, stringProperty) {
+            var defaultValue = null;
+            componentInfo.PropertiesList.forEach(function(property) {
+                if (stringProperty == property.PropertyType.Name) {
+                    defaultValue = property.ControlTypePropertyType.DefaultValue;
+                }
+            });
+            if (defaultValue == null || typeof defaultValue === 'undefined') {
+                defaultValue = '';
+            }
+            return defaultValue + '';
+        };
         var fn = function (item) {
             if (item == null || typeof item == 'undefined') {
                 return null;
             }
+
             var items = [];
             var dockedItems = [];
-            var query = [];
             if (item.query) {
-                query = item.query('> component');
+                var query = item.query('> component');
                 if (item.xtype == 'gridpanel') {
                     query = query.concat(item.columnManager.columns);
                 }
                 // query all children
                 query.forEach(function (child) {
-                    if (child.xtype && Ext.Array.contains(availableComponents, child.xtype) && child.name && child.name.startsWith('sencha')) {
+                    if (child && child.xtype && Ext.Array.contains(availableComponents, child.xtype) && child.name && child.name.startsWith('sencha')) {
                         if (child.xtype == 'toolbar') {
                             dockedItems.push(child);
                         } else {
@@ -690,13 +798,31 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     }
                 });
             }
+
             // create obj
-            var obj = JSON.parse(JSON.stringify(item.record.get('properties')));
-            var data = JSON.parse(JSON.stringify(item.record.get('data')));
-            var events = JSON.parse(JSON.stringify(item.record.get('events')));
-            obj.controlTypeID = item.record.get('ID');
-            obj.data = data;
-            obj.events = events;
+            var componentInfo = JSON.parse(JSON.stringify(item.componentInfo));
+            var obj = componentInfo.Properties;
+
+            // Delete default properties
+            for (var prop in obj) {
+                var currentValue = obj[prop];
+                if (currentValue == null || typeof currentValue === 'undefined') {
+                    currentValue = '';
+                }
+                currentValue += '';
+                if (!(currentValue instanceof Array) && prop != 'xtype') {
+                    var defaultValue = getDefaultValue(componentInfo, prop);
+                    if (currentValue == defaultValue) {
+                        delete obj[prop];
+                    }
+                }
+            }
+
+//            var data = JSON.parse(JSON.stringify(item.record.get('data')));
+//            var events = JSON.parse(JSON.stringify(item.record.get('events')));
+//            obj.id = item.componentInfo.uniqueID;
+//            obj.data = data;
+//            obj.events = events;
 
             // recursion
             if (items.length > 0) {
@@ -733,8 +859,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     clearCurrentForm: function (form) {
         var win = form.up('window');
 
-        if (form.down('[name=senchawin]')) {
-            win.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
+        if (form.down()) {
+            win.fireEvent('ComponentRemoved', form, form, form.down());
         }
         form.removeAll();
         Queries.clear();
@@ -796,13 +922,13 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             console.log('Removing node error. "componentInfo" property is unavailable.');
         }
         var removedNode = null;
-        if (parent.componentInfo) {
-            parentNode = tree.getRootNode().findChild('id', removedItem.componentInfo.uniqueID, true);
+        if (removedItem.componentInfo) {
+            removedNode = tree.getRootNode().findChild('id', removedItem.componentInfo.uniqueID, true);
         } else {
             console.log('Removing node error. "componentInfo" property is unavailable.');
         }
 
-        if (!parentNode && parent.name == form.name) {
+        if (!parentNode && removedItem.componentInfo.ControlTypeID == 1) {
             parentNode = tree.getRootNode()
         }
         if (!parentNode) {
@@ -948,67 +1074,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * ������������� JSON ��� ����������� �����
-     * @param btn
-     */
-    onCode: function (btn) {
-        var win = btn.up('window');
-        var mainContainer = win.down('form[name=mainContainer]');
-        var form = mainContainer.down('form[name=mainPanel]');
-        var codeText = mainContainer.down('textareafield[name=codeText]');
-        var btnLabel = win.down('button[action=onLabel]');
-        if (!form.down('[name=senchawin]')) {
-            console.warn('��� ������� �������� ��� ������� ��������������: ����� ������.');
-            return;
-        }
-        // delete empty properties function
-        var fnDeleteEmptyProperties = function (item) {
-            delete item['data'];
-            delete item['events'];
-            for (var prop in item) {
-                if (!(item[prop] instanceof Array)) {
-                    if (item[prop] == null || typeof item[prop] == 'undefined' || item[prop].toString().trim() == ''
-                        || prop == 'controlTypeID' || prop == 'id') {
-                        delete item[prop];
-                    }
-                }
-            }
-            for (var prop in item) {
-                if (item[prop] instanceof Array) {
-                    if (item[prop] != null || item[prop].length > 0) {
-                        item[prop].forEach(function (x) {
-                            fnDeleteEmptyProperties(x);
-                        });
-                    }
-                }
-            }
-        };
-        // JSON ������
-        var obj = this.getJsonForm(form);
-        fnDeleteEmptyProperties(obj);
-
-        form.hide();
-        codeText.show();
-        codeText.setValue(JSON.stringify(obj, null, '\t'));
-        btnLabel.show();
-    },
-
-    /**
-     * �������� ������������� �����
-     * @param btn
-     */
-    onDesign: function (btn) {
-        var win = btn.up('window');
-        var mainContainer = win.down('form[name=mainContainer]');
-        var form = mainContainer.down('form[name=mainPanel]');
-        var codeText = mainContainer.down('textareafield[name=codeText]');
-        var btnLabel = win.down('button[action=onLabel]');
-        codeText.hide();
-        form.show();
-        btnLabel.hide();
-    },
-
-    /**
      * Change any property in propertygrid
      * @param source The source data object for the grid (corresponds to the same object passed in as the source config property).
      * @param recordId The record's id in the data store
@@ -1017,10 +1082,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * @param eOpts The options object passed to Ext.util.Observable.addListener.
      */
     onProperyChange: function (source, recordId, value, oldValue, eOpts) {
-        var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
+        var focused = Focused.getFocusedCmp();
         var win = focused.up('window[name=MainIDE]');
         var form = win.down('form[name=mainPanel]');
-        focused.record.get('properties')[recordId] = value;
+
+        focused.componentInfo.Properties[recordId] = value;
         var componentName = focused.componentInfo.Name.toLowerCase();
 
         // ����
@@ -1112,13 +1178,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 case 'readOnly':
                     focused.setReadOnly(value);
                     break;
-                //                case 'value':
-                //                    if (focused.record.get('Name').toLowerCase() == 'combobox') {
-                //                        focused.setRawValue(value);
-                //                    } else {
-                //                        focused.setValue(value);
-                //                    }
-                //                    break;
                 case 'valueField':
                     break;
                 case 'width':
@@ -1129,7 +1188,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
         }
 
-        // �������
         var someComponentsArray = ['gridcolumn', 'datecolumn', 'numbercolumn'];
         if (Ext.Array.contains(someComponentsArray, componentName)) {
             var gridpanel = focused.up('gridpanel');
@@ -1193,7 +1251,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             gridpanel.getView().refresh();
         }
 
-        // ����, ������, ���������, �����, �������, ������, ���������, �������, ������
         var someComponentsArray = ['window', 'panel', 'tabpanel', 'newtab', 'gridpanel', 'toolbar', 'container (hbox)',
             'container (vbox)', 'fieldset' , 'button'];
         if (Ext.Array.contains(someComponentsArray, componentName)) {
@@ -1334,6 +1391,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     break;
             }
         }
+
+        Ext.Component.updateLayout(focused);
+        Ext.Component.updateLayout(form);
     },
 
     /**

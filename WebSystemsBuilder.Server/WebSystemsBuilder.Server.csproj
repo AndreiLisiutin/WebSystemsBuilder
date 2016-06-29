@@ -79,6 +79,7 @@
     <Compile Include="Models\Business\FormGeneration\QueryType\QueryTypeTableInstance.cs" />
     <Compile Include="Models\Business\IDE\PropertyInstance.cs" />
     <Compile Include="Models\Business\IDE\ControlTypeInctance.cs" />
+    <Compile Include="Models\Business\IDE\PropertyTypeInstance.cs" />
     <Compile Include="Models\Domain\Controls\ValueType.cs" />
     <Compile Include="Models\Domain\Controls\PropertyType.cs" />
     <Compile Include="Models\Domain\Controls\Property.cs" />
