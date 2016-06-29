@@ -25,12 +25,14 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         'WebSystemsBuilder.utils.IDE.Queries'
     ],
 
-    components: undefined,
-
     init: function () {
         this.control({
             'MainIDE': {
-                afterrender: this.onLoad
+                afterrender: this.onLoad,
+                IDEComponentFocused: this.onIDEComponentFocused
+            },
+            'MainIDE form[name=mainPanel]': {
+                render: this.onMainPanelRender
             },
             'MainIDE menuitem[action=onSaveForm], button[action=onSaveForm]': {
                 click: function (btn) {
@@ -38,13 +40,13 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 }
             },
             'MainIDE menuitem[action=onNewForm], button[action=onNewForm]': {
-                click: this.onNewFormQuestion
+                click: this.onCreateNewForm
             },
             'MainIDE menuitem[action=onOpenForm], button[action=onOpenForm]': {
                 click: this.onOpenFormQuestion
             },
-            'MainIDE menuitem[action=onRenameForm]': {
-                click: this.onRenameForm
+            'MainIDE menuitem[action=onRefactorForm]': {
+                click: this.onRefactorForm
             },
             'MainIDE button[action=onCode]': {
                 click: this.onCode
@@ -53,10 +55,14 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 click: this.onDesign
             },
             'MainIDE gridpanel[name=componentsGroups]': {
-                selectionchange: this.onComponentGroupChange
+                selectionchange: function (selModel) {
+                    this.onContextControlSearch(selModel.view.up('window'));
+                }
             },
             'MainIDE textfield[name=filter]': {
-                change: this.onContextSearch
+                change: function (textfield) {
+                    this.onContextControlSearch(textfield.up('window'));
+                }
             },
             'MainIDE textfield[name=propertyFilter]': {
                 change: this.onContextPropertySearch
@@ -91,17 +97,144 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
+    onIDEComponentFocused: function(win, focusedComponent) {
+        var propertiesPanel = win.down('panel[name=propertiesPanel]');
+        var propertiesGrid = win.down('propertygrid[name=properties]');
+        var propertiesOwner = win.down('panel[name=propertiesOwner]');
+
+        if (focusedComponent) {
+            Focused.setFocusedCmp(focusedComponent);
+            propertiesOwner.update(
+                '<span style="margin:3px;position:absolute;">' +
+                    CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
+                    focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
+                    '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
+                '</span>'
+            );
+//            propertiesGrid.setSource(focusedComponent.record.get('properties'));
+//            propertiesGrid.customEditors = focusedComponent.record.get('sourceConfig');
+//            var treeEl = tree.getRootNode().findChild('id', focusedComponent.record.get('Name'), true);
+//            if (treeEl) {
+//                tree.getSelectionModel().select(treeEl);
+//            }
+//            propertiesPanel.setDisabled(false);
+
+//            var panel = win.down('panel[name=data]');
+//            var loaded1 = false, loaded2 = false;
+//            if (panel.el) panel.el.mask('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ...');
+//            if (focusedComponent.xtype == 'combobox') {
+//                queryKeyField.show();
+//            } else {
+//                queryKeyField.hide();
+//            }
+//            var data = focusedComponent.record.get('data');
+//            query.setValue(data['queryID']);
+//            if (!query.getValue()) {
+//                queryField.getStore().loadData([], false);
+//                queryKeyField.getStore().loadData([], false);
+//                if (panel.el) panel.el.unmask();
+//            } else {
+//                queryField.getStore().load({
+//                    params: {
+//                        ID: query.findRecordByValue(query.getValue()).get('queryTypeID')
+//                    },
+//                    callback: function () {
+//                        if (data['queryOutValueID']) queryField.setValue(data['queryOutValueID']);
+//                        loaded1 = true;
+//                        if (panel.el && loaded2) panel.el.unmask();
+//                    }
+//                });
+//                queryKeyField.getStore().load({
+//                    params: {
+//                        ID: query.findRecordByValue(query.getValue()).get('queryTypeID')
+//                    },
+//                    callback: function () {
+//                        if (data['queryOutKeyID']) queryKeyField.setValue(data['queryOutKeyID']);
+//                        loaded2 = true;
+//                        if (panel.el && loaded1) panel.el.unmask();
+//                    }
+//                });
+//            }
+//            dictionaryField.setValue(data['saveField']);
+//            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//            var events = focusedComponent.record.get('events');
+//            eventPanel.getStore().loadData(events, false);
+//        } else if (!WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp()) {
+//            propertiesGrid.setSource([]);
+//            propertiesGrid.customEditors = [];
+//            propertiesOwner.update('');
+//            propertiesFilter.setValue('');
+//            tree.getSelectionModel().deselectAll();
+//            propertiesPanel.setDisabled(true);
+//            queryField.clearValue();
+//            queryKeyField.clearValue();
+//            query.clearValue();
+//            dictionaryField.clearValue();
+//            eventPanel.getStore().loadData([], false);
+        }
+    },
+
+    onMainPanelRender: function (form) {
+        var body = form.body;
+        var win = form.up('window');
+        var gridComponents = win.down('gridpanel[name=components]');
+        var propertiesGrid = win.down('propertygrid[name=properties]');
+
+        form.formPanelDropTarget = new Ext.dd.DropTarget(body, {
+            ddGroup: 1,
+            allowDrop: true,
+            notifyOver: function (ddSource, e, data) {
+                var draggedCmp = ddSource.dragData.records[0];
+                var draggedControlTypeID = draggedCmp.get('ControlTypeID');
+                if (draggedControlTypeID == 1 && !form.down('[name=senchawin]')) {
+                    this.allowDrop = true;
+                    return Ext.baseCSSPrefix + 'dd-drop-ok';
+                } else {
+                    this.allowDrop = false;
+                    return Ext.baseCSSPrefix + 'dd-drop-nodrop';
+                }
+            },
+            notifyDrop: function (ddSource, e, data) {
+                if (!this.allowDrop) {
+                    return false;
+                }
+
+                var draggedCmp = ddSource.dragData.records[0];
+
+                // Info about current component
+                var componentInfo = {
+                    ControlTypeGroupID: draggedCmp.get('ControlTypeGroupID'),
+                    ControlTypeID: draggedCmp.get('ControlTypeID'),
+                    Group: draggedCmp.get('Group'),
+                    Name: draggedCmp.get('Name'),
+                    Description: draggedCmp.get('Description'),
+                    ExtJsClass: draggedCmp.get('ExtJsClass'),
+                    Icon: draggedCmp.get('Icon')
+                };
+
+                if (componentInfo.ControlTypeID == 1) {
+                    var factory = ComponentFactoryUtils.getFactory(componentInfo.ControlTypeID);
+                    var item = factory.get(win, form, componentInfo);
+                    form.add(item.show());
+                    win.fireEvent('ComponentAdded', win, null, item);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    },
+
     /**
-     * Функция инициализации компонентов формы графического редактора. Вызывается сразу после загрузке формы (afterrender).
-     * В данной функции происходит установка исходных положений и значений всех элементов формы,
-     * активация объекта управления фокусом элементов (Ext.FocusManager) и управление его поведением,
-     * добавление классу String функции startsWith,
-     * описание логики визуального выделения элемента с фокусом на панели редактирования формы (обработка события componentfocus объекта Ext.FocusManager),
-     * обработка событий добавления и удаления элементов формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (afterrender).
+     * пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ,
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (Ext.FocusManager) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ String пїЅпїЅпїЅпїЅпїЅпїЅпїЅ startsWith,
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ componentfocus пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Ext.FocusManager),
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      * @param win
      */
     onLoad: function (win) {
-        //Ext.FocusManager.enable();
         Ext.getBody().on("contextmenu", Ext.emptyFn, null, { preventDefault: true });
         var _this = this;
         var componentsPanel = win.down('panel[name=componentsPanel]');
@@ -120,23 +253,24 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var btnCopyToClipboard = win.down('button[action=onCopyToClipboard]');
         var btnSaveOnFile = win.down('button[action=onSaveOnFile]');
         var btnLabel = win.down('button[action=onLabel]');
-        // события
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         var eventPanel = win.down('gridpanel[name=events]');
-        // данные
+        // пїЅпїЅпїЅпїЅпїЅпїЅ
         var dataPanel = win.down('panel[action=data]');
         var query = win.down('combobox[name=query]');
         var queryField = win.down('combobox[name=queryField]');
         var queryKeyField = win.down('combobox[name=queryKeyField]');
 
-        // disable компоненты
+        // disable some components on main form
         componentsPanel.setDisabled(true);
         projectPanel.setDisabled(true);
         btnDesign.toggle(true);
-        // запросы на форме
-        WebSystemsBuilder.utils.IDE.Queries.init();
-        WebSystemsBuilder.utils.IDE.Random.init();
+
+        // Clear some required stores
+        Queries.clear();
+        Random.clear();
+        Focused.clearFocusedCmp();
         win.inParams = [];
-        win.outParams = [];
 
         // Delegate for all components loading
         var loadControlTypeGrid = function () {
@@ -144,7 +278,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 callback: function (records, objServerResponse, success) {
                     var jsonResp = Ext.decode(objServerResponse._response.responseText);
                     if (jsonResp.Code == 0) {
-                        // выделяем группу "Все"
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅ"
                         componentGroupGrid.getSelectionModel().select(componentGroupGrid.getStore().findRecord('ControlTypeGroupID', -1));
 
                     } else {
@@ -155,9 +289,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     WebSystemsBuilder.utils.MessageBox.error(objServerResponse.responseText);
                 }
             });
-        }
+        };
 
-        // Загружаем таблицу гпупп компонентов и самих компонентов
+        // Load all groups and all components -> choose "All" in groups
         componentGroupGrid.getStore().load({
             callback: function (records, objServerResponse, success) {
                 var jsonResp = Ext.decode(objServerResponse._response.responseText);
@@ -173,99 +307,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
         });
 
-        // Фокус элементов основной формы
-        WebSystemsBuilder.utils.IDE.Focused.clearFocusedCmp();
-        // создаем css стиль z-focused-element для выделения компонента с фокусом
-        Ext.util.CSS.createStyleSheet('.z-focused-element { border-style:double ; border-width:1px; border-color: rgb(0,100,255); -webkit-box-shadow:0px 0px 30px 0px rgb(0,100,255); -moz-box-shadow:0px 0px 30px 0px rgb(0,100,255);' +
-            ' box-shadow:-moz-box-shadow:0px 0px 30px 0px rgb(0,100,255);  }', 'z-focused-element');
-        // При фокусе одного из компонентов формы выделяем его
-        //Ext.FocusManager.clearListeners();
-        //Ext.FocusManager.on('componentfocus', function (fm, cmp, previousCmp) {
-        //    var focused = null;
-        //    if (cmp.name && cmp.name.substr(0, 6) == 'sencha') {
-        //        focused = cmp;
-        //    } else if (cmp.componentCls.indexOf('fieldset-header') > -1 && cmp.up().xtype == 'fieldset'
-        //        && cmp.up().name.substr(0, 6) == 'sencha') {
-        //        focused = cmp.up();
-        //    } else if (cmp.xtype == 'gridview' && cmp.up().xtype == 'gridpanel'
-        //        && cmp.up().name.substr(0, 6) == 'sencha') {
-        //        focused = cmp.up();
-        //    } else if (cmp.componentCls.indexOf('tab-bar') > 1 && cmp.up().xtype == 'tabpanel'
-        //        && cmp.up().name.substr(0, 6) == 'sencha') {
-        //        focused = cmp.up();
-        //    } else if (cmp.xtype == 'header' && cmp.up().name && cmp.up().name.substr(0, 6) == 'sencha' &&
-        //        (cmp.up().xtype == 'panel' || cmp.up().xtype == 'window' || cmp.up().xtype == 'tabpanel' || cmp.up().xtype == 'gridpanel')) {
-        //        focused = cmp.up();
-        //    }
-        //    propertiesPanel = win.down('panel[name=propertiesPanel]');
-        //    if (focused) {
-        //        WebSystemsBuilder.utils.IDE.Focused.setFocusedCmp(focused);
-        //        propertiesOwner.update('<span style="margin:3px;position:absolute;">' + renderIcon(focused.record.get('icon')) + '&nbsp' +
-        //            focused.record.get('component') + '&nbsp&nbsp' + '<i>' + focused.record.get('path') + '</i>&nbsp' + '</span>');
-        //        propertiesGrid.setSource(focused.record.get('properties'));
-        //        propertiesGrid.customEditors = focused.record.get('sourceConfig');
-        //        var treeEl = tree.getRootNode().findChild('id', focused.name, true);
-        //        if (treeEl) {
-        //            tree.getSelectionModel().select(treeEl);
-        //        }
-        //        propertiesPanel.setDisabled(false);
-        //        // данные
-        //        var panel = win.down('panel[name=data]');
-        //        var loaded1 = false, loaded2 = false;
-        //        if (panel.el) panel.el.mask('Загрузка...');
-        //        if (focused.xtype == 'combobox') {
-        //            queryKeyField.show();
-        //        } else {
-        //            queryKeyField.hide();
-        //        }
-        //        var data = focused.record.get('data');
-        //        query.setValue(data['queryID']);
-        //        if (!query.getValue()) {
-        //            queryField.getStore().loadData([], false);
-        //            queryKeyField.getStore().loadData([], false);
-        //            if (panel.el) panel.el.unmask();
-        //        } else {
-        //            queryField.getStore().load({
-        //                params: {
-        //                    ID: query.findRecordByValue(query.getValue()).get('queryTypeID')
-        //                },
-        //                callback: function () {
-        //                    if (data['queryOutValueID']) queryField.setValue(data['queryOutValueID']);
-        //                    loaded1 = true;
-        //                    if (panel.el && loaded2) panel.el.unmask();
-        //                }
-        //            });
-        //            queryKeyField.getStore().load({
-        //                params: {
-        //                    ID: query.findRecordByValue(query.getValue()).get('queryTypeID')
-        //                },
-        //                callback: function () {
-        //                    if (data['queryOutKeyID']) queryKeyField.setValue(data['queryOutKeyID']);
-        //                    loaded2 = true;
-        //                    if (panel.el && loaded1) panel.el.unmask();
-        //                }
-        //            });
-        //        }
-        //        dictionaryField.setValue(data['saveField']);
-        //        // события
-        //        var events = focused.record.get('events');
-        //        eventPanel.getStore().loadData(events, false);
-        //    } else if (!WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp()) {
-        //        propertiesGrid.setSource([]);
-        //        propertiesGrid.customEditors = [];
-        //        propertiesOwner.update('');
-        //        propertiesFilter.setValue('');
-        //        tree.getSelectionModel().deselectAll();
-        //        propertiesPanel.setDisabled(true);
-        //        queryField.clearValue();
-        //        queryKeyField.clearValue();
-        //        query.clearValue();
-        //        dictionaryField.clearValue();
-        //        eventPanel.getStore().loadData([], false);
-        //    }
-        //});
-
-        // При изменении данных синхранизировать вкладку "События" с компонентом
+        // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ" пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         eventPanel.on('RecordChanged', function (grid) {
             var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
             if (focused) {
@@ -277,7 +319,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
         });
 
-        // При изменении данных синхранизировать вкладку "Данные" с компонентом
+        // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅ" пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         query.on('change', function (comboChanged) {
             var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
             if (focused) {
@@ -303,43 +345,42 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
         });
 
-        // При добавлении и удалении элементов формы перерисовываем дерево проекта
-        form.on('ComponentAdded', _this.onAddComponent);
-        form.on('ComponentRemoved', _this.onRemoveComponent);
-        // При закрытии формы дизактивируем объект управления фокусом элементов
-        win.on('beforeclose', function () {
-            Ext.FocusManager.disable();
-        });
+        // Events about adding and removing components from designed form
+        // Handlers shows it by adding/removing components on Project Inspector
+        win.on('ComponentAdded', _this.onAddComponent);
+        win.on('ComponentRemoved', _this.onRemoveComponent);
     },
 
-    //==============================================Сохранить форму==============================================
+    //============================================== Save designed form ==============================================
 
     /**
-     * Функция сохранения формы.
-     * @param btn
+     * Save designed form
+     * @param btn Button "Save"
      */
     onSaveForm: function (btn, close) {
+        var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
         var dictionaryField = win.down('combobox[name=dictionaryField]');
-        var _this = this;
-        // получить объект, хранящий в себе описание формы
-        var obj = this.getJsonForm(form);
-        if (!win.form_name) {
-            var error = 'Форма еще не создана.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+
+        if (!win.FormName) {
+            var error = 'Form has not created yet.';
+            WebSystemsBuilder.utils.MessageBox.error(error);
             return;
         }
-        if (obj == null || typeof obj == 'undefined') {
-            var error = 'Форма пустая.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+
+        // Tree-like object 
+        var obj = this.getJsonForm(form);
+        if (!obj) {
+            var error = 'Form is empty.';
+            WebSystemsBuilder.utils.MessageBox.show(error);
             return;
         }
 
         var queryInParams = WebSystemsBuilder.utils.IDE.Queries.getInParams();
         var queries = WebSystemsBuilder.utils.IDE.Queries.get();
 
-        // рекурсивная функция сохранения
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         var orderNumber = 0;
         var deleteID = [];
         var fn = function (item, parent) {
@@ -360,7 +401,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 data: item['data'],
                 events: item['events']
             };
-            // сохраняем свойства объекта
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             for (var prop in item) {
                 if (!(item[prop] instanceof Array) && prop != 'controlTypeID' && prop != 'data' && prop != 'events') {
                     var property = {
@@ -382,24 +423,10 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             return current;
         };
 
-        // Функция задания id компонентам после сохранения, т.к все на сервере происходит
-        // @deprecated
-        var setID = function (item) {
-            var el = form.query('component[name=' + item['name'] + ']')[0];
-            if (el) {
-                el.record.get('properties')['id'] = item.control['ID'];
-            }
-            if (item.items && item.items instanceof Array) {
-                item.items.forEach(function (x) {
-                    setID(x);
-                });
-            }
-        };
-
-        win.body.mask('Сохранение...');
+        win.body.mask('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ...');
         var newFormObj = fn(obj, null);
-        // AJAX запрос на сохранение формы
-        // Происходит проверка существования данного названия формы и сохранение формы
+        // AJAX пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         Ext.Ajax.timeout = 1000000;
         Ext.Ajax.request({
             url: 'MainIDE/SaveFormInTransaction',
@@ -411,8 +438,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     inParams: win.inParams,
                     outParams: win.outParams,
                     form: {
-                        ID: win.form_id ? win.form_id + '' : '',
-                        name: win.form_name,
+                        ID: win.FormID ? win.FormID + '' : '',
+                        name: win.FormName,
                         dictionaryID: win.form_dictionary_id ? win.form_dictionary_id + '' : ''
                     },
                     control: newFormObj
@@ -421,25 +448,24 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 if (jsonResp.Code == 0) {
-                    // Форма сохранена
-                    win.form_id = jsonResp.resultID;
+                    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    win.FormID = jsonResp.resultID;
                     if (close) {
                         win.body.unmask();
                         win.close();
                         return;
                     }
-                    // Удаляем компоненты с формы
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
                     if (form.down('[name=senchawin]')) {
-                        form.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
+                        win.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
                     }
                     form.removeAll();
-                    form.doLayout();
                     WebSystemsBuilder.utils.IDE.Queries.clear();
                     WebSystemsBuilder.utils.IDE.Random.clear();
                     win.inParams = [];
                     win.outParams = [];
                     win.body.unmask();
-                    // открываем текущую форму
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                     _this.openForm(win);
                 } else {
                     win.body.unmask();
@@ -453,18 +479,18 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
-    //==============================================Открыть форму==============================================
+    //==============================================пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ==============================================
 
     /**
-     * Функция создания диалога "Сохранить форму?" при открытии формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ?" пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      * @param btn
      */
     onOpenFormQuestion: function (btn) {
         var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
-        if (win.form_name || win.form_id) {
-            WebSystemsBuilder.utils.MessageBox.question('Сохранить форму ' + (win.form_name ? ('"' + win.form_name + '"') : '') + '?', function (res) {
+        if (win.FormName || win.FormID) {
+            WebSystemsBuilder.utils.MessageBox.question('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ "' + win.FormName + '"?', function (res) {
                 if (res == 'yes') {
                     _this.onSaveForm(res);
                     _this.clearCurrentForm(form);
@@ -472,8 +498,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 } else if (res == 'no') {
                     _this.clearCurrentForm(form);
                     _this.onOpenForm(btn);
-                } else {
-                    return;
                 }
             }, Ext.Msg.YESNOCANCEL);
         } else {
@@ -483,24 +507,22 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Функция, открывающее диалоговое окно выбора формы для редактирования.
-     * @param btn Кнопка "Открыть", вызвавшая событие
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ", пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      */
     onOpenForm: function (btn) {
         var _this = this;
         var win = btn.up('window');
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.OpenFormDialog');
         var openFormDialog = WebSystemsBuilder.utils.Windows.open('OpenFormDialog', {}, null, true);
-        openFormDialog.on('FormIsReadyToOpen', function (winDialog, form_id, form_name, form_dictionary_id) {
-            win.form_id = form_id;
-            win.form_name = form_name;
-            win.form_dictionary_id = form_dictionary_id;
+        openFormDialog.on('FormIsReadyToOpen', function (winDialog, formID, formName, form_dictionary_id, formDescription) {
+            win.setForm(formID, formName, formDescription);
             _this.openForm(win);
         })
     },
 
     /**
-     * Функция, открывающая форму
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      * @param win
      */
     openForm: function (win) {
@@ -509,26 +531,27 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var dictionaryField = win.down('combobox[name=dictionaryField]');
         var dictionaryFieldSet = dictionaryField.up('fieldset');
         var query = win.down('combobox[name=query]');
-        // Ajax запрос на получение формы
-        win.body.mask('Загрузка...');
+
+        // Ajax пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+        win.body.mask('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ...');
         Ext.Ajax.request({
             url: 'MainIDE/GetFormByID',
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             params: {
-                id: win.form_id + ''
+                id: win.FormID + ''
             },
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 if (jsonResp.Code == 0) {
                     var res = jsonResp.Data;
-                    // воссоздание формы с помощью рекурсивной функции
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     _this.drawForm(win, res);
                     WebSystemsBuilder.utils.IDE.Queries.queries = res.queries;
                     query.getStore().loadData(WebSystemsBuilder.utils.IDE.Queries.get(), false);
-                    win.setTitle('Визуальный редактор форм. ' + win.form_name);
+                    win.setTitle('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. ' + win.FormName);
                     _this.setEnabledComponents(win);
-                    // загрузить комбо "Поле" во вкладке "Данные"
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅ" пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅ"
                     if (win.form_dictionary_id) {
                         dictionaryFieldSet.expand();
                         dictionaryField.setReadOnly(false);
@@ -555,103 +578,88 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
-    //==============================================Новая форма==============================================
+    //============================================== New form ==============================================
 
     /**
-     * Функция создания новой формы
-     * @param btn
+     * Creating new form
+     * If we have existing current form (not empty) - ask user "Save it before new form creation?"
+     * @param btn Button/menuitem "Create new form"
      */
-    onNewFormQuestion: function (btn) {
+    onCreateNewForm: function (btn) {
         var _this = this;
         var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
-        if (win.form_name || win.form_id) {
-            WebSystemsBuilder.utils.MessageBox.question('Сохранить форму ' + (win.form_name ? ('"' + win.form_name + '"') : '') + '?', function (res) {
-                if (res == 'yes') {
-                    _this.onSaveForm(res);
-                    _this.clearCurrentForm(form);
-                    _this.onNewForm(btn);
-                } else if (res == 'no') {
-                    _this.clearCurrentForm(form);
-                    _this.onNewForm(btn);
-                } else {
-                    return;
-                }
-            }, Ext.Msg.YESNOCANCEL);
-        } else {
-            _this.clearCurrentForm(form);
-            _this.onNewForm(btn);
-        }
-    },
-
-    /**
-     * Функция, вызывающаяся после диалога "Сохранить форму?" при создании новой формы
-     * @param btn
-     */
-    onNewForm: function (btn) {
-        var _this = this;
-        var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
+        var mainPanel = win.down('form[name=mainPanel]');
         var dictionaryField = win.down('combobox[name=dictionaryField]');
         var dictionaryFieldSet = dictionaryField.up('fieldset');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.CreateFormDialog');
-        var createFormDialog = WebSystemsBuilder.utils.Windows.open('CreateFormDialog', {}, null, true);
-        createFormDialog.on('FormIsReadyToCreate', function (winDialog, form_name, dictionary_id) {
-            win.form_name = form_name;
-            win.form_id = undefined;
-            win.form_dictionary_id = dictionary_id;
-            _this.setEnabledComponents(win);
-            // загрузить комбо "Поле" во вкладке "Данные"
-            if (win.form_dictionary_id) {
-                dictionaryFieldSet.expand();
-                dictionaryField.setReadOnly(false);
-                dictionaryField.getStore().load({
-                    params: {
-                        dictionaryID: win.form_dictionary_id + ''
+
+        // Delegate for new form dialog window
+        var createNewForm = function () {
+            // Clear current existed form on main panel
+            _this.clearCurrentForm(mainPanel);
+
+            // Open new form dialog window
+            WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.CreateFormDialog');
+            var createFormWin = WebSystemsBuilder.utils.Windows.open('CreateFormDialog', {}, null, true);
+            createFormWin.on('FormIsReadyToCreate', function (formName, formDescription) {
+                win.setForm(null, formName, formDescription);
+                _this.setEnabledComponents(win);
+            });
+        };
+
+        if (win.FormName || win.FormID) {
+            WebSystemsBuilder.utils.MessageBox.question('Do you want to save the form "' + win.FormName + '"?',
+                function (res) {
+                    if (res == 'yes') {
+                        _this.onSaveForm(res);
+                        createNewForm();
+                    } else if (res == 'no') {
+                        createNewForm();
                     }
-                });
-            } else {
-                dictionaryField.setReadOnly(true);
-                dictionaryField.clearValue();
-                dictionaryFieldSet.collapse();
-            }
-            win.setTitle('Визуальный редактор форм. ' + form_name);
-        });
+                },
+                Ext.Msg.YESNOCANCEL);
+        } else {
+            createNewForm();
+        }
     },
 
-    //==============================================Переименовать форму==============================================
+    //============================================== Refactor form ==============================================
 
     /**
-     * Функция, переименовывающая форму
-     * @param btn
+     * Refactor current form
+     * @param btn Button "Refactor"
      */
-    onRenameForm: function (btn) {
+    onRefactorForm: function (btn) {
         var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
-        if (!win.form_name) {
-            var error = 'Форма еще не создана.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+
+        if (!win.FormName) {
+            var error = 'Form has not created yet.';
+            WebSystemsBuilder.utils.MessageBox.error(error);
             return;
         }
-        // открываем окно переименования формы
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.RenameFormDialog');
-        var createFormDialog = WebSystemsBuilder.utils.Windows.open('RenameFormDialog', { form_id: win.form_id, form_name: win.form_name }, null, true);
-        createFormDialog.on('FormIsReadyToRename', function (winDialog, form_name) {
-            win.form_name = form_name;
-            win.setTitle('Визуальный редактор форм. ' + form_name);
+
+        // Open window for Refactor form
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.RefactorFormDialog');
+        var refactorWin = WebSystemsBuilder.utils.Windows.open('RefactorFormDialog', {
+            formID: win.FormID,
+            formName: win.FormName,
+            formDescription: win.FormDescription
+        }, null, true);
+        // Handle FormIsReadyToRename event from Refactor window
+        refactorWin.on('FormIsReadyToRename', function (formName, formDescription) {
+            win.setForm(win.FormID, formName, formDescription);
         });
     },
 
 
     //==================================================================================================================
-    //===================================================Утилиты========================================================
+    //===================================================пїЅпїЅпїЅпїЅпїЅпїЅпїЅ========================================================
     //==================================================================================================================
 
     /**
-     * Получить JSON объект формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ JSON пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      * @private
-     * @param form форма
-     * @return {*} JSON объект
+     * @param form пїЅпїЅпїЅпїЅпїЅ
+     * @return {*} JSON пїЅпїЅпїЅпїЅпїЅпїЅ
      */
     getJsonForm: function (form) {
         var win = form.up('window');
@@ -719,96 +727,111 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Функция, очищающая текущую редактируемую фрму.
-     * @param form Форма
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.
+     * @param form пїЅпїЅпїЅпїЅпїЅ
      */
     clearCurrentForm: function (form) {
         var win = form.up('window');
+
         if (form.down('[name=senchawin]')) {
-            form.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
+            win.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
         }
         form.removeAll();
-        form.doLayout();
-        WebSystemsBuilder.utils.IDE.Queries.clear();
-        WebSystemsBuilder.utils.IDE.Random.clear();
+        Queries.clear();
+        Random.clear();
         win.inParams = [];
-        win.outParams = [];
-        win.form_id = undefined;
-        win.form_dictionary_id = undefined;
-        win.form_name = undefined;
-        win.setTitle('Визуальный редактор форм');
+        win.setForm(null, null, null);
     },
 
     /**
-     * Отрисовать новую вершину дерева при добавлении компонента на форму
-     * @param form Форма, на которой расположены все компоненты
-     * @param parent Родительский элемент для нового
-     * @param addedItem Добавляемый элемент
+     * Add new component into Project Inspector
+     * @param win Main window
+     * @param parent Parent node to add new node
+     * @param addedItem Child node to add
      */
-    onAddComponent: function (form, parent, addedItem) {
-        var win = form.up('window');
+    onAddComponent: function (win, parent, addedItem) {
         var tree = win.down('treepanel');
-        var parentNode = tree.getRootNode().findChild('id', parent.name, true);
-        if (!parentNode && parent.name == form.name) {
+        var parentNode = null;
+
+        if (parent) {
+            if (parent.componentInfo) {
+                parentNode = tree.getRootNode().findChild('id', parent.componentInfo.uniqueID, true);
+            } else {
+                console.log('Adding node error. "componentInfo" property is unavailable.');
+            }
+        }
+        // If current component - main window
+        if (!parentNode && addedItem.componentInfo.ControlTypeID == 1) {
             parentNode = tree.getRootNode();
         }
         if (parentNode) {
             var newNode = {
-                text: addedItem.record.get('component'),
-                name: addedItem.name,
+                text: addedItem.componentInfo.Name,
+                name: addedItem.componentInfo.Name,
                 expanded: true,
-                id: addedItem.name,
-                icon: addedItem.record.get('icon'),
+                id: addedItem.componentInfo.uniqueID,
+                icon: addedItem.componentInfo.Icon,
                 children: []
             };
             parentNode.appendChild(newNode, false, true);
-            tree.doLayout();
         } else {
-            console.log('Adding node error. Cant find parent node: ' + parent);
+            console.log('Adding node error. Can\'t find parent node: ' + parent);
         }
     },
 
     /**
-     * Удалить вершину дерева при удалении компонента с формы
-     * @param form Форма, на которой расположены все компоненты
-     * @param parent Родительский элемент для удаляемго
-     * @param removedItem Удаляемый элемент
+     * Remove component from Project Inspector
+     * @param win Main window
+     * @param parent Parent node to remove the node
+     * @param removedItem Child node to remove
      */
-    onRemoveComponent: function (form, parent, removedItem) {
-        var win = form.up('window');
+    onRemoveComponent: function (win, parent, removedItem) {
         var tree = win.down('treepanel');
-        var parentNode = tree.getRootNode().findChild('id', parent.name, true);
-        var removedNode = tree.getRootNode().findChild('id', removedItem.name, true);
+        var form = win.down('form[name=mainPanel]');
+
+        var parentNode = null;
+        if (parent.componentInfo) {
+            parentNode = tree.getRootNode().findChild('id', parent.componentInfo.uniqueID, true);
+        } else {
+            console.log('Removing node error. "componentInfo" property is unavailable.');
+        }
+        var removedNode = null;
+        if (parent.componentInfo) {
+            parentNode = tree.getRootNode().findChild('id', removedItem.componentInfo.uniqueID, true);
+        } else {
+            console.log('Removing node error. "componentInfo" property is unavailable.');
+        }
+
         if (!parentNode && parent.name == form.name) {
             parentNode = tree.getRootNode()
         }
         if (!parentNode) {
-            console.log('Removing node error. Cant find parent node: ' + parent);
+            console.log('Removing node error. Can\'t find parent node: ' + parent);
         } else if (!removedNode) {
-            console.log('Removing node error. Cant find node to remove : ' + removedItem);
+            console.log('Removing node error. Can\'t find node to remove : ' + removedItem);
         } else {
             parentNode.removeChild(removedNode);
-            tree.doLayout();
         }
     },
 
-    //================================================== Запросы ==================================================
+    //================================================== пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ==================================================
 
     /**
-     * Функция добавления нового запроса к существующим
-     * @param btn Кнопка "+", вызвавшая событие
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "+", пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      */
     onAddQuery: function (btn) {
         var win = btn.up('window');
         var query = win.down('combobox[name=query]');
         var form = win.down('form[name=mainPanel]');
+
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.FormQueries');
         var createQuery = WebSystemsBuilder.utils.Windows.open('FormQueries', {
             form: form
         }, null, true);
         createQuery.on('FormQuerySaved', function (winQuery, obj) {
             WebSystemsBuilder.utils.IDE.Queries.add(obj);
-            // перегрузить комбо с запросами
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             query.getStore().loadData(WebSystemsBuilder.utils.IDE.Queries.get(), false);
             var newQuery = query.getStore().findRecord('_ID', obj._ID);
             if (newQuery) {
@@ -818,8 +841,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Перегрузить таблицу параметров при выборе запроса
-     * @param combo Комбо запрос
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+     * @param combo пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
      */
     onQueryTypeSelectionChange: function (combo) {
         var win = combo.up('window');
@@ -845,28 +868,28 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
     },
 
-    //===================================================Левые функции==================================================
+    //===================================================пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ==================================================
 
     /**
-     * Нарисовать форму, полученную в виде JSON объекта (res)
-     * @param win Окно редактора форм
-     * @param res Объект формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ JSON пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (res)
+     * @param win пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+     * @param res пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      */
     drawForm: function (win, res) {
         var _this = this;
         var form = win.down('form[name=mainPanel]');
         var components = win.down('gridpanel[name=components]');
-        var store = deepCloneStore(components.getStore());
+        var store = CommonUtils.deepCloneStore(components.getStore());
         if (!res.root) {
-            var error = 'Форма пуста.';
+            var error = 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.';
             console.warn(error);
             return;
         }
-        // рекурсивная функция создания объектов
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         // obj typeof OpenControlModel
         var fn = function (obj, parent) {
             if (!obj || !parent || !obj.properties) {
-                var error = 'При открытии формы на редактирование произошла ошибка: объект пуст.';
+                var error = 'пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.';
                 WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
                 return;
             }
@@ -880,19 +903,19 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 }
             });
             if (!xtype) {
-                var error = 'При открытии формы на редактирование произошла ошибка: объект не имеет типа.' + obj['name'] ? obj['name'] : '';
+                var error = 'пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.' + obj['name'] ? obj['name'] : '';
                 WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
                 return;
             }
-            // выбираем объект из хранилища компонентов, соответствующий текущему
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             var controlType = obj.control['controlType'];
-            var selectedRecord = store.findRecord('component', controlType.toLowerCase());
+            var selectedRecord = store.findRecord('Name', controlType.toLowerCase());
             var item;
-            // создаем объект с помощью фабрик объектов
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (xtype == 'container') {
-                item = eval(xtype.toLowerCase() + 'Factory(win, parent, selectedRecord, layout);');
+                item = eval('ContainerFactory.get(win, parent, selectedRecord, layout);');
             } else {
-                item = eval(controlType.toLowerCase() + 'Factory(win, parent, selectedRecord);');
+                item = eval(CommonUtils.capitalizeFirstLetter(controlType.toLowerCase()) + 'Factory.get(win, parent, selectedRecord);');
             }
             item.name = obj['name'];
             item.record.set('events', obj.events);
@@ -906,16 +929,14 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             } else {
                 parent.add(item);
             }
-            parent.doLayout();
-            form.doLayout();
-            form.fireEvent('ComponentAdded', form, parent, item);
-            // изменяем свойства объекта
+            win.fireEvent('ComponentAdded', win, parent, item);
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             WebSystemsBuilder.utils.IDE.Focused.setFocusedCmp(item);
             obj.properties.forEach(function (prop) {
                 _this.onProperyChange(null, prop['property'], prop['_value']);
             });
             WebSystemsBuilder.utils.IDE.Focused.clearFocusedCmp();
-            // рекурсия
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (obj.items && obj.items instanceof Array && obj.items.length > 0) {
                 obj.items.forEach(function (i) {
                     fn(i, item);
@@ -927,7 +948,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Сгенерировать JSON код построенной формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ JSON пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      * @param btn
      */
     onCode: function (btn) {
@@ -937,12 +958,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var codeText = mainContainer.down('textareafield[name=codeText]');
         var btnLabel = win.down('button[action=onLabel]');
         if (!form.down('[name=senchawin]')) {
-            console.warn('При попытке показать код создано предупреждение: Форма пустая.');
+            console.warn('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.');
             return;
         }
         // delete empty properties function
         var fnDeleteEmptyProperties = function (item) {
-            debugger;
             delete item['data'];
             delete item['events'];
             for (var prop in item) {
@@ -963,7 +983,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 }
             }
         };
-        // JSON объект
+        // JSON пїЅпїЅпїЅпїЅпїЅпїЅ
         var obj = this.getJsonForm(form);
         fnDeleteEmptyProperties(obj);
 
@@ -974,7 +994,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Показать представление формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      * @param btn
      */
     onDesign: function (btn) {
@@ -1001,13 +1021,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var win = focused.up('window[name=MainIDE]');
         var form = win.down('form[name=mainPanel]');
         focused.record.get('properties')[recordId] = value;
-        var componentName = focused.record.get('component').toLowerCase();
+        var componentName = focused.componentInfo.Name.toLowerCase();
 
-        // поля
-        if (focused.record.get('component').toLowerCase() == 'textfield' ||
-            focused.record.get('component').toLowerCase() == 'datefield' ||
-            focused.record.get('component').toLowerCase() == 'numberfield' ||
-            focused.record.get('component').toLowerCase() == 'combobox') {
+        // пїЅпїЅпїЅпїЅ
+        var someComponentsArray = ['textfield', 'datefield', 'numberfield', 'combobox'];
+        if (Ext.Array.contains(someComponentsArray, componentName)) {
             switch (recordId) {
                 case 'anchor':
                     if (!value || value.toString().trim() == '') {
@@ -1063,7 +1081,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     focused.labelCell.setWidth(focused.labelWidth);
                     break;
                 case 'margin':
-                    setMargin(focused.getEl(), value);
+                    ComponentFactoryUtils.setMargin(focused.getEl(), value);
                     break;
                 case 'maskRe':
                     break;
@@ -1094,13 +1112,13 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 case 'readOnly':
                     focused.setReadOnly(value);
                     break;
-                    //                case 'value':
-                    //                    if (focused.record.get('component').toLowerCase() == 'combobox') {
-                    //                        focused.setRawValue(value);
-                    //                    } else {
-                    //                        focused.setValue(value);
-                    //                    }
-                    //                    break;
+                //                case 'value':
+                //                    if (focused.record.get('Name').toLowerCase() == 'combobox') {
+                //                        focused.setRawValue(value);
+                //                    } else {
+                //                        focused.setValue(value);
+                //                    }
+                //                    break;
                 case 'valueField':
                     break;
                 case 'width':
@@ -1111,10 +1129,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
         }
 
-        // колонки
-        if (focused.record.get('component').toLowerCase() == 'gridcolumn' ||
-            focused.record.get('component').toLowerCase() == 'datecolumn' ||
-            focused.record.get('component').toLowerCase() == 'numbercolumn') {
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        var someComponentsArray = ['gridcolumn', 'datecolumn', 'numbercolumn'];
+        if (Ext.Array.contains(someComponentsArray, componentName)) {
             var gridpanel = focused.up('gridpanel');
             switch (recordId) {
                 case 'align':
@@ -1174,20 +1191,12 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     break;
             }
             gridpanel.getView().refresh();
-            focused.doLayout();
         }
 
-        // окно, панель, табпанель, табка, таблица, тулбар, контейнер, филдсет, кнопка
-        if (focused.record.get('component').toLowerCase() == 'window' ||
-            focused.record.get('component').toLowerCase() == 'panel' ||
-            focused.record.get('component').toLowerCase() == 'tabpanel' ||
-            focused.record.get('component').toLowerCase() == 'newtab' ||
-            focused.record.get('component').toLowerCase() == 'gridpanel' ||
-            focused.record.get('component').toLowerCase() == 'toolbar' ||
-            focused.record.get('component').toLowerCase() == 'container (hbox)' ||
-            focused.record.get('component').toLowerCase() == 'container (vbox)' ||
-            focused.record.get('component').toLowerCase() == 'fieldset' ||
-            focused.record.get('component').toLowerCase() == 'button') {
+        // пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ
+        var someComponentsArray = ['window', 'panel', 'tabpanel', 'newtab', 'gridpanel', 'toolbar', 'container (hbox)',
+            'container (vbox)', 'fieldset' , 'button'];
+        if (Ext.Array.contains(someComponentsArray, componentName)) {
             switch (recordId) {
                 case 'activeTab':
                     focused.setActiveTab(value);
@@ -1209,7 +1218,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     focused.animCollapse = value;
                     break;
                 case 'bodyPadding':
-                    setPadding(focused.body, value);
+                    ComponentFactoryUtils.setPadding(focused.body, value);
                     break;
                 case 'columnLines':
                     focused.columnLines = value;
@@ -1267,7 +1276,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     focused.setIcon(value);
                     break;
                 case 'margin':
-                    setMargin(focused.getEl(), value);
+                    ComponentFactoryUtils.setMargin(focused.getEl(), value);
                     break;
                 case 'maxWidth':
                     focused.maxWidth = value;
@@ -1314,8 +1323,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     break;
                 case 'text':
                     focused.setText(value);
-
-                    focused.setMargin(value);
                     break;
                 case 'tooltip':
                     focused.setTooltip(value);
@@ -1326,78 +1333,66 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 default:
                     break;
             }
-            if (componentName != 'button') {
-                focused.doLayout();
-            }
         }
-
-        // refresh layout for all components on form
-        form.doLayout();
     },
 
     /**
-     * Функция подгрузки группы компонентов при выборе типа компонентов
-     * @param grid Таблица "Тип компонентов"
+     * Filter all components by context search and group
+     * @param win Main IDE window
      */
-    onComponentGroupChange: function (grid) {
-        var _this = this;
-        var win = grid.view.up('window');
-        var componentGroupGrid = win.down('gridpanel[name=componentsGroups]');
+    onContextControlSearch: function (win) {
+        var controlFilter = win.down('textfield[name=filter]');
         var componentsGrid = win.down('gridpanel[name=components]');
+        var componentGroupGrid = win.down('gridpanel[name=componentsGroups]');
         var selectedGroup = componentGroupGrid.getSelectionModel().getSelection()[0];
+        var pattern = (controlFilter.getValue() || '').toUpperCase().trim();
 
         componentsGrid.store.clearFilter();
-        if (!Ext.isEmpty(selectedGroup)) {
-            if (selectedGroup.get('ControlTypeGroupID') != -1) {
-                componentsGrid.store.filter('ControlTypeGroupID', selectedGroup.get('ControlTypeGroupID'));
+        componentsGrid.store.filterBy(function (record) {
+            var component = record.get('Name').toUpperCase().trim();
+            var contextSearchFilter = pattern == '' || component.indexOf(pattern) >= 0;
+            var groupFilter = false;
+            if (!Ext.isEmpty(selectedGroup)) {
+                if (selectedGroup.get('ControlTypeGroupID') != -1) {
+                    groupFilter = record.get('ControlTypeGroupID') == selectedGroup.get('ControlTypeGroupID');
+                } else {
+                    groupFilter = true;
+                }
             }
-        } else {
-            componentsGrid.store.filter('ControlTypeGroupID', 0);
-        }
-    },
-
-    /**
-     * Функция контекстного поиска для компонентов
-     * @param textfield Текстовое поле фильтра
-     */
-    onContextSearch: function (textfield) {
-        var win = textfield.up('window');
-        var componentsGrid = win.down('gridpanel[name=components]');
-        var pattern = (textfield.getValue() || '').toUpperCase().trim();
-        componentsGrid.getStore().filterBy(function (record) {
-            var component = record.get('component').toUpperCase().trim();
-            return pattern == '' || component.indexOf(pattern) >= 0;
+            return contextSearchFilter && groupFilter;
         });
     },
 
     /**
-     * Функция контекстного поиска для свойств
-     * @param textfield Текстовое поле фильтра
+     * Filter all properties by context search
+     * @param textfield Context search textfield
      */
     onContextPropertySearch: function (textfield) {
         var win = textfield.up('window');
         var propertiesGrid = win.down('propertygrid[name=properties]');
         var pattern = (textfield.getValue() || '').toUpperCase().trim();
+
         propertiesGrid.getStore().filterBy(function (record) {
-            var component = record.get('name').toUpperCase().trim();
+            var component = record.get('Name').toUpperCase().trim();
             return pattern == '' || component.indexOf(pattern) >= 0;
         });
     },
 
     /**
-     * Функция, открывающая панели "Компоненты" и "Инспектор проекта"
-     * @param win Окно редактора форм
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ" пїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
+     * @param win пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
      */
     setEnabledComponents: function (win) {
         var componentsPanel = win.down('panel[name=componentsPanel]');
         var projectPanel = win.down('panel[name=projectPanel]');
+
         componentsPanel.setDisabled(false);
         projectPanel.setDisabled(false);
     },
 
     /**
-     * Функция просмотра события у компонента
-     * @param btn Кнопка "Посмотреть", вызвавшая событие
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      */
     onShowEvent: function (btn) {
         var _this = this;
@@ -1406,7 +1401,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var eventsGrid = win.down('gridpanel[name=events]');
         var selected = eventsGrid.getSelectionModel().getSelection()[0];
         if (!selected) {
-            WebSystemsBuilder.utils.MessageBox.show('Выберите событие.', null, -1);
+            WebSystemsBuilder.utils.MessageBox.show('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.', null, -1);
             return;
         }
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventAction');
@@ -1418,8 +1413,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Функция редактирования события у компонента
-     * @param btn Кнопка "Редактировать", вызвавшая событие
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      */
     onEditEvent: function (btn) {
         var _this = this;
@@ -1428,7 +1423,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var eventsGrid = win.down('gridpanel[name=events]');
         var selected = eventsGrid.getSelectionModel().getSelection()[0];
         if (!selected) {
-            WebSystemsBuilder.utils.MessageBox.show('Выберите событие.', null, -1);
+            WebSystemsBuilder.utils.MessageBox.show('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.', null, -1);
             return;
         }
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventAction');
@@ -1438,47 +1433,49 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             actions: selected.get('actions')
         }, null, true);
         eventAction.on('EventActionIsReadyToSave', function (winDialog, action) {
-            // изменить грид
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             selected.set('actions', action);
             selected.commit();
-            // бросить событие об изменении
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             eventsGrid.fireEvent('RecordChanged', eventsGrid);
         });
     },
 
     /**
-     * Функция удаления события у компонента
-     * @param btn Кнопка "Удалить", вызвавшая событие
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ", пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      */
     onDeleteEvent: function (btn) {
         var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
         var eventsGrid = win.down('gridpanel[name=events]');
+
         var selected = eventsGrid.getSelectionModel().getSelection()[0];
         if (!selected) {
-            WebSystemsBuilder.utils.MessageBox.show('Выберите событие.', null, -1);
+            WebSystemsBuilder.utils.MessageBox.show('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.', null, -1);
             return;
         }
-        WebSystemsBuilder.utils.MessageBox.question('Очистить обработчик события' + (selected.get('name') ? (' "' + selected.get('name') + '"') : '') + '?', function (res) {
+        WebSystemsBuilder.utils.MessageBox.question('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ' + (selected.get('name') ? (' "' + selected.get('name') + '"') : '') + '?', function (res) {
             if (res == 'yes') {
-                // изменить грид
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
                 selected.set('actions', null);
                 selected.commit();
-                // бросить событие об изменении
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 eventsGrid.fireEvent('RecordChanged', eventsGrid);
             }
         }, Ext.Msg.YESNO);
     },
 
     /**
-     * Функция редактирования входных и выходных параметров окна
-     * @param btn Кнопка "Параметры"
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
      */
     onFormParams: function (btn) {
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
-        if (!win.form_id) {
+
+        if (!win.FormID) {
             WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.FormParameters');
             var paramsForm = WebSystemsBuilder.utils.Windows.open('FormParameters', {
                 inParams: win.inParams,
@@ -1490,28 +1487,28 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 win.outParams = outParams;
             });
         } else {
-            console.log('Невозможно задать параметры формы сохраненной форме.');
+            console.log('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.');
         }
     },
 
     /**
-     * Функция акрытия формы графического редактора.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+     * @param btn пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ", пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
      */
     onClose: function (btn) {
         var _this = this;
         var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
-        if (win.form_name || win.form_id) {
-            WebSystemsBuilder.utils.MessageBox.question('Сохранить форму ' + (win.form_name ? ('"' + win.form_name + '"') : '') + '?', function (res) {
-                if (res == 'yes') {
-                    _this.onSaveForm(res, true);
-                } else if (res == 'no') {
-                    win.close();
-                } else {
-                    return;
-                }
-            }, Ext.Msg.YESNOCANCEL);
+
+        if (win.FormName || win.FormID) {
+            WebSystemsBuilder.utils.MessageBox.question('Do you want to save the form "' + win.FormName + '"?',
+                function (res) {
+                    if (res == 'yes') {
+                        _this.onSaveForm(res, true);
+                    } else if (res == 'no') {
+                        win.close();
+                    }
+                },
+                Ext.Msg.YESNOCANCEL);
         } else {
             win.close();
         }

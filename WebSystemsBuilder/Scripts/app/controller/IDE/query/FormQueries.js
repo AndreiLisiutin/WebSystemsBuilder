@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.query.FormQueries', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.query.FormQueries', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.query.FormQueries'
+        'WebSystemsBuilder.view.IDE.query.FormQueries'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.FormEditor'
+        'WebSystemsBuilder.model.IDE.FormEditor'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.FormEditor'
+        'WebSystemsBuilder.store.IDE.FormEditor'
     ],
 
     init: function () {
@@ -75,7 +75,7 @@
                 };
                 data.push(item);
             });
-            WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.common.ComboForm');
+            WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.common.ComboForm');
             var comboDialog = WebSystemsBuilder.utils.Windows.open('ComboForm', {
                 _data: data,
                 _label:'Компонент',
@@ -120,7 +120,7 @@
     onAddQueryType:function(btn){
         var win = btn.up('window');
         var query = win.down('combobox[name=query]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.query.CreateQuery');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.CreateQuery');
         var createQuery = WebSystemsBuilder.utils.Windows.open('CreateQuery',{}, null, true);
         createQuery.on('QuerySaved', function (winQuery, query_id) {
             // перегрузить комбо с запросами
@@ -147,7 +147,7 @@
             WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
             return;
         }
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.query.CreateQuery');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.CreateQuery');
         var createQuery = WebSystemsBuilder.utils.Windows.open('CreateQuery',{
             queryTypeID:query.getValue()
         }, null, true);
@@ -172,7 +172,7 @@
             return;
         }
 
-        var ID = WebSystemsBuilder.editor.Random.get(); // случайный не настоящий ID
+        var ID = WebSystemsBuilder.IDE.Random.get(); // случайный не настоящий ID
         var obj = {
             ID:ID,
             _ID:ID, // случайный не настоящий ID

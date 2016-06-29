@@ -29,5 +29,16 @@ namespace WebSystemsBuilder.ClientWeb
             list.Add(ControlTypeGroupBLL.ALL_INSTANCE);
             return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary> Get list of all control type dependencies in system
+        /// </summary>
+        /// <returns>List with all control type dependencies, wrapped with IResponsePackage</returns>
+        [HttpGet]
+        public JsonResult GetControlTypeDependencies()
+        {
+            var list = new ControlTypeBLL().GetControlTypeDependencies();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+        
     }
 }

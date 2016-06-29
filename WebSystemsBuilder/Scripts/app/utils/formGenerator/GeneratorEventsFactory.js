@@ -3,7 +3,7 @@
 
     addEvents: function (window) {
         var _this = this;
-        window.query('component').forEach(function (item) {
+        window.query('Name').forEach(function (item) {
             if (item.EVENTS && item.EVENTS.length > 0) {
                 _this.addEventHandlers(item);
             }

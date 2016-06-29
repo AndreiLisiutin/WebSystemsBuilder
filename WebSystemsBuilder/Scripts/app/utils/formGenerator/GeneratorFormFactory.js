@@ -174,7 +174,7 @@
     getFormDictionaryFields: function (window) {
         var _this = this;
         var result = [];
-        window.query('component').forEach(function (item) {
+        window.query('Name').forEach(function (item) {
             if (item.DICTIONARY_MAPPINGS != null && item.DICTIONARY_MAPPINGS.length > 0) {
                 result.push(item);
             }
@@ -196,7 +196,7 @@
     getControlByID: function (window, controlID) {
         var _this = this;
         var result = null;
-        window.query('component').forEach(function (item) {
+        window.query('Name').forEach(function (item) {
             if (item.CONTROL_ID == controlID) {
                 result = item;
             }

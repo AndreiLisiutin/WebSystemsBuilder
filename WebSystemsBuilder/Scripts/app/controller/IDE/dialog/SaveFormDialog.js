@@ -1,8 +1,8 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.dialog.SaveFormDialog', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.dialog.SaveFormDialog', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.dialog.SaveFormDialog'
+        'WebSystemsBuilder.view.IDE.dialog.SaveFormDialog'
     ],
 
     init: function () {

@@ -57,7 +57,7 @@
             plugins: isEditable ? [rowEditing] : []
         });
 
-        grid.on('edit', function (editor, e) {
+        grid.on('edit', function (IDE, e) {
             var result = false;
             win.body.mask('Сохранение...');
             var dataToSave = {};
@@ -96,7 +96,7 @@
             });
             return result;
         });
-        grid.on('canceledit', function (editor, e) {
+        grid.on('canceledit', function (IDE, e) {
             e.record.reject();
             this.getStore().each(function (record) {
                 if (record.phantom) {
@@ -177,13 +177,13 @@
             dataIndex: field.columnName,
             allowBlank: true,
             format: modelsFactory._getColumnFormatByValueTypeID(field.domainValueTypeID),
-            editor: field.primaryKey ? null : modelsFactory._getEditorByValueTypeID(field.domainValueTypeID),
+            IDE: field.primaryKey ? null : modelsFactory._getEditorByValueTypeID(field.domainValueTypeID),
             dictionaryField: field
         };
         if (field.primaryKey) {
-            column.editor = null;
+            column.IDE = null;
         } else if (field.foreignKey) {
-            column.editor = {
+            column.IDE = {
                 xtype: 'combobox',
                 queryMode: 'local',
                 displayField: 'name',

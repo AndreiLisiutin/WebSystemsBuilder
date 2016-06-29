@@ -1,10 +1,10 @@
-﻿Ext.define('WebSystemsBuilder.view.IDE.dialog.CreateFormDialog', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.dialog.RefactorFormDialog', {
     extend: 'Ext.window.Window',
-    alias: 'widget.CreateFormDialog',
-    name: 'CreateFormDialog',
+    alias: 'widget.RefactorFormDialog',
+    name: 'RefactorFormDialog',
 
     modal: true,
-    title: 'New form',
+    title: 'Refactor form',
 
     height: 150,
     width: 450,
@@ -23,6 +23,36 @@
                 {
                     xtype: 'panel',
                     layout: 'anchor',
+                    dockedItems: [
+                        {
+                            xtype: 'toolbar',
+                            dock: 'right',
+                            items: [
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Close',
+                                    action: 'onClose',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/close.png',
+                                    iconAlign: 'top'
+                                },
+                                {
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Refactor',
+                                    action: 'onRefactor',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/check.png',
+                                    iconAlign: 'top'
+                                }
+                            ]
+                        }
+                    ],
+
                     items: [
                         {
                             xtype: 'textfield',
@@ -44,35 +74,6 @@
                             labelWidth: 60,
                             emptyText: 'Type form description...',
                             name: 'description'
-                        }
-                    ],
-                    dockedItems: [
-                        {
-                            xtype: 'toolbar',
-                            dock: 'right',
-                            items: [
-                                {
-                                    xtype: 'button',
-                                    scale: 'medium',
-                                    text: 'Close',
-                                    action: 'onClose',
-                                    border: true,
-                                    icon: 'Scripts/resources/icons/close.png',
-                                    iconAlign: 'top'
-                                },
-                                {
-                                    xtype: 'tbseparator'
-                                },
-                                {
-                                    xtype: 'button',
-                                    scale: 'medium',
-                                    text: 'Create',
-                                    action: 'onCreate',
-                                    border: true,
-                                    icon: 'Scripts/resources/icons/check.png',
-                                    iconAlign: 'top'
-                                }
-                            ]
                         }
                     ]
                 }

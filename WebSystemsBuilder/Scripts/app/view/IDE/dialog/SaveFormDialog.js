@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.dialog.SaveFormDialog', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.dialog.SaveFormDialog', {
     extend: 'Ext.window.Window',
     alias: 'widget.SaveFormDialog',
     name: 'SaveFormDialog',

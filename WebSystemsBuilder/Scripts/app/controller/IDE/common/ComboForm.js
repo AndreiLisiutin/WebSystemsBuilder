@@ -1,8 +1,8 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.common.ComboForm', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.common.ComboForm', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.common.ComboForm'
+        'WebSystemsBuilder.view.IDE.common.ComboForm'
     ],
 
     init: function () {

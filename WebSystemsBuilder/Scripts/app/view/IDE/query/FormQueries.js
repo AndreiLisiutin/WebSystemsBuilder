@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.query.FormQueries', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.FormQueries', {
     extend: 'Ext.window.Window',
     alias: 'widget.FormQueries',
     name: 'FormQueries',
@@ -24,8 +24,8 @@
     initComponent: function () {
         var me = this;
 
-        var queryStore = Ext.create('WebSystemsBuilder.store.editor.Query');
-        var paramsStore = Ext.create('WebSystemsBuilder.store.editor.Params');
+        var queryStore = Ext.create('WebSystemsBuilder.store.IDE.Query');
+        var paramsStore = Ext.create('WebSystemsBuilder.store.IDE.Params');
 
         Ext.applyIf(me, {
 

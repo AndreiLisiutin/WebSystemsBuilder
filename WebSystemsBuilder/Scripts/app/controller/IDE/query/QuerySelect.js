@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.query.QuerySelect', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.query.QuerySelect', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.query.QuerySelect'
+        'WebSystemsBuilder.view.IDE.query.QuerySelect'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.query.QueryFrom'
+        'WebSystemsBuilder.model.IDE.query.QueryFrom'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.query.QueryFrom'
+        'WebSystemsBuilder.store.IDE.query.QueryFrom'
     ],
 
     init: function () {

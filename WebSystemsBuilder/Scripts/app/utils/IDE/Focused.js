@@ -1,9 +1,28 @@
 Ext.define('WebSystemsBuilder.utils.IDE.Focused', {
     singleton: true,
-    focusedCmp: undefined,
+    alternateClassName: ['Focused'],
+
+    focusedCmp: null,
+
+    init: function() {
+        // Custom css "z-focused-element" for current focused component
+        Ext.util.CSS.createStyleSheet('.z-focused-element ' +
+                '{ ' +
+                '  border-style:double ; ' +
+                '  border-width:1px; ' +
+                '  border-color: rgb(0,100,255); ' +
+                '  -webkit-box-shadow:0px 0px 30px 0px rgb(0,100,255); ' +
+                '  -moz-box-shadow:0px 0px 30px 0px rgb(0,100,255);' +
+                '  box-shadow:-moz-box-shadow:0px 0px 30px 0px rgb(0,100,255);  ' +
+                '}',
+            'z-focused-element'
+        );
+    },
+
     getFocusedCmp: function () {
         return this.focusedCmp;
     },
+
     setFocusedCmp: function (cmp) {
         this.clearFocusedCmp();
         try {
@@ -15,6 +34,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.Focused', {
             console.log('Deleted focusedCmp is empty. Error: ' + ex + ' Focused component: ' + this.focusedCmp);
         }
     },
+
     clearFocusedCmp: function () {
         try {
             if (this.focusedCmp) {

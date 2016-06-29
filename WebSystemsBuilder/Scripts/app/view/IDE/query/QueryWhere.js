@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.query.QueryWhere', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.QueryWhere', {
     extend: 'Ext.window.Window',
     alias: 'widget.QueryWhere',
     name: 'QueryWhere',
@@ -24,10 +24,10 @@
     initComponent: function () {
         var me = this;
 
-        var allDictionaryStore = Ext.create('WebSystemsBuilder.store.editor.query.AllDictionary');
-        var dictionaryStore = Ext.create('WebSystemsBuilder.store.editor.query.AllDictionary');
-        var allFieldStore = Ext.create('WebSystemsBuilder.store.editor.query.Field');
-        var fieldStore = Ext.create('WebSystemsBuilder.store.editor.query.Field');
+        var allDictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.AllDictionary');
+        var dictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.AllDictionary');
+        var allFieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var fieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
 
         Ext.applyIf(me, {
 

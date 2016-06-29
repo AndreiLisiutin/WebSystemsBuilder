@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.dialog.OpenFormDialog', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.dialog.OpenFormDialog', {
     extend: 'Ext.window.Window',
     alias: 'widget.OpenFormDialog',
     name: 'OpenFormDialog',
@@ -24,7 +24,7 @@
     initComponent: function () {
         var me = this;
 
-        var formStore = Ext.create('WebSystemsBuilder.store.editor.dialog.Form');
+        var formStore = Ext.create('WebSystemsBuilder.store.IDE.dialog.Form');
 
         Ext.applyIf(me, {
 

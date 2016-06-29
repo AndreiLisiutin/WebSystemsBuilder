@@ -1,8 +1,8 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.dialog.FormParametersExplorer', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.dialog.FormParametersExplorer', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.dialog.FormParametersExplorer'
+        'WebSystemsBuilder.view.IDE.dialog.FormParametersExplorer'
     ],
 
     init: function () {

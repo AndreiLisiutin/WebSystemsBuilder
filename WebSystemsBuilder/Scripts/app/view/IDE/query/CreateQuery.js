@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.query.CreateQuery', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.CreateQuery', {
     extend: 'Ext.window.Window',
     alias: 'widget.CreateQuery',
     name: 'CreateQuery',
@@ -22,9 +22,9 @@
     initComponent: function () {
         var me = this;
 
-        var fromStore = Ext.create('WebSystemsBuilder.store.editor.query.From');
-        var selectStore = Ext.create('WebSystemsBuilder.store.editor.query.Select');
-        var whereStore = Ext.create('WebSystemsBuilder.store.editor.query.Where');
+        var fromStore = Ext.create('WebSystemsBuilder.store.IDE.query.From');
+        var selectStore = Ext.create('WebSystemsBuilder.store.IDE.query.Select');
+        var whereStore = Ext.create('WebSystemsBuilder.store.IDE.query.Where');
 
         Ext.applyIf(me, {
 

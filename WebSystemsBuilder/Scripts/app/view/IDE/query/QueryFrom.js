@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.query.QueryFrom', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.QueryFrom', {
     extend: 'Ext.window.Window',
     alias: 'widget.QueryFrom',
     name: 'QueryFrom',
@@ -24,10 +24,10 @@
     initComponent: function () {
         var me = this;
 
-        var allDictionaryStore = Ext.create('WebSystemsBuilder.store.editor.query.AllDictionary');
-        var dictionaryStore = Ext.create('WebSystemsBuilder.store.editor.query.Dictionary');
-        var allFieldStore = Ext.create('WebSystemsBuilder.store.editor.query.Field');
-        var fieldStore = Ext.create('WebSystemsBuilder.store.editor.query.Field');
+        var allDictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.AllDictionary');
+        var dictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
+        var allFieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var fieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
 
         Ext.applyIf(me, {
 

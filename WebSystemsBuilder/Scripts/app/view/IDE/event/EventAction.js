@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.view.editor.event.EventAction', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.event.EventAction', {
     extend: 'Ext.window.Window',
     alias: 'widget.EventAction',
     name: 'EventAction',
@@ -24,7 +24,7 @@
     initComponent: function () {
         var me = this;
 
-        var actionStore = Ext.create('WebSystemsBuilder.store.editor.event.Action');
+        var actionStore = Ext.create('WebSystemsBuilder.store.IDE.event.Action');
 
         Ext.applyIf(me, {
 

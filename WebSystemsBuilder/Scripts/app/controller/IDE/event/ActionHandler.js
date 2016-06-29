@@ -1,16 +1,16 @@
-﻿Ext.define('WebSystemsBuilder.controller.editor.event.ActionHandler', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.event.ActionHandler', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.editor.event.ActionHandler'
+        'WebSystemsBuilder.view.IDE.event.ActionHandler'
     ],
 
     models: [
-        'WebSystemsBuilder.model.editor.event.ActionHandler'
+        'WebSystemsBuilder.model.IDE.event.ActionHandler'
     ],
 
     stores: [
-        'WebSystemsBuilder.store.editor.event.ActionHandler'
+        'WebSystemsBuilder.store.IDE.event.ActionHandler'
     ],
 
     init: function () {
@@ -98,7 +98,7 @@
             };
             data.push(item);
         });
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.editor.common.ComboForm');
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.common.ComboForm');
         var comboForm = WebSystemsBuilder.utils.Windows.open('ComboForm', {
             _data: data,
             _label:'Компонент',
@@ -135,7 +135,7 @@
             return;
         }
 
-        var actionID = WebSystemsBuilder.editor.Random.get();
+        var actionID = WebSystemsBuilder.IDE.Random.get();
         var params = [];
         paramsGrid.getStore().data.items.forEach(function(item){
             var newItem = {
