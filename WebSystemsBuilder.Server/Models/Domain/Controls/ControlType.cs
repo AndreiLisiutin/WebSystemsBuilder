@@ -22,5 +22,7 @@ namespace WebSystemsBuilder.Server.Models
         public string Description { get; set; }
         [Column("extjs_class")]
         public string ExtJsClass { get; set; }
+        [Column("is_operand")]
+        public string IsOperand { get; set; }
     }
 }
