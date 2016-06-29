@@ -8,19 +8,15 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    [Table("wb_control", Schema = "public")]
-    public class Control
+    [Table("wb_client_action_type_control_type", Schema = "public")]
+    public class ClientActionTypeControlType
     {
         [Key]
-        [Column("control_id")]
-        public int ControlID { get; set; }
+        [Column("client_action_type_control_type_id")]
+        public int ClientActionTypeControlTypeID { get; set; }
+        [Column("client_action_type_id")]
+        public int ClientActionTypeID { get; set; }
         [Column("control_type_id")]
         public int ControlTypeID { get; set; }
-        [Column("form_id")]
-        public int FormID { get; set; }
-        [Column("control_id_parent")]
-        public int? ControlIDParent { get; set; }
-        [Column("operand_id")]
-        public int? OperandID { get; set; }
     }
 }

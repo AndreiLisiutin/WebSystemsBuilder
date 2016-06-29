@@ -22,5 +22,7 @@ namespace WebSystemsBuilder.Server.Models
         public bool IsPublic { get; set; }
         [Column("value_type_id")]
         public int ValueTypeID { get; set; }
+        [Column("operand_id")]
+        public int OperandID { get; set; }
     }
 }
