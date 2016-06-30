@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    [Table("wb_form", Schema = "public")]
-    public class Form
+    [Table("wb_predicate_operation", Schema = "public")]
+    public class PredicateOperation
     {
         [Key]
-        [Column("form_id")]
-        public int FormID { get; set; }
+        [Column("predicate_operation_id")]
+        public int PredicateOperationID { get; set; }
         [Column("name")]
         public string Name { get; set; }
-        [Column("description")]
-        public string Description { get; set; }
     }
 }

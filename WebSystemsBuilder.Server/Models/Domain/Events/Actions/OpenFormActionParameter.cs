@@ -18,5 +18,7 @@ namespace WebSystemsBuilder.Server.Models
         public int FormParameterID { get; set; }
         [Column("operand_id_value")]
         public int OperandIDValue { get; set; }
+        [Column("open_form_action_id")]
+        public int OpenFormActionID { get; set; }
     }
 }

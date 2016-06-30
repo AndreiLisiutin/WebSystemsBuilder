@@ -22,5 +22,7 @@ namespace WebSystemsBuilder.Server.Models
         public int ActionIDTrue { get; set; }
         [Column("action_id_false")]
         public int ActionIDFalse { get; set; }
+        [Column("predicate_operation_id")]
+        public int PredicateOperationID { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace WebSystemsBuilder.Server.Models
 {
     [Table("wb_action", Schema = "public")]
-    public class Action
+    public class EventAction
     {
         [Key]
         [Column("action_id")]

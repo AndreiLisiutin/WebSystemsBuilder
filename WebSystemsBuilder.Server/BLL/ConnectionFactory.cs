@@ -11,7 +11,7 @@ namespace WebSystemsBuilder.Server
     public class ConnectionFactory
     {
         private const string connectionName = "WebBuilder";
-        public DbConnection CreateConnection()
+        protected DbConnection CreateConnection()
         {
             var connectionString = ConfigurationManager.ConnectionStrings[connectionName];
             if (connectionString == null || connectionString.ConnectionString == null)
@@ -24,12 +24,12 @@ namespace WebSystemsBuilder.Server
             return new Npgsql.NpgsqlConnectionFactory().CreateConnection(connectionString.ConnectionString);
         }
         
-        public WebBuilderEFContext CreateContext()
+        protected WebBuilderEFContext CreateContext()
         {
             return new WebBuilderEFContext(connectionName);
         }
-        
-        public WebBuilderEFContext CreateContext(DbConnection connection)
+
+        protected WebBuilderEFContext CreateContext(DbConnection connection)
         {
             return new WebBuilderEFContext(connection, false);
         }

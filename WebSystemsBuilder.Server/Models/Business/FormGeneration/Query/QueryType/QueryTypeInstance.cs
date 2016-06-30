@@ -76,7 +76,9 @@ namespace WebSystemsBuilder.Server.Models
                 }
                 string sqlParamName = "@param_" + paramIn.QueryTypeIn.QueryTypeInID;
                 baseSql = baseSql.Replace(paramIn.QueryTypeIn.QueryTypePlaceholder, sqlParamName);
-                sqlParams.Add(sqlParamName, _TestDeserialize(parameters[paramIn.QueryTypeIn.QueryTypeInID], paramIn.ValueType));
+                object sqlValue = ValueTypeConverter.Deserialize(parameters[paramIn.QueryTypeIn.QueryTypeInID], 
+                    paramIn.ValueType.ValueTypeID, paramIn.ValueType.Format);
+                sqlParams.Add(sqlParamName, sqlValue);
             }
 
             foreach (var paramOut in this.QueryTypeOuts)
@@ -94,72 +96,6 @@ namespace WebSystemsBuilder.Server.Models
             }
 
             return new Tuple<string, Dictionary<string, object>>(baseSql, sqlParams);
-        }
-
-        private object _TestDeserialize(string value, PropertyValueType valueType)
-        {
-            if (value == null || value.ToString().Trim().ToUpper() == "NULL")
-            {
-                return null;
-            }
-            switch (valueType.ValueTypeID)
-            {
-                case (int)ValueTypeEnum.String:
-                    return value;
-                    break;
-                case (int)ValueTypeEnum.Float:
-                    float floatValue;
-                    if (float.TryParse(value, out floatValue))
-                    {
-                        return floatValue;
-                    }
-                    else
-                    {
-                        throw new ValueTypeCastException(value, valueType.ValueTypeID);
-                    }
-                    break;
-                case (int)ValueTypeEnum.Integer:
-                    int intValue;
-                    if (int.TryParse(value, out intValue))
-                    {
-                        return intValue;
-                    }
-                    else
-                    {
-                        throw new ValueTypeCastException(value, valueType.ValueTypeID);
-                    }
-                    break;
-                case (int)ValueTypeEnum.Boolean:
-                    bool boolValue;
-                    if (bool.TryParse(value, out boolValue))
-                    {
-                        return boolValue;
-                    }
-                    else
-                    {
-                        throw new ValueTypeCastException(value, valueType.ValueTypeID);
-                    }
-                    return value;
-                    break;
-                case (int)ValueTypeEnum.DateTime:
-                    DateTime dateValue;
-                    if (DateTime.TryParseExact("24/01/2013", valueType.Format ?? "dd.MM.yyyy",
-                        CultureInfo.InvariantCulture, DateTimeStyles.None, out dateValue))
-                    {
-                        return dateValue;
-                    }
-                    else
-                    {
-                        throw new ValueTypeCastException(value, valueType.ValueTypeID);
-                    }
-                    return value;
-                    break;
-                default:
-                    throw new FormGenerationException(string.Format(
-                        "Value type not found(ValueTypeID = {0}).",
-                            valueType.ValueTypeID
-                    ));
-            }
         }
     }
 

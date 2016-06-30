@@ -12,10 +12,11 @@ namespace WebSystemsBuilder.Server.Models
         {
 
         }
-        public ControlInstance(Control Control, ControlType ControlType)
+        public ControlInstance(Control Control, ControlType ControlType, List<PropertyInstance> Properties)
         {
             this.Control = Control;
             this.ControlType = ControlType;
+            this.Properties = Properties;
         }
         public Control Control { get; set; }
         public ControlType ControlType { get; set; }
