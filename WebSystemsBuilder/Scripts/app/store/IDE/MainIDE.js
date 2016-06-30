@@ -136,3 +136,10 @@ Ext.define('WebSystemsBuilder.store.IDE.Params', {
         }
     }
 });
+
+Ext.define('WebSystemsBuilder.store.IDE.FormParameters', {
+    extend: 'Ext.data.Store',
+    model: 'WebSystemsBuilder.model.IDE.FormParameters',
+    autoLoad: false,
+    data: []
+});

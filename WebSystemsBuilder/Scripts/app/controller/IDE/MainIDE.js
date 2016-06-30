@@ -22,6 +22,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     requires: [
         'WebSystemsBuilder.utils.IDE.Focused',
         'WebSystemsBuilder.utils.IDE.Random',
+        'WebSystemsBuilder.utils.IDE.FormParametersIDE',
         'WebSystemsBuilder.utils.IDE.Queries'
     ],
 
@@ -54,6 +55,17 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             'MainIDE button[action=onDesign]': {
                 click: this.onDesign
             },
+
+            'MainIDE button[action=onAddFormParameter]': {
+                click: this.onAddFormParameter
+            },
+            'MainIDE button[action=onEditFormParameter]': {
+                click: this.onEditFormParameter
+            },
+            'MainIDE button[action=onDeleteFormParameter]': {
+                click: this.onDeleteFormParameter
+            },
+
             'MainIDE gridpanel[name=componentsGroups]': {
                 selectionchange: function (selModel) {
                     this.onContextControlSearch(selModel.view.up('window'));
@@ -84,9 +96,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             },
             'MainIDE button[action=onSetParam]': {
                 click: this.onSetParam
-            },
-            'MainIDE menuitem[action=onFormParams]': {
-                click: this.onFormParams
             },
             'MainIDE combobox[name=query]': {
                 change: this.onQueryTypeSelectionChange
@@ -248,7 +257,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         Queries.clear();
         Random.clear();
         Focused.clearFocusedCmp();
-        win.inParams = [];
+        FormParametersIDE.clear();
+        MousedComponentsIDE.clear();
 
         // Delegate for all components loading
         var loadControlTypeGrid = function () {
@@ -492,10 +502,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                         win.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
                     }
                     form.removeAll();
-                    WebSystemsBuilder.utils.IDE.Queries.clear();
-                    WebSystemsBuilder.utils.IDE.Random.clear();
-                    win.inParams = [];
-                    win.outParams = [];
+                    Queries.clear();
+                    Random.clear();
+                    Focused.clearFocusedCmp();
+                    FormParametersIDE.clear();
+                    MousedComponentsIDE.clear();
                     win.body.unmask();
                     // ��������� ������� �����
                     _this.openForm(win);
@@ -1527,33 +1538,69 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }, Ext.Msg.YESNO);
     },
 
-    /**
-     * ������� �������������� ������� � �������� ���������� ����
-     * @param btn ������ "���������"
-     */
-    onFormParams: function (btn) {
-        var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
+    //region Form parameters
 
-        if (!win.FormID) {
-            WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.FormParameters');
-            var paramsForm = WebSystemsBuilder.utils.Windows.open('FormParameters', {
-                inParams: win.inParams,
-                outParams: win.outParams,
-                form: form
-            }, null, true);
-            paramsForm.on('ParamsAreReadyToSave', function (winParams, inParams, outParams) {
-                win.inParams = inParams;
-                win.outParams = outParams;
-            });
-        } else {
-            console.log('���������� ������ ��������� ����� ����������� �����.');
+    onAddFormParameter: function(button) {
+        var MainIDE = button.up('MainIDE');
+        var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
+
+        ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.FormParametersExplorer');
+        var formParametersExplorer = WebSystemsBuilder.utils.Windows.open('FormParametersExplorer', {
+            FormID: MainIDE.formID,
+            UniqueID: null
+        }, null, true);
+        formParametersExplorer.on('FormParameterSaved', function(parameter){
+            var formParameters = FormParametersIDE.getFormParameters();
+            FormParametersGrid.getStore().loadData(formParameters, false);
+        });
+    },
+    onEditFormParameter: function(button) {
+        var MainIDE = button.up('MainIDE');
+        var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
+        var selectedFormParameter = FormParametersGrid.getSelectionModel().getSelection()[0];
+
+        if (!selectedFormParameter) {
+            MessageBox.error('Choose form parameter to edit');
+            return;
         }
+
+        ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.FormParametersExplorer');
+        var formParametersExplorer = WebSystemsBuilder.utils.Windows.open('FormParametersExplorer', {
+            FormID: MainIDE.formID,
+            UniqueID: selectedFormParameter.get('UniqueID')
+        }, null, true);
+        formParametersExplorer.on('FormParameterSaved', function(parameter){
+            var formParameters = FormParametersIDE.getFormParameters();
+            FormParametersGrid.getStore().loadData(formParameters, false);
+        });
+    },
+    onDeleteFormParameter: function(button) {
+        var MainIDE = button.up('MainIDE');
+        var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
+        var selectedFormParameter = FormParametersGrid.getSelectionModel().getSelection()[0];
+
+        if (!selectedFormParameter) {
+            MessageBox.error('Choose form parameter to delete');
+            return;
+        }
+
+        WebSystemsBuilder.utils.MessageBox.question('Do you want to delete the form parameter "' + selectedFormParameter.get('Name') + '"?',
+            function (res) {
+                if (res == 'yes') {
+                    FormParametersIDE.deleteParameter(selectedFormParameter.get('UniqueID'));
+                    var formParameters = FormParametersIDE.getFormParameters();
+                    FormParametersGrid.getStore().loadData(formParameters, false);
+                }
+            },
+            Ext.Msg.YESNO
+        );
     },
 
+    // endregion
+
     /**
-     * ������� ������� ����� ������������ ���������.
-     * @param btn ������ "�������", ��������� ������� �������� �����
+     * Close the window
+     * @param btn Button "Close"
      */
     onClose: function (btn) {
         var _this = this;

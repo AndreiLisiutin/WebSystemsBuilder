@@ -128,3 +128,13 @@ Ext.define('WebSystemsBuilder.model.IDE.Params', {
         'rawValue'
     ]
 });
+
+Ext.define('WebSystemsBuilder.model.IDE.FormParameters', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'UniqueID',
+        'Name',
+        'ValueTypeID',
+        'ValueType'
+    ]
+});
