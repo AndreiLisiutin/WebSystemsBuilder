@@ -31,6 +31,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
         var queryKeyFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
         var dictionaryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.DictionaryField');
         var eventsStore = Ext.create('WebSystemsBuilder.store.IDE.event.ComponentEvent');
+        var formParametersStore = Ext.create('WebSystemsBuilder.store.IDE.FormParameters');
 
         Ext.applyIf(me, {
             items: [
@@ -250,45 +251,114 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                 }
                             ]
                         },
-
 //======================================================================================================================
-//                                   ��������� �������
+//                                              Project Panel
 //======================================================================================================================
                         {
                             xtype: 'panel',
                             name: 'projectPanel',
-                            title: 'Project Inspector',
                             region: 'east',
                             layout: 'border',
                             split: true,
                             width: 270,
                             items: [
                                 {
-                                    xtype: 'treepanel',
-                                    name: 'projectTree',
-                                    region: 'center',
+                                    xtype: 'tabpanel',
                                     split: true,
-                                    useArrows: true,
+                                    tabPosition: 'bottom',
                                     flex: 1,
-                                    rootVisible: true,
-                                    store: projectInspectorStore,
-                                    listeners: {
-                                        itemclick: function (tree, record, item, index, e, eOpts) {
-                                            try {
-                                                var uniqueID = record.get('id');
-                                                var win = tree.up('MainIDE');
-                                                var form = win.down('form[name=mainPanel]');
-                                                var element = form.query('component[uniqueID=' + uniqueID + ']')[0];
-                                                if (element) {
-                                                    win.fireEvent('IDEComponentFocused', win, element);
+                                    region: 'center',
+                                    name: 'ProjectTabPanel',
+                                    items: [
+                                        {
+                                            xtype: 'treepanel',
+                                            name: 'projectTree',
+                                            title: 'Project Inspector',
+                                            useArrows: true,
+                                            flex: 1,
+                                            rootVisible: true,
+                                            store: projectInspectorStore,
+                                            listeners: {
+                                                itemclick: function (tree, record, item, index, e, eOpts) {
+                                                    try {
+                                                        var uniqueID = record.get('id');
+                                                        var win = tree.up('MainIDE');
+                                                        var form = win.down('form[name=mainPanel]');
+                                                        var element = form.query('component[uniqueID=' + uniqueID + ']')[0];
+                                                        if (element) {
+                                                            win.fireEvent('IDEComponentFocused', win, element);
+                                                        }
+                                                    } catch (ex) {
+                                                        console.log('Tree item click error. Element to focus :' + element + ' Error info: ' + ex);
+                                                    }
                                                 }
-                                            } catch (ex) {
-                                                console.log('Tree item click error. Element to focus :' + element + ' Error info: ' + ex);
                                             }
+                                        },
+                                        {
+                                            xtype: 'gridpanel',
+                                            name: 'FormParametersGrid',
+                                            title: 'Parameters',
+                                            flex: 1,
+                                            bodyStyle: {
+                                                'border-width': '1 0 0 0'
+                                            },
+                                            store: formParametersStore,
+                                            columns: [
+                                                {
+                                                    xtype: 'gridcolumn',
+                                                    flex: 1,
+                                                    text: 'Name',
+                                                    dataIndex: 'Name'
+                                                },
+                                                {
+                                                    xtype: 'gridcolumn',
+                                                    text: 'Type',
+                                                    align:'center',
+                                                    resizable: false,
+                                                    dataIndex: 'ValueType',
+                                                    width: 80,
+                                                    sortable: false
+                                                }
+                                            ],
+                                            dockedItems: [
+                                                {
+                                                    xtype: 'toolbar',
+                                                    dock: 'right',
+                                                    items: [
+                                                        {
+                                                            xtype: 'button',
+                                                            scale: 'medium',
+                                                            border: true,
+                                                            icon: 'Scripts/resources/icons/add.png',
+                                                            action: 'onAddFormParameter'
+                                                        },
+                                                        {
+                                                            xtype: 'tbseparator'
+                                                        },
+                                                        {
+                                                            xtype: 'button',
+                                                            scale: 'medium',
+                                                            border: true,
+                                                            icon: 'Scripts/resources/icons/edit.png',
+                                                            action: 'onEditFormParameter'
+                                                        },
+                                                        {
+                                                            xtype: 'tbseparator'
+                                                        },
+                                                        {
+                                                            xtype: 'button',
+                                                            scale: 'medium',
+                                                            border: true,
+                                                            icon: 'Scripts/resources/icons/delete.png',
+                                                            action: 'onDeleteFormParameter'
+                                                        }
+                                                    ]
+                                                }
+                                            ]
                                         }
-                                    }
+                                    ]
                                 },
-//------------------------------------------------��������--------------------------------------------------------------
+//------------------------------------------------ Properties ----------------------------------------------------------
                                 {
                                     xtype: 'panel',
                                     name: 'propertiesPanel',
@@ -332,6 +402,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         //------------------------------------------------���� ��������---------------------------------------------------------
                                         {
                                             xtype: 'tabpanel',
+                                            tabPosition: 'bottom',
                                             activeTab: 0,
                                             anchor: '0 -57',
                                             flex: 1,
@@ -632,15 +703,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                             iconAlign: 'left',
                                             scale: 'medium',
                                             text: 'Refactor'
-                                        },
-                                        {
-                                            xtype: 'menuitem',
-                                            action: 'onFormParams',
-                                            icon: 'Scripts/resources/icons/up_down.png',
-                                            border: true,
-                                            iconAlign: 'left',
-                                            scale: 'medium',
-                                            text: 'Parameters'
                                         },
                                         {
                                             xtype: 'menuitem',

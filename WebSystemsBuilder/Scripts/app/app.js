@@ -14,6 +14,7 @@ Ext.application({
         'WebSystemsBuilder.utils.IDE.Random',
         'WebSystemsBuilder.utils.IDE.DragDropComponents',
         'WebSystemsBuilder.utils.IDE.MousedComponentsIDE',
+        'WebSystemsBuilder.utils.IDE.FormParametersIDE',
 
         'WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils',
         'WebSystemsBuilder.utils.controlTypes.BaseComponentFactory',
@@ -40,6 +41,7 @@ Ext.application({
         DragDropComponents.init();
         Focused.init();
         MousedComponentsIDE.init();
+        FormParametersIDE.init();
     },
 
     launch: function () {

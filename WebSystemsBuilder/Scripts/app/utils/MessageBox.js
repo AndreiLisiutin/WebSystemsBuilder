@@ -14,8 +14,7 @@ Ext.define('WebSystemsBuilder.utils.MessageBox', {
 
     error: function (message, fn) {
         Ext.Msg.on('show', function () {
-            Ext.Msg.doComponentLayout();
-            Ext.Msg.doLayout();
+            Ext.Msg.updateLayout();
         }, this, { single: true });
 
         return Ext.Msg.show({
@@ -29,8 +28,7 @@ Ext.define('WebSystemsBuilder.utils.MessageBox', {
 
     warning: function (message) {
         Ext.Msg.on('show', function () {
-            Ext.Msg.doComponentLayout();
-            Ext.Msg.doLayout();
+            Ext.Msg.updateLayout();
         }, this, { single: true });
 
         return Ext.Msg.show({
@@ -85,8 +83,7 @@ Ext.define('WebSystemsBuilder.utils.MessageBox', {
         }
 
         Ext.Msg.on('show', function () {
-            Ext.Msg.doComponentLayout();
-            Ext.Msg.doLayout();
+            Ext.Msg.updateLayout();
         }, this, { single: true });
 
         cfg = Ext.Object.merge({

@@ -4,6 +4,12 @@
     views: [
         'WebSystemsBuilder.view.IDE.dialog.FormParametersExplorer'
     ],
+    models: [
+        'WebSystemsBuilder.model.common.ValueType'
+    ],
+    stores: [
+        'WebSystemsBuilder.store.common.ValueType'
+    ],
 
     init: function () {
         this.control({
@@ -20,51 +26,86 @@
     },
 
     /**
-     * Функция инициализации компонентов формы. Вызывается сразу после загрузке формы (afterrender).
-     * @param win Окно, представляющее данную форму.
+     * Load form (afterrender).
+     * @param win Window
      */
     onLoad: function (win) {
-       var combo = win.down('combobox[name=combo]');
-       var param = win.down('textfield[name=param]');
-       if (win.data && win.data.length > 0){
-           combo.getStore().loadData(win.data, false);
-       }
+        var type = win.down('combobox[name=type]');
+        var parameterName = win.down('textfield[name=parameterName]');
+
+        var loadTypeCombo = function (valueTypeID) {
+            type.getEl().mask('Loading...');
+            type.getStore().load({
+                callback: function () {
+                    type.getEl().unmask();
+                    if (valueTypeID) {
+                        type.setValue(valueTypeID);
+                    }
+                }
+            });
+        };
+
+        if (win.UniqueID > 0) {
+            var param = FormParametersIDE.getParameterByID(win.UniqueID);
+            parameterName.setValue(param.Name);
+            loadTypeCombo(param.ValueTypeID);
+            type.setReadOnly(true);
+        } else {
+            loadTypeCombo();
+        }
     },
 
     /**
-     * Функция сохранения
-     * @param btn Кнопка "Сохранить", вызвавшая событие
+     * Save form parameter (Button click)
+     * @param btn Button "Save"
      */
-    onSave:function(btn){
+    onSave: function (btn) {
         var win = btn.up('window');
-        var combo = win.down('combobox[name=combo]');
-        var param = win.down('textfield[name=param]');
-        if (!param.getValue()){
-            var error = 'Выберите параметр.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+        var type = win.down('combobox[name=type]');
+        var parameterName = win.down('textfield[name=parameterName]');
+
+        if (!parameterName.getValue()) {
+            var error = 'Type parameter name.';
+            MessageBox.error(error);
             return;
         }
-        if (!combo.getValue()){
-            var error = 'Выберите значение.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+        if (!type.getValue()) {
+            var error = 'Type parameter value type.';
+            MessageBox.error(error);
+            return;
+        }
+        var error = FormParametersIDE._checkParameterName(parameterName.getValue(), win.UniqueID);
+        if (error) {
+            MessageBox.error(error);
             return;
         }
 
-        // Сгененировать событие, сообщающее основной форме о том,
-        // что источник данных готов к сохранению
-        win.fireEvent('ParamSaved', win, combo.getValue(), combo.getRawValue(), param.getValue());
-        this.onClose(btn);
+        var parameter = {
+            Name: parameterName.getValue(),
+            ValueTypeID: type.getValue(),
+            ValueType: type.getRawValue(),
+            UniqueID: win.UniqueID
+        };
+        var saveSuccess = false;
+        if (win.UniqueID > 0) {
+            saveSuccess = FormParametersIDE.editParameter(parameter);
+        } else {
+            saveSuccess = FormParametersIDE.addParameter(parameter);
+        }
+        if (!saveSuccess) {
+            MessageBox.error('Form parameter save error');
+            return;
+        }
+        win.fireEvent('FormParameterSaved', parameter);
+        win.close();
     },
 
     /**
-     * Функция акрытия формы.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * Close the window
+     * @param btn Button "Close"
      */
     onClose: function (btn) {
-        var win = btn.up('FormParametersExplorer');
-        if (win && win.close) {
-            win.close();
-        }
+        btn.up('window').close();
     }
 
 });
