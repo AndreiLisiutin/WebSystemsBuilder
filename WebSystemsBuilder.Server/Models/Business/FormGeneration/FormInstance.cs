@@ -12,18 +12,16 @@ namespace WebSystemsBuilder.Server.Models
         {
 
         }
-        public FormInstance(Form Form, ControlInstance RootControl, List<QueryInstance> Queries, 
+        public FormInstance(Form Form, ControlInstance RootControl, 
             List<FormParameterInstance> FormParameters, List<EventWithActionsInstance> Events)
         {
             this.Form = Form;
             this.RootControl = RootControl;
-            this.Queries = Queries;
             this.FormParameters = FormParameters;
             this.Events = Events;
         }
         public Form Form { get; set; }
         public ControlInstance RootControl { get; set; }
-        public List<QueryInstance> Queries { get; set; }
         public List<FormParameterInstance> FormParameters { get; set; }
         public List<EventWithActionsInstance> Events { get; set; }
     }

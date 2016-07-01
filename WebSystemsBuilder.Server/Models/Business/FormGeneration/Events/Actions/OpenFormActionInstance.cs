@@ -22,5 +22,13 @@ namespace WebSystemsBuilder.Server.Models
         }
         public OpenFormAction OpenFormAction { get; set; }
         public List<OpenFormActionParameter> OpenFormActionParameters { get; set; }
+
+        public override int ActionTypeID
+        {
+            get
+            {
+                return (int)ActionTypeEnum.OpenForm;
+            }
+        }
     }
 }

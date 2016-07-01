@@ -17,7 +17,7 @@
     Click: null,
     Change: null
 });
-EventTypes.init();
+EventTypes.init(); 
 
 Ext.define('ActionKinds', {
     singleton: true,

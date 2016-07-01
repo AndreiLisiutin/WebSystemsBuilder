@@ -23,5 +23,13 @@ namespace WebSystemsBuilder.Server.Models
         public ClientAction ClientAction { get; set; }
         public ClientActionTypeControlType ClientActionTypeControlType { get; set; }
         public ClientActionType ClientActionType { get; set; }
+
+        public override int ActionTypeID
+        {
+            get
+            {
+                return (int)ActionTypeEnum.Client;
+            }
+        }
     }
 }

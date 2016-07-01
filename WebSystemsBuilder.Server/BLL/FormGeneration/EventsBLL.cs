@@ -24,10 +24,14 @@ namespace WebSystemsBuilder.Server
                     List<ClientActionInstance> clientActions = this._GetClientActions(db, eventIDs);
                     List<PredicateActionInstance> predicateActions = this._GetPredicateActions(db, eventIDs);
                     List<OpenFormActionInstance> formActions = this._GetOpenFormActions(db, eventIDs);
+                    List<ServerActionInstance> serverActions = this._GetServerActions(db, eventIDs);
+                    List<QueryActionInstance> queryActions = this._GetQueryActions(db, eventIDs);
 
                     actions.AddRange(clientActions.Select(e => (BaseActionInstance)e));
                     actions.AddRange(predicateActions.Select(e => (BaseActionInstance)e));
                     actions.AddRange(formActions.Select(e => (BaseActionInstance)e));
+                    actions.AddRange(serverActions.Select(e => (BaseActionInstance)e));
+                    actions.AddRange(queryActions.Select(e => (BaseActionInstance)e));
 
                     foreach (var action in actions)
                     {
@@ -107,6 +111,91 @@ namespace WebSystemsBuilder.Server
             .ToList()
             .GroupBy(e => new { e.action, e.openFormAction })
             .Select(e => new OpenFormActionInstance(e.Key.action, e.Key.openFormAction, e.Select(x => x.openFormActionParameter).ToList()))
+            .ToList();
+        }
+        private List<ServerActionInstance> _GetServerActions(WebBuilderEFContext db, List<int> eventID)
+        {
+            return (
+                from serverAction in db.ServerActions
+                join action in db.EventActions on serverAction.ActionID equals action.ActionID
+                where eventID.Contains(action.EventID)
+                select new { serverAction = serverAction, action = action }
+            )
+            .ToList()
+            .Select(e => new ServerActionInstance(e.action, e.serverAction))
+            .ToList();
+        }
+
+        private List<QueryActionInstance> _GetQueryActions(WebBuilderEFContext db, List<int> eventID)
+        {
+            return (
+                from queryAction in db.QueryActions
+                join action in db.EventActions on queryAction.ActionID equals action.ActionID
+                where eventID.Contains(action.EventID)
+                select new { queryAction = queryAction, action = action }
+            )
+            .ToList()
+            .Select(e => this._GetQueryInstanceByQuery(db, e.action, e.queryAction))
+            .ToList();
+        }
+        
+        public QueryActionInstance _GetQueryInstanceByQuery(WebBuilderEFContext db, EventAction action, QueryAction query)
+        {
+            List<QueryActionInInstance> ins = this._GetQueryIns(db, query.ActionID);
+            List<QueryActionOutInstance> outs = this._GetQueryOuts(db, query.ActionID);
+            List<QueryActionPartInstance> parts = this._GetQueryParts(db, query.ActionID);
+
+            QueryActionInstance queryInstance = new QueryActionInstance(action, query, ins, outs, parts);
+            return queryInstance;
+        }
+
+        private QueryAction _GetQueryByID(WebBuilderEFContext db, int queryActionID)
+        {
+            QueryAction query = db.QueryActions.SingleOrDefault(e => e.ActionID == queryActionID);
+            if (query == null)
+            {
+                throw new Exception(string.Format(
+                    "Query not found(queryActionID = {0})", queryActionID
+                ));
+            }
+            return query;
+        }
+        private List<QueryActionInInstance> _GetQueryIns(WebBuilderEFContext db, int queryActionID)
+        {
+            return (
+                from queryIn in db.QueryActionIns
+                where queryIn.QueryActionID == queryActionID
+                join queryTypeIn in db.QueryTypeIns on queryIn.QueryTypeInID equals queryTypeIn.QueryTypeInID
+                join valueType in db.PropertyValueTypes on queryTypeIn.ValueTypeID equals valueType.ValueTypeID
+                select new { queryIn = queryIn, queryTypeIn = queryTypeIn, valueType = valueType }
+                )
+                .ToList()
+                    .Select(e => new QueryActionInInstance(e.queryIn, new QueryTypeInInstance(e.queryTypeIn, e.valueType)))
+                .ToList();
+        }
+        private List<QueryActionOutInstance> _GetQueryOuts(WebBuilderEFContext db, int queryActionID)
+        {
+            return (
+                 from queryOut in db.QueryActionOuts
+                 where queryOut.QueryActionID == queryActionID
+                 join queryTypeOut in db.QueryTypeOuts on queryOut.QueryTypeOutID equals queryTypeOut.QueryTypeOutID
+                 join valueType in db.PropertyValueTypes on queryTypeOut.ValueTypeID equals valueType.ValueTypeID
+                 select new { queryOut = queryOut, queryTypeOut = queryTypeOut, valueType = valueType }
+                 )
+                 .ToList()
+                     .Select(e => new QueryActionOutInstance(e.queryOut, new QueryTypeOutInstance(e.queryTypeOut, e.valueType)))
+                 .ToList();
+        }
+        private List<QueryActionPartInstance> _GetQueryParts(WebBuilderEFContext db, int queryActionID)
+        {
+            return (
+                from queryPart in db.QueryActionParts
+                where queryPart.QueryActionID == queryActionID
+                join queryTypePart in db.QueryTypeParts on queryPart.QueryTypePartID equals queryTypePart.QueryTypePartID
+                select new { queryPart = queryPart, queryTypePart = queryTypePart }
+            )
+            .ToList()
+                .Select(e => new QueryActionPartInstance(e.queryPart, e.queryTypePart))
             .ToList();
         }
     }

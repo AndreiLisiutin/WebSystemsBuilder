@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    public class BaseActionInstance
+    public abstract class BaseActionInstance
     {
         public BaseActionInstance()
         {
@@ -16,6 +16,7 @@ namespace WebSystemsBuilder.Server.Models
         {
             this.EventAction = EventAction;
         }
+        public abstract int ActionTypeID { get; }
         public EventAction EventAction { get; set; }
         public List<BaseActionInstance> ChildActions { get; set; }
     }
