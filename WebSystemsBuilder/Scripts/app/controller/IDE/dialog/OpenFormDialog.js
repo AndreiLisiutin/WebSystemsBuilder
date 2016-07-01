@@ -4,11 +4,9 @@
     views: [
         'WebSystemsBuilder.view.IDE.dialog.OpenFormDialog'
     ],
-
     models: [
         'WebSystemsBuilder.model.IDE.dialog.OpenFormDialog'
     ],
-
     stores: [
         'WebSystemsBuilder.store.IDE.dialog.OpenFormDialog'
     ],
@@ -31,65 +29,63 @@
     },
 
     /**
-     * Функция инициализации компонентов формы. Вызывается сразу после загрузке формы (afterrender).
-     * @param win Окно, представляющее данную форму.
+     * Load form (afterrender)
+     * @param win Current window (CreateFormDialog)
      */
     onLoad: function (win) {
         var form = win.down('combobox[name=form]');
-        var dictionary = win.down('textfield[name=dictionary]');
-        win.body.mask('Загрузка...');
+        var description = win.down('textareafield[name=description]');
+
+        form.getEl().mask('Loading...');
         form.getStore().load({
-            callback:function(){
-                win.body.unmask();
+            callback: function () {
+                form.getEl().unmask();
             }
         });
     },
 
     /**
-     * Функция открытия выбранной формы
-     * @param btn Кнопка "Открыть", вызвавшая событие
+     * Open form ("Open" button click)
+     * @param btn "Open" button
      */
-    onOpenForm:function(btn){
+    onOpenForm: function (btn) {
         var win = btn.up('window');
         var form = win.down('combobox[name=form]');
-        if (!form.getValue()){
-            var error = 'Выберите форму, которую Вы хотите отредактировать.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-//            console.error(error);
-        } else {
-            // Сгененировать событие, сообщающее основной форме о том,
-            // что форма для открытия на редактирование выбрана
-            win.fireEvent('FormIsReadyToOpen', win, form.getValue(), form.getRawValue(), win.dictionaryID);
-            this.onClose(btn);
+        var description = win.down('textareafield[name=description]');
+
+        var formID = form.getValue();
+        if (!formID) {
+            var error = 'Choose the form.';
+            MessageBox.error(error);
         }
+
+        win.fireEvent('FormIsReadyToOpen', formID);
+        win.close();
     },
 
     /**
-     * Функция, подгружающая словарь формы при изменении выбора формы
-     * @param combo Комбобокс, вызвавший событие
-     * @param records Массив записей, выбранных в комбобоксе
+     * Load description of chosen form
+     * @param combo Combo "Form"
+     * @param record Selected record of "Form" combo
      */
-    onFormChange:function(combo, records){
+    onFormChange: function (combo, record) {
         var win = combo.up('window');
-        var dictionary = win.down('textfield[name=dictionary]');
-        if (!combo.getValue()){
-            win.dictionaryID = null;
-            dictionary.setValue(null);
-        } else {
-            dictionary.setValue(records[0].get('dictionary'));
-            win.dictionaryID = records[0].get('dictionaryID');
+        var form = win.down('combobox[name=form]');
+        var description = win.down('textareafield[name=description]');
+
+        if (!form.getValue()) {
+            description.setValue(null);
         }
+
+        description.setValue(record.get('Description'));
     },
 
     /**
-     * Функция акрытия формы.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * Close form ("Close" button click)
+     * @param btn "Close" button
      */
     onClose: function (btn) {
-        var win = btn.up('OpenFormDialog');
-        if (win && win.close) {
-            win.close();
-        }
+        btn.up('window').close();
     }
 
 });

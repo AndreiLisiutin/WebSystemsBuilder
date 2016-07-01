@@ -44,7 +44,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 click: this.onCreateNewForm
             },
             'MainIDE menuitem[action=onOpenForm], button[action=onOpenForm]': {
-                click: this.onOpenFormQuestion
+                click: this.onOpenForm
             },
             'MainIDE menuitem[action=onRefactorForm]': {
                 click: this.onRefactorForm
@@ -394,231 +394,280 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
-    //============================================== Save designed form ==============================================
+    //=============================================== Save designed form ===============================================
 
     /**
      * Save designed form
      * @param btn Button "Save"
      */
-    onSaveForm: function (btn, close) {
+    onSaveForm: function (btn, closeAfterSave) {
         var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
-        var dictionaryField = win.down('combobox[name=dictionaryField]');
 
         if (!win.FormName) {
             var error = 'Form has not created yet.';
-            WebSystemsBuilder.utils.MessageBox.error(error);
+            MessageBox.error(error);
             return;
         }
-
-        // Tree-like object 
-        var obj = this.getJsonForm(form);
-        if (!obj) {
+        if (!form.down()) {
             var error = 'Form is empty.';
-            WebSystemsBuilder.utils.MessageBox.show(error);
+            MessageBox.error(error);
             return;
         }
 
-        var queryInParams = WebSystemsBuilder.utils.IDE.Queries.getInParams();
-        var queries = WebSystemsBuilder.utils.IDE.Queries.get();
+        var formMetaDescriptions = {
+            Form: {
+                FormID: win.FormID,
+                Name: win.FormName,
+                Description: win.FormDescription
+            },
+            RootControl: null,
+            Queries: null,
+            FormParameters: FormParametersIDE.getFormParametersToSave(win.FormID),
+            Events: null
+        };
 
-        // ����������� ������� ����������
-        var orderNumber = 0;
-        var fn = function (item, parent) {
-            orderNumber++;
-            var current = {
-                control: {
-                    ID: undefined,
-                    controlTypeID: item['controlTypeID'] ? item['controlTypeID'] + '' : '',
-                    controlIDParent: undefined,
-                    formID: undefined,
-                    orderNumber: orderNumber + ''
+        // Tree-like object
+        var obj = _this.getJsonForm(form);
+        var getPropertyTypeInstance = function(componentInfo, stringProperty) {
+            var PropertyTypeInstance = null;
+            componentInfo.PropertiesList.forEach(function(property) {
+                if (stringProperty == property.PropertyType.Name) {
+                    PropertyTypeInstance = property;
+                }
+            });
+            return PropertyTypeInstance;
+        };
+        var GetControlMetaDescriptions = function (item, parent) {
+            var currentControl = {
+                Control: {
+                    ControlID: 0,
+                    ControlTypeID: item.componentInfo.ControlTypeID,
+                    ControlIDParent: parent ? parent.componentInfo.ControlID : null,
+                    FormID: formMetaDescriptions.FormID,
+                    OperandID: 0
                 },
-                name: item['name'],
-                items: [],
-                properties: [],
-                queries: queries,
-                queryInParams: queryInParams,
-                data: item['data'],
-                events: item['events']
+                ControlType: item.componentInfo.ControlType,
+                Properties: [],
+                ChildControls: []
             };
-            // ��������� �������� �������
+
             for (var prop in item) {
-                if (!(item[prop] instanceof Array) && prop != 'controlTypeID' && prop != 'data' && prop != 'events') {
-                    var property = {
-                        controlID: undefined,
-                        controlTypeID: item['controlTypeID'] ? item['controlTypeID'] + '' : '',
-                        property: prop,
-                        value: item[prop]
+                if (!(item[prop] instanceof Array) && !Ext.Array.contains(['ControlTypeID', 'data', 'events', 'componentInfo', 'uniqueID'], prop)) {
+                    var propertyTypeInstance = getPropertyTypeInstance(item.componentInfo, prop);
+                    if (!propertyTypeInstance) continue;
+                    var currentProperty = {
+                        Property: {
+                            PropertyID: null,
+                            ControlID: currentControl.Control.ControlID,
+                            ControlTypePropertyTypeID: propertyTypeInstance.ControlTypePropertyType.ControlTypePropertyTypeID,
+                            Value: item[prop]
+                        },
+                        ControlTypePropertyType: propertyTypeInstance.ControlTypePropertyType,
+                        PropertyType: propertyTypeInstance.PropertyType,
+                        ValueType: propertyTypeInstance.ValueType
                     };
-                    current.properties.push(property);
+                    currentControl.Properties.push(currentProperty);
                 }
             }
             for (var prop in item) {
-                if (item[prop] instanceof Array && prop != 'events') {
+                if (Ext.Array.contains(['items', 'dockedItems'], prop)) {
                     item[prop].forEach(function (x) {
-                        current.items.push(fn(x, item));
+                        currentControl.ChildControls.push(GetControlMetaDescriptions(x, item));
                     });
                 }
             }
-            return current;
+
+            return currentControl;
         };
 
-        win.body.mask('����������...');
-        var newFormObj = fn(obj, null);
-        // AJAX ������ �� ���������� �����
-        // ���������� �������� ������������� ������� �������� ����� � ���������� �����
-        Ext.Ajax.timeout = 1000000;
+        // Collect all meta descriptions in objects
+        var rootControl = GetControlMetaDescriptions(obj, null);
+        formMetaDescriptions.RootControl = rootControl;
+
+        win.body.mask('Saving...');
         Ext.Ajax.request({
-            url: 'MainIDE/SaveFormInTransaction',
+            url: 'MainIDE/SaveMetaDescriptions',
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            timeout: 1000000,
             jsonData: {
-                formModel: {
-                    inParams: win.inParams,
-                    outParams: win.outParams,
-                    form: {
-                        ID: win.FormID ? win.FormID + '' : '',
-                        name: win.FormName,
-                        dictionaryID: win.form_dictionary_id ? win.form_dictionary_id + '' : ''
-                    },
-                    control: newFormObj
-                }
+                obj: formMetaDescriptions
             },
             success: function (objServerResponse) {
+                win.body.unmask();
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 if (jsonResp.Code == 0) {
-                    // ����� ���������
-                    win.FormID = jsonResp.resultID;
-                    if (close) {
-                        win.body.unmask();
+                    if (closeAfterSave) {
                         win.close();
                         return;
                     }
-                    // ������� ���������� � �����
-                    if (form.down('[name=senchawin]')) {
-                        win.fireEvent('ComponentRemoved', form, form, form.down('[name=senchawin]'));
-                    }
-                    form.removeAll();
-                    Queries.clear();
-                    Random.clear();
-                    Focused.clearFocusedCmp();
-                    FormParametersIDE.clear();
-                    MousedComponentsIDE.clear();
-                    win.body.unmask();
-                    // ��������� ������� �����
-                    _this.openForm(win);
+
+                    var formID = jsonResp.resultID;
+                    _this.openForm(win, formID);
+
                 } else {
-                    win.body.unmask();
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, -1);
+                    MessageBox.error(jsonResp.Message);
                 }
             },
             failure: function (objServerResponse) {
                 win.body.unmask();
-                WebSystemsBuilder.utils.MessageBox.show(objServerResponse.responseText, null, -1);
+                MessageBox.error(objServerResponse.responseText);
             }
         });
     },
 
-    //==============================================������� �����==============================================
+    //=================================================== Open form ====================================================
 
     /**
-     * ������� �������� ������� "��������� �����?" ��� �������� �����
+     * Open form
      * @param btn
-     */
-    onOpenFormQuestion: function (btn) {
-        var _this = this;
-        var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
-        if (win.FormName || win.FormID) {
-            WebSystemsBuilder.utils.MessageBox.question('��������� ����� "' + win.FormName + '"?', function (res) {
-                if (res == 'yes') {
-                    _this.onSaveForm(res);
-                    _this.clearCurrentForm(form);
-                    _this.onOpenForm(btn);
-                } else if (res == 'no') {
-                    _this.clearCurrentForm(form);
-                    _this.onOpenForm(btn);
-                }
-            }, Ext.Msg.YESNOCANCEL);
-        } else {
-            _this.clearCurrentForm(form);
-            _this.onOpenForm(btn);
-        }
-    },
-
-    /**
-     * �������, ����������� ���������� ���� ������ ����� ��� ��������������.
-     * @param btn ������ "�������", ��������� �������
      */
     onOpenForm: function (btn) {
         var _this = this;
         var win = btn.up('window');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.OpenFormDialog');
-        var openFormDialog = WebSystemsBuilder.utils.Windows.open('OpenFormDialog', {}, null, true);
-        openFormDialog.on('FormIsReadyToOpen', function (winDialog, formID, formName, form_dictionary_id, formDescription) {
-            win.setForm(formID, formName, formDescription);
-            _this.openForm(win);
-        })
+        var form = win.down('form[name=mainPanel]');
+
+        var openForm = function() {
+            _this.clearCurrentForm(form);
+
+            WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.OpenFormDialog');
+            var openFormDialog = WebSystemsBuilder.utils.Windows.open('OpenFormDialog', {}, null, true);
+            openFormDialog.on('FormIsReadyToOpen', function (formID) {
+                _this.openForm(win, formID)
+            })
+        };
+
+        if (win.FormName || win.FormID > 0) {
+            WebSystemsBuilder.utils.MessageBox.question('Do you want to save the form "' + win.FormName + '"?',
+                function (res) {
+                    if (res == 'yes') {
+                        _this.onSaveForm(res);
+                        openForm();
+                    } else if (res == 'no') {
+                        openForm();
+                    }
+                }, Ext.Msg.YESNOCANCEL
+            );
+        } else {
+            openForm();
+        }
     },
 
     /**
-     * �������, ����������� �����
+     * Get form from storage and draw it
      * @param win
+     * @param formID
      */
-    openForm: function (win) {
+    openForm: function (win, formID) {
         var _this = this;
         var form = win.down('form[name=mainPanel]');
-        var dictionaryField = win.down('combobox[name=dictionaryField]');
-        var dictionaryFieldSet = dictionaryField.up('fieldset');
-        var query = win.down('combobox[name=query]');
 
-        // Ajax ������ �� ��������� �����
-        win.body.mask('��������...');
+        win.body.mask('Loading...');
         Ext.Ajax.request({
             url: 'MainIDE/GetFormByID',
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             params: {
-                id: win.FormID + ''
+                formID: formID + ''
             },
             success: function (objServerResponse) {
+                win.body.unmask();
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 if (jsonResp.Code == 0) {
                     var res = jsonResp.Data;
-                    // ����������� ����� � ������� ����������� �������
+
+                    win.setForm(res.formID, res.formName, res.formDescription);
                     _this.drawForm(win, res);
-                    WebSystemsBuilder.utils.IDE.Queries.queries = res.queries;
-                    query.getStore().loadData(WebSystemsBuilder.utils.IDE.Queries.get(), false);
-                    win.setTitle('���������� �������� ����. ' + win.FormName);
                     _this.setEnabledComponents(win);
-                    // ��������� ����� "����" �� ������� "������"
-                    if (win.form_dictionary_id) {
-                        dictionaryFieldSet.expand();
-                        dictionaryField.setReadOnly(false);
-                        dictionaryField.getStore().load({
-                            params: {
-                                dictionaryID: win.form_dictionary_id + ''
-                            }
-                        });
-                    } else {
-                        dictionaryField.setReadOnly(true);
-                        dictionaryField.clearValue();
-                        dictionaryFieldSet.collapse();
-                    }
-                    win.body.unmask();
+
                 } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, -1);
-                    win.body.unmask();
+                    MessageBox.error(jsonResp.Message);
                 }
             },
             failure: function (objServerResponse) {
                 win.body.unmask();
-                WebSystemsBuilder.utils.MessageBox.show(objServerResponse.responseText, null, -1);
+                MessageBox.error(objServerResponse.responseText);
             }
         });
+    },
+
+    /**
+     * ���������� �����, ���������� � ���� JSON ������� (res)
+     * @param win ���� ��������� ����
+     * @param res ������ �����
+     */
+    drawForm: function (win, res) {
+        var _this = this;
+        var form = win.down('form[name=mainPanel]');
+        var components = win.down('gridpanel[name=components]');
+        var store = CommonUtils.deepCloneStore(components.getStore());
+
+        if (!res.root) {
+            var error = '����� �����.';
+            console.warn(error);
+            return;
+        }
+
+        // obj typeof OpenControlModel
+        var fn = function (obj, parent) {
+            if (!obj || !parent || !obj.properties) {
+                var error = '��� �������� ����� �� �������������� ��������� ������: ������ ����.';
+                WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+                return;
+            }
+            var xtype, layout;
+            obj.properties.forEach(function (x) {
+                if (x.property.toLowerCase() == 'xtype') {
+                    xtype = x.value.toLowerCase();
+                }
+                if (x.property.toLowerCase() == 'layout') {
+                    layout = x.value.toLowerCase();
+                }
+            });
+            if (!xtype) {
+                var error = '��� �������� ����� �� �������������� ��������� ������: ������ �� ����� ����.' + obj['name'] ? obj['name'] : '';
+                WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+                return;
+            }
+            // �������� ������ �� ��������� �����������, ��������������� ��������
+            var controlType = obj.control['controlType'];
+            var selectedRecord = store.findRecord('Name', controlType.toLowerCase());
+            var item;
+            // ������� ������ � ������� ������ ��������
+            if (xtype == 'container') {
+                item = eval('ContainerFactory.get(win, parent, selectedRecord, layout);');
+            } else {
+                item = eval(CommonUtils.capitalizeFirstLetter(controlType.toLowerCase()) + 'Factory.get(win, parent, selectedRecord);');
+            }
+            item.name = obj['name'];
+            item.record.set('events', obj.events);
+            item.record.set('data', obj.data);
+
+            if (item.xtype == 'toolbar') {
+                parent.addDocked(item);
+            } else if (Ext.Array.contains(['gridcolumn', 'datecolumn', 'numbercolumn'], item.xtype)) {
+                parent.headerCt.insert(parent.columns.length, item);
+                parent.getView().refresh();
+            } else {
+                parent.add(item);
+            }
+            win.fireEvent('ComponentAdded', win, parent, item);
+            // �������� �������� �������
+            WebSystemsBuilder.utils.IDE.Focused.setFocusedCmp(item);
+            obj.properties.forEach(function (prop) {
+                _this.onProperyChange(null, prop['property'], prop['_value']);
+            });
+            WebSystemsBuilder.utils.IDE.Focused.clearFocusedCmp();
+            // ��������
+            if (obj.items && obj.items instanceof Array && obj.items.length > 0) {
+                obj.items.forEach(function (i) {
+                    fn(i, item);
+                });
+            }
+        };
+
+        fn(res.root, form);
     },
 
     //============================================== New form ==============================================
@@ -715,7 +764,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             for (var prop in item) {
                 if (!(item[prop] instanceof Array)) {
                     var isEmpty = item[prop] == null || typeof item[prop] == 'undefined' || item[prop].toString().trim() == '';
-                    var isHiddenProperties = prop == 'ControlTypeID' || prop == 'id';
+                    var isHiddenProperties = prop == 'ControlTypeID' || prop == 'id' || prop == 'componentInfo';
                     if (isHiddenProperties) {
                         delete item[prop];
                     }
@@ -786,7 +835,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
             return defaultValue + '';
         };
-        var fn = function (item) {
+        var GetMetaDescriptionsRecursive = function (item) {
             if (item == null || typeof item == 'undefined') {
                 return null;
             }
@@ -829,9 +878,12 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 }
             }
 
+            // ID field
+            obj.uniqueID = item.componentInfo.uniqueID;
+            obj.componentInfo = componentInfo;
+
 //            var data = JSON.parse(JSON.stringify(item.record.get('data')));
 //            var events = JSON.parse(JSON.stringify(item.record.get('events')));
-//            obj.id = item.componentInfo.uniqueID;
 //            obj.data = data;
 //            obj.events = events;
 
@@ -840,26 +892,26 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 if (item.xtype == 'gridpanel') {
                     obj.columns = [];
                     items.forEach(function (i) {
-                        obj.columns.push(fn(i));
+                        obj.columns.push(GetMetaDescriptionsRecursive(i));
                     });
                 } else {
                     obj.items = [];
                     items.forEach(function (i) {
-                        obj.items.push(fn(i));
+                        obj.items.push(GetMetaDescriptionsRecursive(i));
                     });
                 }
             }
             if (dockedItems.length > 0) {
                 obj.dockedItems = [];
                 dockedItems.forEach(function (i) {
-                    obj.dockedItems.push(fn(i));
+                    obj.dockedItems.push(GetMetaDescriptionsRecursive(i));
                 });
             }
 
             return obj;
         };
 
-        var obj = fn(localWindow);
+        var obj = GetMetaDescriptionsRecursive(localWindow);
         return obj;
     },
 
@@ -871,7 +923,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var win = form.up('window');
 
         if (form.down()) {
-            win.fireEvent('ComponentRemoved', form, form, form.down());
+            win.fireEvent('ComponentRemoved', win, null, form.down());
         }
         form.removeAll();
         Queries.clear();
@@ -927,7 +979,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var form = win.down('form[name=mainPanel]');
 
         var parentNode = null;
-        if (parent.componentInfo) {
+        if (parent && parent.componentInfo) {
             parentNode = tree.getRootNode().findChild('id', parent.componentInfo.uniqueID, true);
         } else {
             console.log('Removing node error. "componentInfo" property is unavailable.');
@@ -1006,83 +1058,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     //===================================================����� �������==================================================
-
-    /**
-     * ���������� �����, ���������� � ���� JSON ������� (res)
-     * @param win ���� ��������� ����
-     * @param res ������ �����
-     */
-    drawForm: function (win, res) {
-        var _this = this;
-        var form = win.down('form[name=mainPanel]');
-        var components = win.down('gridpanel[name=components]');
-        var store = CommonUtils.deepCloneStore(components.getStore());
-        if (!res.root) {
-            var error = '����� �����.';
-            console.warn(error);
-            return;
-        }
-        // ����������� ������� �������� ��������
-        // obj typeof OpenControlModel
-        var fn = function (obj, parent) {
-            if (!obj || !parent || !obj.properties) {
-                var error = '��� �������� ����� �� �������������� ��������� ������: ������ ����.';
-                WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-                return;
-            }
-            var xtype, layout;
-            obj.properties.forEach(function (x) {
-                if (x.property.toLowerCase() == 'xtype') {
-                    xtype = x.value.toLowerCase();
-                }
-                if (x.property.toLowerCase() == 'layout') {
-                    layout = x.value.toLowerCase();
-                }
-            });
-            if (!xtype) {
-                var error = '��� �������� ����� �� �������������� ��������� ������: ������ �� ����� ����.' + obj['name'] ? obj['name'] : '';
-                WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-                return;
-            }
-            // �������� ������ �� ��������� �����������, ��������������� ��������
-            var controlType = obj.control['controlType'];
-            var selectedRecord = store.findRecord('Name', controlType.toLowerCase());
-            var item;
-            // ������� ������ � ������� ������ ��������
-            if (xtype == 'container') {
-                item = eval('ContainerFactory.get(win, parent, selectedRecord, layout);');
-            } else {
-                item = eval(CommonUtils.capitalizeFirstLetter(controlType.toLowerCase()) + 'Factory.get(win, parent, selectedRecord);');
-            }
-            item.name = obj['name'];
-            item.record.set('events', obj.events);
-            item.record.set('data', obj.data);
-
-            if (item.xtype == 'toolbar') {
-                parent.addDocked(item);
-            } else if (Ext.Array.contains(['gridcolumn', 'datecolumn', 'numbercolumn'], item.xtype)) {
-                parent.headerCt.insert(parent.columns.length, item);
-                parent.getView().refresh();
-            } else {
-                parent.add(item);
-            }
-            win.fireEvent('ComponentAdded', win, parent, item);
-            // �������� �������� �������
-            WebSystemsBuilder.utils.IDE.Focused.setFocusedCmp(item);
-            obj.properties.forEach(function (prop) {
-                _this.onProperyChange(null, prop['property'], prop['_value']);
-            });
-            WebSystemsBuilder.utils.IDE.Focused.clearFocusedCmp();
-            // ��������
-            if (obj.items && obj.items instanceof Array && obj.items.length > 0) {
-                obj.items.forEach(function (i) {
-                    fn(i, item);
-                });
-            }
-        };
-
-        fn(res.root, form);
-    },
 
     /**
      * Change any property in propertygrid

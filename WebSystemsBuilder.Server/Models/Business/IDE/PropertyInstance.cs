@@ -8,6 +8,7 @@ namespace WebSystemsBuilder.Server.Models
 {
     public class PropertyInstance
     {
+        public PropertyInstance() { }
         public PropertyInstance(Property Property, ControlTypePropertyType ControlTypePropertyType, PropertyValueType ValueType, PropertyType PropertyType = null)
         {
             this.Property = Property;

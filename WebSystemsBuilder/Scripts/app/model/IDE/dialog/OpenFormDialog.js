@@ -6,9 +6,8 @@
 Ext.define('WebSystemsBuilder.model.IDE.dialog.Form', {
     extend: 'Ext.data.Model',
     fields: [
-        'ID',
-        'name',
-        'dictionaryID',
-        'dictionary'
+        'FormID',
+        'Name',
+        'Description'
     ]
 });

@@ -7,14 +7,39 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
     init: function () {
 //        {
 //            Name: 'name',
-//            Type: 'type',
+//            ValueType: 'type',
+//            ValueTypeID: 'type',
 //            UniqueID: 'id'
+//            OperandID: 'id'
+//            FormParameterID: 'id'
 //        }
         this.Parameters = [];
     },
 
     getFormParameters: function () {
         return this.Parameters;
+    },
+    getFormParametersToSave: function (formID) {
+        var paramsList = [];
+        this.Parameters.forEach(function(currentParam) {
+            var currentParamToSave = {
+                FormParameter: {
+                    FormParameterID: currentParam.FormParameterID,
+                    OperandID: currentParam.OperandID,
+                    FormID: formID,
+                    Name: currentParam.Name,
+                    IsPublic: true,
+                    ValueTypeID: currentParam.ValueTypeID
+                },
+                PropertyValueType: {
+                    ValueTypeID: currentParam.ValueTypeID,
+                    Name: currentParam.ValueType,
+                    Format: null
+                }
+            }
+            paramsList.push(currentParamToSave);
+        });
+        return paramsList;
     },
 
     getParameterByName: function (parameterName) {

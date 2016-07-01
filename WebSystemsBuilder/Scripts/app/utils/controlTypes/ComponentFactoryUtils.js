@@ -42,6 +42,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
                 var componentInfo = {
                     ControlTypeGroupID: draggedClone.get('ControlTypeGroupID'),
                     ControlTypeID: draggedClone.get('ControlTypeID'),
+                    ControlType: draggedClone.get('ControlType'),
                     Group: draggedClone.get('Group'),
                     Name: draggedClone.get('Name'),
                     Description: draggedClone.get('Description'),
@@ -97,14 +98,14 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
         }
 
         if (array.length == 1) {
-            if (!isNumber(array[0])) {
+            if (!CommonUtils.isNumber(array[0])) {
                 console.log('Margin of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Margin = [' + value + ']).');
             } else {
                 obj.setStyle({'margin': array[0] + 'px'});
             }
         } else {
             for (var i = 0; i < 4; i++) {
-                if (!isNumber(array[i])) {
+                if (!CommonUtils.isNumber(array[i])) {
                     console.log('Margin of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Margin = [' + value + ']).');
                     return;
                 }
@@ -128,14 +129,14 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
         }
 
         if (array.length == 1) {
-            if (!isNumber(array[0])) {
+            if (!CommonUtils.isNumber(array[0])) {
                 console.log('Padding of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Padding = [' + value + ']).');
             } else {
                 obj.setStyle({'padding': array[0] + 'px'});
             }
         } else {
             for (var i = 0; i < 4; i++) {
-                if (!isNumber(array[i])) {
+                if (!CommonUtils.isNumber(array[i])) {
                     console.log('Padding of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Padding = [' + value + ']).');
                     return;
                 }
