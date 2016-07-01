@@ -21,5 +21,13 @@ namespace WebSystemsBuilder.Server.Models
         }
         public PredicateAction PredicateAction { get; set; }
         public PredicateOperation PredicateOperation { get; set; }
+
+        public override int ActionTypeID
+        {
+            get
+            {
+                return (int)ActionTypeEnum.Predicate;
+            }
+        }
     }
 }

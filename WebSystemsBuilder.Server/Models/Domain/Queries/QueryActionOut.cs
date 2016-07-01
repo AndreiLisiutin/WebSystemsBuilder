@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    [Table("wb_query_out", Schema = "public")]
-    public class QueryOut
+    [Table("wb_query_action_out", Schema = "public")]
+    public class QueryActionOut
     {
         [Key]
-        [Column("query_out_id")]
-        public int QueryOutID { get; set; }
+        [Column("query_action_out_id")]
+        public int QueryActionOutID { get; set; }
+        [Column("query_action_id")]
+        public int QueryActionID { get; set; }
         [Column("query_type_out_id")]
         public int QueryTypeOutID { get; set; }
-        [Column("query_id")]
-        public int QueryID { get; set; }
-        [Column("operand_id")]
-        public int OperandID { get; set; }
+        [Column("operand_id_value")]
+        public int OperandIDValue { get; set; }
     }
 }

@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    [Table("wb_query_in", Schema = "public")]
-    public class QueryIn
+    [Table("wb_query_action_part", Schema = "public")]
+    public class QueryActionPart
     {
         [Key]
-        [Column("query_in_id")]
-        public int QueryInID { get; set; }
-        [Column("query_type_in_id")]
-        public int QueryTypeInID { get; set; }
-        [Column("query_id")]
-        public int QueryID { get; set; }
+        [Column("query_action_part_id")]
+        public int QueryActionPartID { get; set; }
+        [Column("query_action_id")]
+        public int QueryActionID { get; set; }
+        [Column("query_type_part_id")]
+        public int QueryTypePartID { get; set; }
         [Column("operand_id_value")]
         public int OperandIDValue { get; set; }
     }

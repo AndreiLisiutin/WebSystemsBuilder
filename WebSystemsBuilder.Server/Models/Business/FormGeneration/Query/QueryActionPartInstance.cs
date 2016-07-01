@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    public class QueryPartInstance
+    public class QueryActionPartInstance
     {
-        public QueryPartInstance()
+        public QueryActionPartInstance()
         {
 
         }
-        public QueryPartInstance(QueryPart QueryPart, QueryTypePart QueryTypePart)
+        public QueryActionPartInstance(QueryActionPart QueryActionPart, QueryTypePart QueryTypePart)
         {
             this.QueryTypePart = QueryTypePart;
-            this.QueryPart = QueryPart;
+            this.QueryActionPart = QueryActionPart;
         }
-        public QueryPart QueryPart { get; set; }
+        public QueryActionPart QueryActionPart { get; set; }
         public QueryTypePart QueryTypePart { get; set; }
     }
 }

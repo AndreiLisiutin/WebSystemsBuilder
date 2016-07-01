@@ -19,10 +19,12 @@ namespace WebSystemsBuilder.Server
         public WebBuilderEFContext(string connectionString)
             : base(connectionString)
         {
+            this.Database.Log = Console.Write;
         }
         public WebBuilderEFContext(DbConnection connection, bool contextOwnsConnection = true)
             : base(connection, contextOwnsConnection)
         {
+            this.Database.Log = Console.Write;
         }
         public DbSet<Operand> Operands { get; set; }
 
@@ -47,10 +49,10 @@ namespace WebSystemsBuilder.Server
         public DbSet<Table> Tables { get; set; }
         public DbSet<Column> Columns { get; set; }
 
-        public DbSet<Query> Queries { get; set; }
-        public DbSet<QueryIn> QueryIns { get; set; }
-        public DbSet<QueryOut> QueryOuts { get; set; }
-        public DbSet<QueryPart> QueryParts { get; set; }
+        public DbSet<QueryAction> QueryActions { get; set; }
+        public DbSet<QueryActionIn> QueryActionIns { get; set; }
+        public DbSet<QueryActionOut> QueryActionOuts { get; set; }
+        public DbSet<QueryActionPart> QueryActionParts { get; set; }
 
         public DbSet<Event> Events { get; set; }
         public DbSet<EventType> EventTypes { get; set; }
@@ -63,5 +65,6 @@ namespace WebSystemsBuilder.Server
         public DbSet<OpenFormActionParameter> OpenFormActionParameters { get; set; }
         public DbSet<PredicateAction> PredicateActions { get; set; }
         public DbSet<PredicateOperation> PredicateOperations { get; set; }
+        public DbSet<ServerAction> ServerActions { get; set; }
     }
 }

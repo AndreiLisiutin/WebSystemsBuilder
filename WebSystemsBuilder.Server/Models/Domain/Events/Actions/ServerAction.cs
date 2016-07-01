@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    [Table("wb_query", Schema = "public")]
-    public class Query
+    [Table("wb_server_action", Schema = "public")]
+    public class ServerAction
     {
         [Key]
-        [Column("query_id")]
-        public int QueryID { get; set; }
-        [Column("query_type_id")]
-        public int QueryTypeID { get; set; }
-        [Column("form_id")]
-        public int FormID { get; set; }
+        [Column("action_id")]
+        public int ActionID { get; set; }
+        [Column("action_id_first")]
+        public int? ActionIDFirst { get; set; }
     }
 }

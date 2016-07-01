@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    public class QueryOutInstance
+    public class QueryActionOutInstance
     {
-        public QueryOutInstance()
+        public QueryActionOutInstance()
         {
 
         }
-        public QueryOutInstance(QueryOut QueryOut, QueryTypeOutInstance QueryTypeOut)
+        public QueryActionOutInstance(QueryActionOut QueryActionOut, QueryTypeOutInstance QueryTypeOut)
         {
-            this.QueryOut = QueryOut;
+            this.QueryActionOut = QueryActionOut;
             this.QueryTypeOut = QueryTypeOut;
         }
-        public QueryOut QueryOut { get; set; }
+        public QueryActionOut QueryActionOut { get; set; }
         public QueryTypeOutInstance QueryTypeOut { get; set; }
     }
 }

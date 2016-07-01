@@ -19,9 +19,9 @@ namespace WebSystemsBuilder.Server.Models
         [Column("operand_id_second")]
         public int OperandIDSecond { get; set; }
         [Column("action_id_true")]
-        public int ActionIDTrue { get; set; }
+        public int? ActionIDTrue { get; set; }
         [Column("action_id_false")]
-        public int ActionIDFalse { get; set; }
+        public int? ActionIDFalse { get; set; }
         [Column("predicate_operation_id")]
         public int PredicateOperationID { get; set; }
     }

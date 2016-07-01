@@ -65,7 +65,6 @@
     <Compile Include="BLL\ConnectionFactory.cs" />
     <Compile Include="BLL\FormGeneration\EventsBLL.cs" />
     <Compile Include="BLL\FormGeneration\ParametersBLL.cs" />
-    <Compile Include="BLL\FormGeneration\QueryBLL.cs" />
     <Compile Include="BLL\FormGeneration\QueryTypeBLL.cs" />
     <Compile Include="BLL\FormGeneration\ValueTypesBLL.cs" />
     <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
@@ -73,7 +72,9 @@
     <Compile Include="BLL\IDE\ControlTypeBLL.cs" />
     <Compile Include="BLL\ValueTypeEnum.cs" />
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
+    <Compile Include="Models\Business\FormGeneration\Events\Actions\ActionTypeEnum.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\BaseActionInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\Events\Actions\ServerActionInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\PredicateActionInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\OpenFormActionInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\ClientActionInstance.cs" />
@@ -86,10 +87,10 @@
     <Compile Include="Models\Business\FormGeneration\FormInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Query\QueryType\QueryTypeInInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Query\QueryType\QueryTypeTableInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\Query\QueryPartInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\Query\QueryOutInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\Query\QueryInInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\Query\QueryInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\Query\QueryActionPartInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\Query\QueryActionOutInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\Query\QueryActionInInstance.cs" />
+    <Compile Include="Models\Business\FormGeneration\Query\QueryActionInstance.cs" />
     <Compile Include="Models\Business\IDE\PropertyInstance.cs" />
     <Compile Include="Models\Business\IDE\ControlTypeInctance.cs" />
     <Compile Include="Models\Business\IDE\PropertyTypeInstance.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Models\Domain\Controls\ControlTypeDependency.cs" />
     <Compile Include="Models\Domain\Controls\ControlType.cs" />
     <Compile Include="Models\Domain\Controls\Control.cs" />
+    <Compile Include="Models\Domain\Events\Actions\ServerAction.cs" />
     <Compile Include="Models\Domain\Events\Actions\EventAction.cs" />
     <Compile Include="Models\Domain\Events\Actions\ClientAction.cs" />
     <Compile Include="Models\Domain\Events\Actions\ClientActionType.cs" />
@@ -122,10 +124,10 @@
     <Compile Include="Models\Domain\Events\EventType.cs" />
     <Compile Include="Models\Domain\Events\EventTypeControlType.cs" />
     <Compile Include="Models\Domain\Operand.cs" />
-    <Compile Include="Models\Domain\Queries\Query.cs" />
-    <Compile Include="Models\Domain\Queries\QueryIn.cs" />
-    <Compile Include="Models\Domain\Queries\QueryOut.cs" />
-    <Compile Include="Models\Domain\Queries\QueryPart.cs" />
+    <Compile Include="Models\Domain\Queries\QueryAction.cs" />
+    <Compile Include="Models\Domain\Queries\QueryActionIn.cs" />
+    <Compile Include="Models\Domain\Queries\QueryActionOut.cs" />
+    <Compile Include="Models\Domain\Queries\QueryActionPart.cs" />
     <Compile Include="Models\Domain\Queries\QueryTypes\QueryType.cs" />
     <Compile Include="Models\Domain\Queries\QueryTypes\QueryTypeColumn.cs" />
     <Compile Include="Models\Domain\Queries\QueryTypes\QueryTypeIn.cs" />

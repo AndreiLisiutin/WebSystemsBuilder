@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    public class QueryInInstance
+    public class QueryActionInInstance
     {
-        public QueryInInstance()
+        public QueryActionInInstance()
         {
 
         }
-        public QueryInInstance(QueryIn QueryIn, QueryTypeInInstance QueryTypeIn)
+        public QueryActionInInstance(QueryActionIn QueryActionIn, QueryTypeInInstance QueryTypeIn)
         {
             this.QueryTypeIn = QueryTypeIn;
-            this.QueryIn = QueryIn;
+            this.QueryActionIn = QueryActionIn;
         }
         public QueryTypeInInstance QueryTypeIn { get; set; }
-        public QueryIn QueryIn { get; set; }
+        public QueryActionIn QueryActionIn { get; set; }
     }
 }

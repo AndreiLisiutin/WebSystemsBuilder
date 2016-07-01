@@ -65,6 +65,35 @@
             case ValueTypes.Bool:
                 return object.toString().toLowerCase().trim() == 'true';
                 break;
+            default:
+                throw 'Unknown value type';
+        }
+    },
+
+    getStringFromValue: function (object, valueTypeID) {
+        var _this = this;
+        if (object == null || typeof object == 'undefined') {
+            return null;
+        }
+
+        var valueType = _this._valueTypes.filter(function (obj) {
+            return obj.ValueTypeID == valueTypeID;
+        })[0];
+
+        switch (valueTypeID) {
+            case ValueTypes.String:
+            case ValueTypes.Decimal:
+            case ValueTypes.Int:
+                return object.toString();
+                break;
+            case ValueTypes.Date:
+                return Ext.Date.format(object, valueType ? (valueType.Format || 'c') : 'c');
+                break;
+            case ValueTypes.Bool:
+                return object ? 'TRUE' : 'FALSE';
+                break;
+            default:
+                throw 'Unknown value type';
         }
     }
 });

@@ -34,10 +34,9 @@ namespace WebSystemsBuilder.Server
                     "The root element of form not found. (FormID = {0})", formID
                 ));
             }
-            List<QueryInstance> queries = new QueryBLL().GetQueriesByFormID(formID);
             List<FormParameterInstance> parameters = new ParametersBLL().GetParametersByFormID(formID);
             List<EventWithActionsInstance> events = new EventsBLL().GetEventsByFormID(formID);
-            return new FormInstance(rootForm, rootControl, queries, parameters, events);
+            return new FormInstance(rootForm, rootControl, parameters, events);
         }
         
         private Form _GetFormByID(WebBuilderEFContext db, int formID)
