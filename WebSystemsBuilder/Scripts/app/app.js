@@ -12,7 +12,7 @@ Ext.application({
         'WebSystemsBuilder.utils.ControllerLoader',
         'WebSystemsBuilder.utils.IDE.Focused',
         'WebSystemsBuilder.utils.IDE.Random',
-        'WebSystemsBuilder.utils.IDE.DragDropComponents',
+        'WebSystemsBuilder.utils.IDE.ControlTypeDependencies',
         'WebSystemsBuilder.utils.IDE.MousedComponentsIDE',
         'WebSystemsBuilder.utils.IDE.FormParametersIDE',
 
@@ -38,7 +38,7 @@ Ext.application({
 
     init: function() {
         WebSystemsBuilder.utils.DefaultConfiguration.defineConfiguration();
-        DragDropComponents.init();
+        ControlTypeDependencies.init();
         Focused.init();
         MousedComponentsIDE.init();
         FormParametersIDE.init();

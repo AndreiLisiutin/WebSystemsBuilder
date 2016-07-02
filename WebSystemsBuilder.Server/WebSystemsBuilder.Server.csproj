@@ -54,6 +54,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,6 +71,7 @@
     <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeGroupBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeBLL.cs" />
+    <Compile Include="BLL\IDE\FormBll.cs" />
     <Compile Include="BLL\ValueTypeEnum.cs" />
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\ActionTypeEnum.cs" />

@@ -18,7 +18,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
                     var moused = MousedComponentsIDE.getMousedComponents()[0];
                     var controlTypeParentID = moused.componentInfo.ControlTypeID;
                     // Possible control types, which can be children of current moused component
-                    var dragOnChildren = DragDropComponents.getDependencies(controlTypeParentID);
+                    var dragOnChildren = ControlTypeDependencies.getDependencies(controlTypeParentID);
                     if (Ext.Array.contains(dragOnChildren, draggedControlTypeID)) {
                         this.allowDrop = true;
                         return Ext.baseCSSPrefix + 'dd-drop-ok';
@@ -42,6 +42,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
                 var componentInfo = {
                     ControlTypeGroupID: draggedClone.get('ControlTypeGroupID'),
                     ControlTypeID: draggedClone.get('ControlTypeID'),
+                    ControlType: draggedClone.get('ControlType'),
                     Group: draggedClone.get('Group'),
                     Name: draggedClone.get('Name'),
                     Description: draggedClone.get('Description'),
@@ -61,7 +62,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
         });
 
         var currentControlTypeID = currentComponent.componentInfo.ControlTypeID;
-        var dependenciesOfCurrentControl = DragDropComponents.getDependencies(currentControlTypeID);
+        var dependenciesOfCurrentControl = ControlTypeDependencies.getDependencies(currentControlTypeID);
 
         component.formPanelDropTarget.removeFromGroup(currentControlTypeID);
         dependenciesOfCurrentControl.forEach(function (_controlTypeID) {
@@ -97,14 +98,14 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
         }
 
         if (array.length == 1) {
-            if (!isNumber(array[0])) {
+            if (!CommonUtils.isNumber(array[0])) {
                 console.log('Margin of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Margin = [' + value + ']).');
             } else {
                 obj.setStyle({'margin': array[0] + 'px'});
             }
         } else {
             for (var i = 0; i < 4; i++) {
-                if (!isNumber(array[i])) {
+                if (!CommonUtils.isNumber(array[i])) {
                     console.log('Margin of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Margin = [' + value + ']).');
                     return;
                 }
@@ -128,14 +129,14 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
         }
 
         if (array.length == 1) {
-            if (!isNumber(array[0])) {
+            if (!CommonUtils.isNumber(array[0])) {
                 console.log('Padding of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Padding = [' + value + ']).');
             } else {
                 obj.setStyle({'padding': array[0] + 'px'});
             }
         } else {
             for (var i = 0; i < 4; i++) {
-                if (!isNumber(array[i])) {
+                if (!CommonUtils.isNumber(array[i])) {
                     console.log('Padding of ' + obj.record.get('Name').toLowerCase() + ' is incorrect. (Padding = [' + value + ']).');
                     return;
                 }

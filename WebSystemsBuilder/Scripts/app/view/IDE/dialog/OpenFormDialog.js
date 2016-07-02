@@ -2,24 +2,19 @@
     extend: 'Ext.window.Window',
     alias: 'widget.OpenFormDialog',
     name: 'OpenFormDialog',
-    id: 'winOpenFormDialog',
 
     modal: true,
     constrain: true,
-    title: 'Открытие формы для редактирования',
+    title: 'Open form',
 
-    height: 140,
+    height: 150,
     width: 450,
-    minHeight: 140,
+    minHeight: 150,
     minWidth: 450,
-    maxHeight: 140,
+    maxHeight: 150,
     maxWidth: 450,
 
-    dictionaryID:undefined,
-
-    layout: {
-        type: 'anchor'
-    },
+    layout: 'fit',
 
     initComponent: function () {
         var me = this;
@@ -27,63 +22,68 @@
         var formStore = Ext.create('WebSystemsBuilder.store.IDE.dialog.Form');
 
         Ext.applyIf(me, {
-
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'right',
-                    items: [
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Закрыть',
-                            action: 'onClose',
-                            border: true,
-                            icon: 'Scripts/resources/icons/close.png',
-                            iconAlign: 'top'
-                        },
-                        {
-                            xtype: 'tbseparator'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Открыть',
-                            action: 'onOpen',
-                            border: true,
-                            icon: 'Scripts/resources/icons/open3.png',
-                            iconAlign: 'top'
-                        }
-                    ]
-                }
-            ],
-
             items: [
                 {
-                    xtype: 'combobox',
-                    anchor: '0',
-                    margin: '10 5 5 10',
-                    labelSeparator:'',
-                    valueField: 'ID',
-                    displayField: 'name',
-                    queryMode: 'local',
-                    editable: false,
-                    fieldLabel: 'Форма',
-                    labelWidth: 50,
-                    emptyText: 'Выберите форму для редактирования...',
-                    name: 'form',
-                    store: formStore
-                },
-                {
-                    xtype: 'textfield',
-                    anchor: '0',
-                    margin: '0 5 5 10',
-                    labelSeparator:'',
-                    readOnly: true,
-                    fieldLabel: 'Словарь',
-                    labelWidth: 50,
-                    emptyText: 'Форма не связана ни с одним словарем...',
-                    name: 'dictionary'
+                    xtype: 'panel',
+                    layout: 'anchor',
+                    items: [
+                        {
+                            xtype: 'combobox',
+                            name: 'form',
+                            fieldLabel: 'Form',
+                            anchor: '0',
+                            margin: '10 5 5 10',
+                            labelSeparator: '',
+                            valueField: 'FormID',
+                            displayField: 'Name',
+                            queryMode: 'local',
+                            editable: false,
+                            labelWidth: 60,
+                            emptyText: 'Choose the form...',
+                            store: formStore
+                        },
+                        {
+                            xtype: 'textareafield',
+                            name: 'description',
+                            fieldLabel: 'Description',
+                            anchor: '0',
+                            height: 70,
+                            margin: '0 5 5 10',
+                            readOnly: true,
+                            labelSeparator: '',
+                            labelWidth: 60,
+                            emptyText: 'Empty description...'
+                        }
+                    ],
+                    dockedItems: [
+                        {
+                            xtype: 'toolbar',
+                            dock: 'right',
+                            items: [
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Close',
+                                    action: 'onClose',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/close.png',
+                                    iconAlign: 'top'
+                                },
+                                {
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Open',
+                                    action: 'onOpen',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/open3.png',
+                                    iconAlign: 'top'
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         });

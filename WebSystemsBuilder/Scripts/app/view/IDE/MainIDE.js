@@ -40,7 +40,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                     layout: 'border',
                     items: [
 //======================================================================================================================
-//                                               ����������
+//                                               Controls
 //======================================================================================================================
                         {
                             xtype: 'panel',
@@ -53,7 +53,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             width: 300,
                             layout: 'border',
                             items: [
-//------------------------------------------------������----------------------------------------------------------------
+//------------------------------------------------Context filter--------------------------------------------------------
                                 {
                                     xtype: 'panel',
                                     padding: 5,
@@ -67,7 +67,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         }
                                     ]
                                 },
-//------------------------------------------------������ �����������----------------------------------------------------
+//----------------------------------------- Control groups -------------------------------------------------------------
                                 {
                                     xtype: 'gridpanel',
                                     name: 'componentsGroups',
@@ -92,7 +92,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         }
                                     ]
                                 },
-//------------------------------------------------����������------------------------------------------------------------
+//------------------------------------------------ Controls ------------------------------------------------------------
                                 {
                                     xtype: 'gridpanel',
                                     name: 'components',
@@ -101,7 +101,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                     hideHeaders: true,
                                     flex: 1,
 
-                                    // ���� � ����
+                                    // Set drag&drop functionality
                                     enableDragDrop: true,
                                     viewConfig: {
                                         plugins: [
@@ -116,7 +116,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         ]
                                     },
 
-                                    // ����� ������, ��������� dragZone
                                     store: controlTypesStore,
                                     selModel: Ext.create('Ext.selection.RowModel', { mode: "SINGLE", ignoreRightMouseSelection: true }),
                                     listeners: {
@@ -130,7 +129,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                         }
                                     },
 
-                                    // ������
                                     requires: [
                                         'Ext.grid.feature.Grouping'
                                     ],
@@ -142,7 +140,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                             id: 'componentsGrouping'
                                         }
                                     ],
-                                    // �������
+
                                     infoIcon: 'Scripts/resources/icons/IDE/info.png',
                                     columns: [
                                         {
@@ -178,7 +176,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             ]
                         },
 //======================================================================================================================
-//                                   ������� ������
+//                                        Main Panel
 //======================================================================================================================
                         {
                             xtype: 'form',
@@ -313,7 +311,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                 {
                                                     xtype: 'gridcolumn',
                                                     text: 'Type',
-                                                    align:'center',
+                                                    align: 'center',
                                                     resizable: false,
                                                     dataIndex: 'ValueType',
                                                     width: 80,
@@ -368,7 +366,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                     height: 370,
                                     layout: 'anchor',
                                     items: [
-                                        //------------------------------------------------������----------------------------------------------------------------
                                         {
                                             xtype: 'panel',
                                             name: 'propertiesOwner',
@@ -399,7 +396,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                 }
                                             ]
                                         },
-                                        //------------------------------------------------���� ��������---------------------------------------------------------
                                         {
                                             xtype: 'tabpanel',
                                             tabPosition: 'bottom',
@@ -435,7 +431,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                         }
                                                     }
                                                 },
-                                                //------------------------------------------------�������---------------------------------------------------------
+//----------------------------------------------------- Events ---------------------------------------------------------
                                                 {
                                                     xtype: 'gridpanel',
                                                     name: 'events',
@@ -506,144 +502,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                             ]
                                                         }
                                                     ]
-                                                },
-                                                //------------------------------------------------������---------------------------------------------------------
-                                                {
-                                                    xtype: 'panel',
-                                                    padding: 2,
-                                                    flex: 1,
-                                                    title: 'Data',
-                                                    name: 'data',
-                                                    layout: 'anchor',
-                                                    items: [
-                                                        {
-                                                            xtype: 'fieldset',
-                                                            title: '������',
-                                                            anchor: '0',
-                                                            margin: 5,
-                                                            padding: 2,
-                                                            layout: 'anchor',
-                                                            checkboxToggle: true,
-                                                            items: [
-                                                                {
-                                                                    xtype: 'container',
-                                                                    anchor: '0',
-                                                                    layout: {
-                                                                        align: 'stretch',
-                                                                        type: 'hbox'
-                                                                    },
-                                                                    items: [
-                                                                        {
-                                                                            xtype: 'combobox',
-                                                                            flex: 1,
-                                                                            margin: '0 5 5 5',
-                                                                            labelSeparator: '',
-                                                                            valueField: '_ID',
-                                                                            displayField: 'sqlText',
-                                                                            queryMode: 'local',
-                                                                            editable: false,
-                                                                            fieldLabel: '������',
-                                                                            labelWidth: 50,
-                                                                            name: 'query',
-                                                                            store: queryStore,
-                                                                            //��������
-                                                                            trigger1Cls: 'x-form-arrow-trigger',
-                                                                            trigger2Cls: 'x-form-clear-trigger',
-                                                                            //������� ������ �����
-                                                                            onTrigger2Click: function () {
-                                                                                this.clearValue();
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            xtype: 'button',
-                                                                            width: 22,
-                                                                            height: 22,
-                                                                            action: 'onAddQuery',
-                                                                            margin: '0 5 5 0',
-                                                                            border: true,
-                                                                            iconAlign: 'top',
-                                                                            icon: 'Scripts/resources/icons/add_16.png'
-                                                                        }
-                                                                    ]
-                                                                },
-                                                                {
-                                                                    xtype: 'combobox',
-                                                                    anchor: '0',
-                                                                    margin: '0 5 5 5',
-                                                                    labelSeparator: '',
-                                                                    valueField: 'ID',
-                                                                    displayField: 'name',
-                                                                    queryMode: 'local',
-                                                                    editable: false,
-                                                                    fieldLabel: '��������',
-                                                                    labelWidth: 50,
-                                                                    name: 'queryField',
-                                                                    store: queryFieldStore,
-                                                                    //��������
-                                                                    trigger1Cls: 'x-form-arrow-trigger',
-                                                                    trigger2Cls: 'x-form-clear-trigger',
-                                                                    //������� ������ �����
-                                                                    onTrigger2Click: function () {
-                                                                        this.clearValue();
-                                                                    }
-                                                                },
-                                                                {
-                                                                    xtype: 'combobox',
-                                                                    anchor: '0',
-                                                                    margin: '0 5 5 5',
-                                                                    labelSeparator: '',
-                                                                    valueField: 'ID',
-                                                                    displayField: 'name',
-                                                                    queryMode: 'local',
-                                                                    editable: false,
-                                                                    fieldLabel: '����',
-                                                                    labelWidth: 50,
-                                                                    hidden: true,
-                                                                    name: 'queryKeyField',
-                                                                    store: queryKeyFieldStore,
-                                                                    //��������
-                                                                    trigger1Cls: 'x-form-arrow-trigger',
-                                                                    trigger2Cls: 'x-form-clear-trigger',
-                                                                    //������� ������ �����
-                                                                    onTrigger2Click: function () {
-                                                                        this.clearValue();
-                                                                    }
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            xtype: 'fieldset',
-                                                            title: '�������',
-                                                            anchor: '0',
-                                                            layout: 'anchor',
-                                                            margin: 5,
-                                                            padding: 2,
-                                                            checkboxToggle: true,
-                                                            items: [
-                                                                {
-                                                                    xtype: 'combobox',
-                                                                    anchor: '0',
-                                                                    margin: '5 5 5 5',
-                                                                    labelSeparator: '',
-                                                                    valueField: 'ID',
-                                                                    displayField: 'name',
-                                                                    queryMode: 'local',
-                                                                    editable: false,
-                                                                    fieldLabel: '����',
-                                                                    labelWidth: 50,
-                                                                    name: 'dictionaryField',
-                                                                    store: dictionaryFieldStore,
-                                                                    //��������
-                                                                    trigger1Cls: 'x-form-arrow-trigger',
-                                                                    trigger2Cls: 'x-form-clear-trigger',
-                                                                    //������� ������ �����
-                                                                    onTrigger2Click: function () {
-                                                                        this.clearValue();
-                                                                    }
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
                                                 }
                                             ]
                                         }
@@ -652,6 +510,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                             ]
                         }
                     ],
+//================================================ Docked items ========================================================
                     dockedItems: [
                         {
                             xtype: 'toolbar',

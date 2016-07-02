@@ -26,7 +26,7 @@
 
     /**
      * Load form (afterrender)
-     * @param current window (CreateFormDialog)
+     * @param win Current window (CreateFormDialog)
      */
     onLoad: function (win) {
         //var dictionary = win.down('combobox[name=dictionary]');
@@ -40,7 +40,7 @@
 
     /**
      * Create new form ("Create" button click)
-     * @param "Create" button
+     * @param btn "Create" button
      */
     onCreateForm: function (btn) {
         var win = btn.up('CreateFormDialog');
@@ -63,7 +63,7 @@
 
     /**
      * Close form ("Close" button click)
-     * @param "Close" button
+     * @param btn "Close" button
      */
     onClose: function (btn) {
         btn.up('CreateFormDialog').close();

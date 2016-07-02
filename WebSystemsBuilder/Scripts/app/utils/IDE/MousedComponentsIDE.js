@@ -33,7 +33,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.MousedComponentsIDE', {
         }
     },
 
-    clearMousedComponents: function () {
+    clear: function () {
         this.MousedStack = [];
     }
 });
