@@ -58,7 +58,7 @@ namespace WebSystemsBuilder.Server
                         // Recursive save all the controls of the form
                         formInstance.RootControl.Control.FormID = formInstance.Form.FormID;
                         this.SaveControl(formInstance.RootControl, db, transaction);
-                        
+
                         // Commit transaction
                         db.SaveChanges();
                         transaction.Commit();
@@ -99,11 +99,19 @@ namespace WebSystemsBuilder.Server
                         if (formInstance.FormParameters != null)
                         {
                             // Delete old parameters
-                            var oldFormParameters = db.FormParameters                                
-                                .Where(x => x.FormID == formInstance.Form.FormID)
-                                .ToList()
-                                .Where(x => !formInstance.FormParameters.Select(p => p.FormParameter.FormParameterID).Contains(x.FormParameterID));
+                            var oldFormParameters = db.FormParameters
+                                .Where(x => x.FormID == formInstance.Form.FormID).ToList()
+                                .Where(x => !formInstance.FormParameters.Select(p => p.FormParameter.FormParameterID).Contains(x.FormParameterID)).ToList();
+                            List<Operand> oldOperandsList = new List<Operand>();
+                            foreach (int operandID in oldFormParameters.Where(x => x.OperandID > 0).Select(x => x.OperandID))
+                            {
+                                var oldOperand = db.Operands.SingleOrDefault(x => x.OperandID == operandID);
+                                oldOperandsList.Add(oldOperand);
+                            }
                             db.FormParameters.RemoveRange(oldFormParameters);
+                            db.SaveChanges();
+                            db.Operands.RemoveRange(oldOperandsList);
+                            db.SaveChanges();
 
                             // Save new form parameters
                             foreach (var formParameter in formInstance.FormParameters)
@@ -133,8 +141,17 @@ namespace WebSystemsBuilder.Server
                         }
                         else
                         {
-                            var formParametersList = db.FormParameters.Where(x => x.FormID == formInstance.Form.FormID);
+                            var formParametersList = db.FormParameters.Where(x => x.FormID == formInstance.Form.FormID).ToList();
+                            List<Operand> oldOperandsList = new List<Operand>();
+                            foreach (int operandID in formParametersList.Where(x => x.OperandID > 0).Select(x => x.OperandID))
+                            {
+                                var oldOperand = db.Operands.SingleOrDefault(x => x.OperandID == operandID);
+                                oldOperandsList.Add(oldOperand);
+                            }
                             db.FormParameters.RemoveRange(formParametersList);
+                            db.SaveChanges();
+                            db.Operands.RemoveRange(oldOperandsList);
+                            db.SaveChanges();
                         }
 
                         // Recursive save all the controls of the form
@@ -155,7 +172,7 @@ namespace WebSystemsBuilder.Server
                 }
             }
         }
-        
+
         /// <summary>
         /// Recursive function - save control, it's propeties and child controls
         /// </summary>
@@ -199,8 +216,10 @@ namespace WebSystemsBuilder.Server
                 var oldProperties = db.Properties
                     .Where(x => x.ControlID == currentControl.Control.ControlID)
                     .ToList()
-                    .Where(x => !currentControl.Properties.Select(p => p.Property.PropertyID).Contains(x.PropertyID));
+                    .Where(x => !currentControl.Properties.Select(p => p.Property.PropertyID).Contains(x.PropertyID))
+                    .ToList();
                 db.Properties.RemoveRange(oldProperties);
+                db.SaveChanges();
 
                 foreach (PropertyInstance currentProperty in currentControl.Properties)
                 {
@@ -226,18 +245,35 @@ namespace WebSystemsBuilder.Server
             }
             else
             {
-                var oldPropertiesList = db.Properties.Where(x => x.ControlID == currentControl.Control.ControlID);
+                var oldPropertiesList = db.Properties.Where(x => x.ControlID == currentControl.Control.ControlID).ToList();
                 db.Properties.RemoveRange(oldPropertiesList);
+                db.SaveChanges();
             }
 
             // Children controls
             if (currentControl.ChildControls != null)
             {
                 var oldChildControls = db.Controls
-                    .Where(x => x.ControlIDParent == currentControl.Control.ControlID)
-                    .ToList()
-                    .Where(x => !currentControl.ChildControls.Select(p => p.Control.ControlID).Contains(x.ControlID));
+                    .Where(x => x.ControlIDParent == currentControl.Control.ControlID).ToList()
+                    .Where(x => !currentControl.ChildControls.Select(p => p.Control.ControlID).Contains(x.ControlID)).ToList();
+                List<Operand> oldOperandsList = new List<Operand>();
+                foreach (int operandID in oldChildControls.Where(x => x.OperandID > 0).Select(x => x.OperandID))
+                {
+                    var oldOperand = db.Operands.SingleOrDefault(x => x.OperandID == operandID);
+                    oldOperandsList.Add(oldOperand);
+                }
+                List<Property> oldPropertiesList = new List<Property>();
+                foreach (var controlID in oldChildControls.Select(x => x.ControlID))
+                {
+                    var oldProperties = db.Properties.Where(x => x.ControlID == controlID).ToList();
+                    oldPropertiesList.AddRange(oldProperties);
+                }
+                db.Properties.RemoveRange(oldPropertiesList);
+                db.SaveChanges();
                 db.Controls.RemoveRange(oldChildControls);
+                db.SaveChanges();
+                db.Operands.RemoveRange(oldOperandsList);
+                db.SaveChanges();
 
                 // Recursion: save child controls
                 for (int i = 0; i < currentControl.ChildControls.Count; i++)
@@ -250,8 +286,25 @@ namespace WebSystemsBuilder.Server
             }
             else
             {
-                var oldChildControls = db.Controls.Where(x => x.ControlIDParent == currentControl.Control.ControlID);
+                var oldChildControls = db.Controls.Where(x => x.ControlIDParent == currentControl.Control.ControlID).ToList();
+                List<Operand> oldOperandsList = new List<Operand>();
+                foreach (int operandID in oldChildControls.Where(x => x.OperandID > 0).Select(x => x.OperandID))
+                {
+                    var oldOperand = db.Operands.SingleOrDefault(x => x.OperandID == operandID);
+                    oldOperandsList.Add(oldOperand);
+                }
+                List<Property> oldPropertiesList = new List<Property>();
+                foreach (var controlID in oldChildControls.Select(x => x.ControlID))
+                {
+                    var oldProperties = db.Properties.Where(x => x.ControlID == controlID).ToList();
+                    oldPropertiesList.AddRange(oldProperties);
+                }
+                db.Properties.RemoveRange(oldPropertiesList);
+                db.SaveChanges();
                 db.Controls.RemoveRange(oldChildControls);
+                db.SaveChanges();
+                db.Operands.RemoveRange(oldOperandsList);
+                db.SaveChanges();
             }
 
             return currentControl;

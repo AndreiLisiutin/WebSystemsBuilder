@@ -106,40 +106,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
-
-    onIDEComponentFocused: function (win, focusedComponent) {
-        var propertiesPanel = win.down('panel[name=propertiesPanel]');
-        var propertiesGrid = win.down('propertygrid[name=properties]');
-        var propertiesOwner = win.down('panel[name=propertiesOwner]');
-        var tree = win.down('treepanel');
-
-        if (focusedComponent) {
-            Focused.setFocusedCmp(focusedComponent);
-            propertiesOwner.update(
-                    '<span style="margin:3px;position:absolute;">' +
-                    CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
-                    focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
-                    '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
-                    '</span>'
-            );
-
-            var treeNode = tree.getRootNode().findChild('id', focusedComponent.componentInfo.uniqueID, true);
-            if (treeNode) {
-                tree.getSelectionModel().select(treeNode);
-            }
-
-            propertiesGrid.setSource(focusedComponent.componentInfo.Properties);
-            propertiesPanel.setDisabled(false);
-
-        } else if (!WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp()) {
-            propertiesGrid.setSource([]);
-            propertiesOwner.update('');
-            propertiesFilter.setValue('');
-            tree.getSelectionModel().deselectAll();
-            propertiesPanel.setDisabled(true);
-        }
-    },
-
     /**
      * Load the form
      * @param win Main window
@@ -165,8 +131,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }, null, { preventDefault: true });
 
         Ext.getBody().on('click', function (e) {
-            e.preventDefault();
-            var focused = Focused.getFocusedCmp();
             var moused = MousedComponentsIDE.getUpperMousedComponent();
             if (moused) {
                 win.fireEvent('IDEComponentFocused', win, moused);
@@ -183,7 +147,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var propertiesGrid = win.down('propertygrid[name=properties]');
         var propertiesOwner = win.down('panel[name=propertiesOwner]');
         var form = win.down('form[name=mainPanel]');
-        var dictionaryField = win.down('combobox[name=dictionaryField]');
         var tree = win.down('treepanel');
         var btnCode = win.down('button[action=onCode]');
         var btnDesign = win.down('button[action=onDesign]');
@@ -204,7 +167,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         projectPanel.setDisabled(true);
         btnDesign.toggle(true);
 
-        // Clear some required stores
+        // Clear some required stores and classes
         Queries.clear();
         Random.clear();
         Focused.clearFocusedCmp();
@@ -246,43 +209,41 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             }
         });
 
-        // ��� ��������� ������ ���������������� ������� "�������" � �����������
-        eventPanel.on('RecordChanged', function (grid) {
-            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-            if (focused) {
-                var newEvents = [];
-                eventPanel.getStore().data.items.forEach(function (item) {
-                    newEvents.push(item.data);
-                });
-                focused.record.set('events', newEvents);
-            }
-        });
+//        eventPanel.on('RecordChanged', function (grid) {
+//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
+//            if (focused) {
+//                var newEvents = [];
+//                eventPanel.getStore().data.items.forEach(function (item) {
+//                    newEvents.push(item.data);
+//                });
+//                focused.record.set('events', newEvents);
+//            }
+//        });
 
-        // ��� ��������� ������ ���������������� ������� "������" � �����������
-        query.on('change', function (comboChanged) {
-            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-            if (focused) {
-                focused.record.get('data')['queryID'] = query.getValue();
-            }
-        });
-        queryField.on('change', function (comboChanged) {
-            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-            if (focused) {
-                focused.record.get('data')['queryOutValueID'] = queryField.getValue();
-            }
-        });
-        queryKeyField.on('change', function (comboChanged) {
-            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-            if (focused) {
-                focused.record.get('data')['queryOutKeyID'] = queryKeyField.getValue();
-            }
-        });
-        dictionaryField.on('change', function (comboChanged) {
-            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-            if (focused) {
-                focused.record.get('data')['saveField'] = dictionaryField.getValue();
-            }
-        });
+//        query.on('change', function (comboChanged) {
+//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
+//            if (focused) {
+//                focused.record.get('data')['queryID'] = query.getValue();
+//            }
+//        });
+//        queryField.on('change', function (comboChanged) {
+//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
+//            if (focused) {
+//                focused.record.get('data')['queryOutValueID'] = queryField.getValue();
+//            }
+//        });
+//        queryKeyField.on('change', function (comboChanged) {
+//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
+//            if (focused) {
+//                focused.record.get('data')['queryOutKeyID'] = queryKeyField.getValue();
+//            }
+//        });
+//        dictionaryField.on('change', function (comboChanged) {
+//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
+//            if (focused) {
+//                focused.record.get('data')['saveField'] = dictionaryField.getValue();
+//            }
+//        });
 
         // Events about adding and removing components from designed form
         // Handlers shows it by adding/removing components on Project Inspector
@@ -290,6 +251,10 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         win.on('ComponentRemoved', _this.onRemoveComponent);
     },
 
+    /**
+     * Set Drag Zone to main form (Window to main form)
+     * @param form Main form
+     */
     onMainPanelRender: function (form) {
         var body = form.body;
         var win = form.up('window');
@@ -471,8 +436,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     //=================================================== Open form ====================================================
 
     /**
-     * Open form
-     * @param btn
+     * Open form ("Open" button click event handler)
+     * @param btn "Open" button
      */
     onOpenForm: function (btn) {
         var _this = this;
@@ -542,6 +507,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         });
     },
 
+    /**
+     * Draw recieved form on the Main Form
+     * @param win Main IDE Window
+     * @param formMetaDescriptions Recieved meta-descriptions of the form
+     */
     drawForm: function (win, formMetaDescriptions) {
         var _this = this;
         var form = win.down('form[name=mainPanel]');
@@ -628,8 +598,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var _this = this;
         var win = btn.up('window');
         var mainPanel = win.down('form[name=mainPanel]');
-        var dictionaryField = win.down('combobox[name=dictionaryField]');
-        var dictionaryFieldSet = dictionaryField.up('fieldset');
 
         // Delegate for new form dialog window
         var createNewForm = function () {
@@ -687,6 +655,45 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         refactorWin.on('FormIsReadyToRename', function (formName, formDescription) {
             win.setForm(win.FormID, formName, formDescription);
         });
+    },
+
+
+    /**
+     * Focus component event handler
+     * @param win Main IDE Window
+     * @param focusedComponent Focused component on the form
+     */
+    onIDEComponentFocused: function (win, focusedComponent) {
+        var propertiesPanel = win.down('panel[name=propertiesPanel]');
+        var propertiesGrid = win.down('propertygrid[name=properties]');
+        var propertiesOwner = win.down('panel[name=propertiesOwner]');
+        var tree = win.down('treepanel');
+
+        if (focusedComponent) {
+            Focused.setFocusedCmp(focusedComponent);
+            propertiesOwner.update(
+                    '<span style="margin:3px;position:absolute;">' +
+                    CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
+                    focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
+                    '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
+                    '</span>'
+            );
+
+            var treeNode = tree.getRootNode().findChild('id', focusedComponent.componentInfo.uniqueID, true);
+            if (treeNode) {
+                tree.getSelectionModel().select(treeNode);
+            }
+
+            propertiesGrid.setSource(focusedComponent.componentInfo.Properties);
+            propertiesPanel.setDisabled(false);
+
+        } else if (!WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp()) {
+            propertiesGrid.setSource([]);
+            propertiesOwner.update('');
+            propertiesFilter.setValue('');
+            tree.getSelectionModel().deselectAll();
+            propertiesPanel.setDisabled(true);
+        }
     },
 
     /**
@@ -882,6 +889,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         win.setForm(null, null, null);
     },
 
+    //region Project tree
+
     /**
      * Add new component into Project Inspector
      * @param win Main window
@@ -953,7 +962,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
     },
 
-    //================================================== ������� ==================================================
+    //endregion
+
+    //region Form Queries
 
     /**
      * ������� ���������� ������ ������� � ������������
@@ -1007,7 +1018,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
     },
 
-    //===================================================����� �������==================================================
+    //endregion
+
+    //=================================================== Some utilities ===============================================
 
     /**
      * Change any property in propertygrid
@@ -1375,8 +1388,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * �������, ����������� ������ "����������" � "��������� �������"
-     * @param win ���� ��������� ����
+     * Enable/disable components and proejct panel
+     * @param win Main IDE Window
      */
     setEnabledComponents: function (win) {
         var componentsPanel = win.down('panel[name=componentsPanel]');
@@ -1385,6 +1398,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         componentsPanel.setDisabled(false);
         projectPanel.setDisabled(false);
     },
+
+    //region Events
 
     /**
      * ������� ��������� ������� � ����������
@@ -1463,8 +1478,14 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }, Ext.Msg.YESNO);
     },
 
+    //endregion
+
     //region Form parameters
 
+    /**
+     * Add form parameter. Uses FormParametersIDE as parameters storage
+     * @param button Button "Add form parameter"
+     */
     onAddFormParameter: function(button) {
         var MainIDE = button.up('MainIDE');
         var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
@@ -1474,11 +1495,15 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             FormID: MainIDE.formID,
             UniqueID: null
         }, null, true);
-        formParametersExplorer.on('FormParameterSaved', function(parameter){
-            var formParameters = FormParametersIDE.getFormParameters();
-            FormParametersGrid.getStore().loadData(formParameters, false);
-        });
+//        formParametersExplorer.on('FormParameterSaved', function(parameter){
+//            var formParameters = FormParametersIDE.getFormParameters();
+//            FormParametersGrid.getStore().loadData(formParameters, false);
+//        });
     },
+    /**
+     * Edit form parameter. Uses FormParametersIDE as parameters storage
+     * @param button Button "Edit form parameter"
+     */
     onEditFormParameter: function(button) {
         var MainIDE = button.up('MainIDE');
         var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
@@ -1494,11 +1519,15 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             FormID: MainIDE.formID,
             UniqueID: selectedFormParameter.get('UniqueID')
         }, null, true);
-        formParametersExplorer.on('FormParameterSaved', function(parameter){
-            var formParameters = FormParametersIDE.getFormParameters();
-            FormParametersGrid.getStore().loadData(formParameters, false);
-        });
+//        formParametersExplorer.on('FormParameterSaved', function(parameter){
+//            var formParameters = FormParametersIDE.getFormParameters();
+//            FormParametersGrid.getStore().loadData(formParameters, false);
+//        });
     },
+    /**
+     * Delete form parameter. Uses FormParametersIDE as parameters storage
+     * @param button Button "Delete form parameter"
+     */
     onDeleteFormParameter: function(button) {
         var MainIDE = button.up('MainIDE');
         var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
@@ -1513,8 +1542,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             function (res) {
                 if (res == 'yes') {
                     FormParametersIDE.deleteParameter(selectedFormParameter.get('UniqueID'));
-                    var formParameters = FormParametersIDE.getFormParameters();
-                    FormParametersGrid.getStore().loadData(formParameters, false);
+//                    var formParameters = FormParametersIDE.getFormParameters();
+//                    FormParametersGrid.getStore().loadData(formParameters, false);
                 }
             },
             Ext.Msg.YESNO
