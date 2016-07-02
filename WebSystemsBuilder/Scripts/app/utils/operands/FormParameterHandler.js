@@ -15,6 +15,9 @@ Ext.define('WebSystemsBuilder.utils.operands.FormParameterHandler', {
     getOperandID: function() {
         return this._parameterInstance.FormParameter.OperandID;
     },
+    getValueTypeID: function () {
+        return this._parameterInstance.FormParameter.ValueTypeID;
+    },
     getValue: function () {
         return this.value;
     },

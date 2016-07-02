@@ -9,7 +9,8 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
         'WebSystemsBuilder.utils.mapping.ValueTypes',
         'WebSystemsBuilder.utils.mapping.ControlTypes',
         'WebSystemsBuilder.utils.mapping.EventTypes',
-        'WebSystemsBuilder.utils.mapping.ClientActionTypes'
+        'WebSystemsBuilder.utils.mapping.ClientActionTypes',
+        'WebSystemsBuilder.utils.mapping.PredicateOperations'
     ],
 
     init: function () {
@@ -27,6 +28,7 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
         WebSystemsBuilder.utils.mapping.ControlTypes.init();
         WebSystemsBuilder.utils.mapping.EventTypes.init();
         WebSystemsBuilder.utils.mapping.ClientActionTypes.init();
+        WebSystemsBuilder.utils.mapping.PredicateOperations.init();
     },
 
     onOpenIDE: function (button) {

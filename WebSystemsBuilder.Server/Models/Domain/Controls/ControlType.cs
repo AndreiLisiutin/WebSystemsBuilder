@@ -23,6 +23,8 @@ namespace WebSystemsBuilder.Server.Models
         [Column("extjs_class")]
         public string ExtJsClass { get; set; }
         [Column("is_operand")]
-        public string IsOperand { get; set; }
+        public bool IsOperand { get; set; }
+        [Column("value_type_id")]
+        public int? ValueTypeID { get; set; }
     }
 }

@@ -12,6 +12,9 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
     getOperandID: function() {
         return this._controlInstance.Control.OperandID;
     },
+    getValueTypeID: function () {
+        return this._controlInstance.ControlType.ValueTypeID;
+    },
 
     generateComponent: function (controlInstance, innerHandlers) {
         var _this = this;

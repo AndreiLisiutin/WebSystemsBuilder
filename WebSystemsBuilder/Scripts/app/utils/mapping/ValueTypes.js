@@ -1,6 +1,9 @@
 ﻿Ext.define('WebSystemsBuilder.utils.mapping.ValueTypes', {
     alternateClassName: 'ValueTypes',
     singleton: true,
+    requires:[
+        'WebSystemsBuilder.utils.mapping.PredicateOperations'
+    ],
     init: function () {
         this.String = 1;
         this.Decimal = 2;
@@ -94,6 +97,31 @@
                 break;
             default:
                 throw 'Unknown value type';
+        }
+    },
+
+    executePredicate: function(operand1, operand2, predicateOperationID, valueTypeID) {
+
+        if (operand1 == null || typeof(operand1) == 'undefined' || 
+            operand2 == null || typeof(operand2) == 'undefined') {
+            return false;
+        }
+        
+        switch (predicateOperationID) {
+            case PredicateOperations.Equals:
+                return +operand1 == +operand2;
+                break;
+            case PredicateOperations.NotEquals:
+                return +operand1 != +operand2;
+                break;
+            case PredicateOperations.GreaterThan:
+                return +operand1 > +operand2;
+                break;
+            case PredicateOperations.LowerThan:
+                return +operand1 < +operand2;
+                break;
+            default:
+                throw 'Unknown predicateOperationID';
         }
     }
 });

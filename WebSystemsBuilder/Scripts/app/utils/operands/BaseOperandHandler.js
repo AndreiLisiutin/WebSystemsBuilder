@@ -5,10 +5,13 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseOperandHandler', {
         throw 'BaseOperandFactory not implemented.';
     },
 
-    getValue: function (handler) {
+    getValue: function () {
         throw 'BaseOperandFactory not implemented.';
     },
-    setValue: function (handler) {
+    getValueTypeID: function () {
+        throw 'BaseOperandFactory not implemented.';
+    },
+    setValue: function (value) {
         throw 'BaseOperandFactory not implemented.';
     }
 });
