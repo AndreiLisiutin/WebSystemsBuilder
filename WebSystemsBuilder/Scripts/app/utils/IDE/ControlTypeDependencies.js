@@ -1,6 +1,6 @@
-Ext.define('WebSystemsBuilder.utils.IDE.DragDropComponents', {
+Ext.define('WebSystemsBuilder.utils.IDE.ControlTypeDependencies', {
     singleton: true,
-    alternateClassName: ['DragDropComponents'],
+    alternateClassName: ['ControlTypeDependencies'],
 
     ControlTypeDependencies: null,
     ready: false,

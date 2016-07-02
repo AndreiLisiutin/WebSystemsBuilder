@@ -46,9 +46,10 @@
         };
 
         if (win.UniqueID > 0) {
-            var param = FormParametersIDE.getParameterByID(win.UniqueID);
-            parameterName.setValue(param.Name);
-            loadTypeCombo(param.ValueTypeID);
+            var param = FormParametersIDE.getParameterByUniqueID(win.UniqueID);
+            win.parameter = param;
+            parameterName.setValue(param.FormParameter.Name);
+            loadTypeCombo(param.FormParameter.ValueTypeID);
             type.setReadOnly(true);
         } else {
             loadTypeCombo();
@@ -63,6 +64,7 @@
         var win = btn.up('window');
         var type = win.down('combobox[name=type]');
         var parameterName = win.down('textfield[name=parameterName]');
+        var isEdit = win.UniqueID > 0;
 
         if (!parameterName.getValue()) {
             var error = 'Type parameter name.';
@@ -81,10 +83,19 @@
         }
 
         var parameter = {
-            Name: parameterName.getValue(),
-            ValueTypeID: type.getValue(),
-            ValueType: type.getRawValue(),
-            UniqueID: win.UniqueID
+            FormParameter: {
+                FormParameterID: isEdit ? win.parameter.FormParameter.FormParameterID : 0,
+                FormID: 0,
+                Name: parameterName.getValue(),
+                IsPublic: isEdit ? win.parameter.FormParameter.IsPublic : 0,
+                ValueTypeID: type.getValue(),
+                UniqueID: isEdit ? win.UniqueID : 0
+            },
+            PropertyValueType: {
+                ValueTypeID: type.getValue(),
+                Name: type.getRawValue(),
+                Format:isEdit ? win.parameter.PropertyValueType.Format : null
+            }
         };
         var saveSuccess = false;
         if (win.UniqueID > 0) {

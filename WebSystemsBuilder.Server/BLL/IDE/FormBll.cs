@@ -88,8 +88,12 @@ namespace WebSystemsBuilder.Server
                     try
                     {
                         // Save Form
-                        db.Entry(formInstance.Form).State = EntityState.Modified;
-                        db.SaveChanges();
+                        var originalForm = db.Forms.Find(formInstance.Form.FormID);
+                        if (originalForm != null)
+                        {
+                            db.Entry(originalForm).CurrentValues.SetValues(formInstance.Form);
+                            db.SaveChanges();
+                        }
 
                         // Save Form Parameters
                         if (formInstance.FormParameters != null)
@@ -117,7 +121,11 @@ namespace WebSystemsBuilder.Server
                                 }
                                 else
                                 {
-                                    db.Entry(formParameter.FormParameter).State = EntityState.Modified;
+                                    var originalParameter = db.FormParameters.Find(formParameter.FormParameter.FormParameterID);
+                                    if (originalParameter != null)
+                                    {
+                                        db.Entry(originalParameter).CurrentValues.SetValues(formParameter.FormParameter);
+                                    }
                                 }
 
                                 db.SaveChanges();
@@ -163,7 +171,7 @@ namespace WebSystemsBuilder.Server
             }
 
             // Save current control
-            if (currentControl.Control.OperandID <= 0)
+            if (currentControl.Control.OperandID == null || currentControl.Control.OperandID <= 0)
             {
                 // Get OperandID
                 var operand = db.Operands.Add(new Operand());
@@ -176,7 +184,11 @@ namespace WebSystemsBuilder.Server
             else
             {
                 // Edit current control
-                db.Entry(currentControl.Control).State = EntityState.Modified;
+                var originalControl = db.Controls.Find(currentControl.Control.ControlID);
+                if (originalControl != null)
+                {
+                    db.Entry(originalControl).CurrentValues.SetValues(currentControl.Control);
+                }
             }
             db.SaveChanges();
 
@@ -203,7 +215,11 @@ namespace WebSystemsBuilder.Server
                     else
                     {
                         // Edit property
-                        db.Entry(currentProperty.Property).State = EntityState.Modified;
+                        var originalProperty = db.Properties.Find(currentProperty.Property.PropertyID);
+                        if (originalProperty != null)
+                        {
+                            db.Entry(originalProperty).CurrentValues.SetValues(currentProperty.Property);
+                        }
                     }
                     db.SaveChanges();
                 }

@@ -3,43 +3,43 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
     alternateClassName: ['FormParametersIDE'],
 
     Parameters: null,
+    gridpanel: null,
 
-    init: function () {
-//        {
-//            Name: 'name',
-//            ValueType: 'type',
-//            ValueTypeID: 'type',
-//            UniqueID: 'id'
-//            OperandID: 'id'
-//            FormParameterID: 'id'
-//        }
+    init: function (gridpanel) {
+//        FormParameter
+//        public int FormParameterID { get; set; }
+//        public int FormID { get; set; }
+//        public string Name { get; set; }
+//        public bool IsPublic { get; set; }
+//        public int ValueTypeID { get; set; }
+//        public int OperandID { get; set; }
+//        public int UniqueID { get; set; }
+
+//        PropertyValueType
+//        public int ValueTypeID { get; set; }
+//        public string Name { get; set; }
+//        public string Format { get; set; }
         this.Parameters = [];
+
+        // load data into gridpanel
+        if (gridpanel) {
+            this.bindGridPanel(gridpanel);
+            this.gridpanel.getStore().loadData(this.Parameters, false);
+        }
+    },
+
+    bindGridPanel: function(gridpanel) {
+        this.gridpanel = gridpanel;
     },
 
     getFormParameters: function () {
         return this.Parameters;
     },
     getFormParametersToSave: function (formID) {
-        var paramsList = [];
         this.Parameters.forEach(function(currentParam) {
-            var currentParamToSave = {
-                FormParameter: {
-                    FormParameterID: currentParam.FormParameterID,
-                    OperandID: currentParam.OperandID,
-                    FormID: formID,
-                    Name: currentParam.Name,
-                    IsPublic: true,
-                    ValueTypeID: currentParam.ValueTypeID
-                },
-                PropertyValueType: {
-                    ValueTypeID: currentParam.ValueTypeID,
-                    Name: currentParam.ValueType,
-                    Format: null
-                }
-            }
-            paramsList.push(currentParamToSave);
+            currentParam.FormParameter.FormID = formID;
         });
-        return paramsList;
+        return this.Parameters;
     },
 
     getParameterByName: function (parameterName) {
@@ -47,7 +47,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
 
         if (this.Parameters.length > 0) {
             this.Parameters.forEach(function (currentParam) {
-                if (currentParam.Name == parameterName) {
+                if (currentParam.FormParameter.Name == parameterName) {
                     foundParameter = currentParam;
                 }
             });
@@ -55,12 +55,12 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
 
         return foundParameter;
     },
-    getParameterByID: function (uniqueID) {
+    getParameterByUniqueID: function (uniqueID) {
         var foundParameter = null;
 
         if (this.Parameters.length > 0) {
             this.Parameters.forEach(function (currentParam) {
-                if (currentParam.UniqueID == uniqueID) {
+                if (currentParam.FormParameter.UniqueID == uniqueID) {
                     foundParameter = currentParam;
                 }
             });
@@ -82,7 +82,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
         }
         var foundParameter;
         this.Parameters.forEach(function (currentParam) {
-            if (currentParam.Name == parameterName && currentParam.UniqueID != (uniqueID || 0)) {
+            if (currentParam.FormParameter.Name == parameterName && currentParam.FormParameter.UniqueID != (uniqueID || 0)) {
                 foundParameter = currentParam;
             }
         });
@@ -93,46 +93,64 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
     },
 
     addParameter: function (parameter) {
-        var ckeckNameError = this._checkParameterName(parameter.Name);
+        var ckeckNameError = this._checkParameterName(parameter.FormParameter.Name);
         if (ckeckNameError) {
             console.error('FormParametersIDE.addParameter: ' + ckeckNameError);
             return false;
         }
 
-        if (!parameter.UniqueID) {
-            parameter.UniqueID = Random.get();
+        if (!parameter.FormParameter.UniqueID) {
+            if (parameter.FormParameter.OperandID > 0) {
+                parameter.FormParameter.UniqueID = parameter.FormParameter.OperandID;
+            } else {
+                parameter.FormParameter.UniqueID = Random.get();
+            }
         }
         this.Parameters.push(parameter);
+
+        // load data into gridpanel
+        if (this.gridpanel) {
+            this.gridpanel.getStore().loadData(this.Parameters, false);
+        }
         return true;
     },
 
     editParameter: function (parameter) {
-        var ckeckNameError = this._checkParameterName(parameter.Name, parameter.UniqueID);
+        var ckeckNameError = this._checkParameterName(parameter.FormParameter.Name, parameter.FormParameter.UniqueID);
         if (ckeckNameError) {
             console.error('FormParametersIDE.editParameter: ' + ckeckNameError);
             return false;
         }
 
-        var currentParameter = this.getParameterByID(parameter.UniqueID);
+        var currentParameter = this.getParameterByUniqueID(parameter.FormParameter.UniqueID);
         if (currentParameter) {
             var index = Ext.Array.indexOf(this.Parameters, currentParameter);
             if (index != -1) {
                 this.Parameters[index] = parameter;
+                // load data into gridpanel
+                if (this.gridpanel) {
+                    this.gridpanel.getStore().loadData(this.Parameters, false);
+                }
+
                 return true;
             } else {
-                console.error('FormParametersIDE.editParameter: can\'t find index of parameter "' + currentParameter.Name + '"');
+                console.error('FormParametersIDE.editParameter: can\'t find index of parameter "' + currentParameter.FormParameter.Name + '"');
                 return false;
             }
         } else {
-            console.error('FormParametersIDE.editParameter: can\'t find parameter "' + parameter.Name + '"');
+            console.error('FormParametersIDE.editParameter: can\'t find parameter "' + parameter.FormParameter.Name + '"');
             return false;
         }
     },
 
     deleteParameter: function (uniqueID) {
-        var foundParameter = this.getParameterByID(uniqueID);
+        var foundParameter = this.getParameterByUniqueID(uniqueID);
         if (foundParameter) {
             Ext.Array.remove(this.Parameters, foundParameter);
+            // load data into gridpanel
+            if (this.gridpanel) {
+                this.gridpanel.getStore().loadData(this.Parameters, false);
+            }
         } else {
             console.error('FormParametersIDE.deleteParameter: can\'t find parameter [uniqueID="' + uniqueID + '"]');
         }
@@ -140,6 +158,10 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
 
     clear: function () {
         this.Parameters = [];
+        // load data into gridpanel
+        if (this.gridpanel) {
+            this.gridpanel.getStore().loadData(this.Parameters, false);
+        }
     }
 
 });

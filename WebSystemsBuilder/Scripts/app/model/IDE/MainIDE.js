@@ -132,9 +132,39 @@ Ext.define('WebSystemsBuilder.model.IDE.Params', {
 Ext.define('WebSystemsBuilder.model.IDE.FormParameters', {
     extend: 'Ext.data.Model',
     fields: [
-        'UniqueID',
-        'Name',
-        'ValueTypeID',
-        'ValueType'
+        'FormParameter',
+        'PropertyValueType',
+        {
+            name: 'UniqueID',
+            convert: function (v, record) {
+                var FormParameter = record.get('FormParameter');
+                if (!FormParameter) return null;
+                return FormParameter.UniqueID;
+            }
+        },
+        {
+            name: 'Name',
+            convert: function (v, record) {
+                var FormParameter = record.get('FormParameter');
+                if (!FormParameter) return null;
+                return FormParameter.Name;
+            }
+        },
+        {
+            name: 'ValueTypeID',
+            convert: function (v, record) {
+                var FormParameter = record.get('FormParameter');
+                if (!FormParameter) return null;
+                return FormParameter.ValueTypeID;
+            }
+        },
+        {
+            name: 'ValueType',
+            convert: function (v, record) {
+                var FormParameter = record.get('PropertyValueType');
+                if (!FormParameter) return null;
+                return FormParameter.Name;
+            }
+        }
     ]
 });

@@ -32,8 +32,10 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.BaseComponentFactory', {
 
         var component = _this.createComponent();
 
-        component.uniqueID = Random.get();
+        component.uniqueID = componentInfo.uniqueID ? componentInfo.uniqueID : Random.get();
         componentInfo.uniqueID = component.uniqueID;
+        component.ControlID = componentInfo.ControlID;
+        component.OperandID = componentInfo.OperandID;
         component.name = 'sencha' + componentInfo.Name.toLowerCase() + component.uniqueID;
         component.dataIndex = component.name;
         component.componentInfo = componentInfo;

@@ -18,7 +18,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
                     var moused = MousedComponentsIDE.getMousedComponents()[0];
                     var controlTypeParentID = moused.componentInfo.ControlTypeID;
                     // Possible control types, which can be children of current moused component
-                    var dragOnChildren = DragDropComponents.getDependencies(controlTypeParentID);
+                    var dragOnChildren = ControlTypeDependencies.getDependencies(controlTypeParentID);
                     if (Ext.Array.contains(dragOnChildren, draggedControlTypeID)) {
                         this.allowDrop = true;
                         return Ext.baseCSSPrefix + 'dd-drop-ok';
@@ -62,7 +62,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
         });
 
         var currentControlTypeID = currentComponent.componentInfo.ControlTypeID;
-        var dependenciesOfCurrentControl = DragDropComponents.getDependencies(currentControlTypeID);
+        var dependenciesOfCurrentControl = ControlTypeDependencies.getDependencies(currentControlTypeID);
 
         component.formPanelDropTarget.removeFromGroup(currentControlTypeID);
         dependenciesOfCurrentControl.forEach(function (_controlTypeID) {
