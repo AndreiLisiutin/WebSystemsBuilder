@@ -15,5 +15,25 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ToolbarFactory', {
             isComponent: true,
             dock: 'right'
         });
-    }
+    },
+
+    //----------------------------------FORM GENERATOR------------------------------------------------------------------
+
+    getSelfArrayName:function(properties) {
+        return 'dockedItems';
+    },
+    //----------------------------------EVENTS--------------------------------------------------------------------------
+    bindLoad: function (handler) {
+        this._visualComponent.on('afterrender', handler);
+    },
+    bindClick: function (handler) {
+        this._visualComponent.on('click', handler);
+    },
+    //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
+    executeEnable: function (handler) {
+        this._visualComponent.enable();
+    },
+    executeDisable: function (handler) {
+        this._visualComponent.disable();
+    },
 });

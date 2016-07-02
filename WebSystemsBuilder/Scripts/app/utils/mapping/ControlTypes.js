@@ -1,4 +1,5 @@
-﻿Ext.define('ControlTypes', {
+﻿Ext.define('WebSystemsBuilder.utils.mapping.ControlTypes', {
+    alternateClassName: 'ControlTypes',
     singleton: true,
     init: function () {
         this.Window = 1;
@@ -29,7 +30,7 @@
                 break;
             case this.ToolBar:
                 return 'dockedItems';
-            break;
+                break;
             default:
                 return 'items';
                 break;

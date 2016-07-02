@@ -17,5 +17,22 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.FieldSetFactory', {
             c.toggleCmp.hide();
         });
         return component;
+    },
+
+    //----------------------------------FORM GENERATOR------------------------------------------------------------------
+
+    //----------------------------------EVENTS--------------------------------------------------------------------------
+    bindLoad: function (handler) {
+        this._visualComponent.on('afterrender', handler);
+    },
+    bindClick: function (handler) {
+        this._visualComponent.on('click', handler);
+    },
+    //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
+    executeEnable: function (handler) {
+        this._visualComponent.enable();
+    },
+    executeDisable: function (handler) {
+        this._visualComponent.disable();
     }
 });

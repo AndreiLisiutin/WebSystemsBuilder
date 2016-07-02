@@ -14,5 +14,38 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.TextFieldFactory', {
             readOnly: true,
             width: 200
         });
+    },
+
+    //----------------------------------FORM GENERATOR------------------------------------------------------------------
+
+    //----------------------------------OPERAND-------------------------------------------------------------------------
+    getValue: function () {
+        return this._visualComponent.getValue();
+    },
+    setValue: function (value) {
+        return this._visualComponent.setValue(value);
+    },
+    //----------------------------------EVENTS--------------------------------------------------------------------------
+    bindLoad: function (handler) {
+        this._visualComponent.on('afterrender', handler);
+    },
+    bindClick: function (handler) {
+        this._visualComponent.on('click', handler);
+    },
+    bindChangeValue: function (handler) {
+        this._visualComponent.on('change', handler);
+    },
+    //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
+    executeEnable: function (handler) {
+        this._visualComponent.enable();
+    },
+    executeDisable: function (handler) {
+        this._visualComponent.disable();
+    },
+    executeSetReadOnly: function (handler) {
+        this._visualComponent.setReadOnly(true);
+    },
+    executeSetNotReadOnly: function (handler) {
+        this._visualComponent.setReadOnly(false);
     }
 });

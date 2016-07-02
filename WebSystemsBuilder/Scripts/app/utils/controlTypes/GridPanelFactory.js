@@ -28,5 +28,25 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.GridPanelFactory', {
             c.tools['collapse-top'].hide();
         });
         return component;
+    },
+
+    //----------------------------------FORM GENERATOR------------------------------------------------------------------
+
+    //----------------------------------EVENTS--------------------------------------------------------------------------
+    bindLoad: function (handler) {
+        this._visualComponent.on('afterrender', handler);
+    },
+    bindClick: function (handler) {
+        this._visualComponent.on('click', handler);
+    },
+    bindChangeSelection: function (handler) {
+        this._visualComponent.on('selectionchange', handler);
+    },
+    //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
+    executeEnable: function (handler) {
+        this._visualComponent.enable();
+    },
+    executeDisable: function (handler) {
+        this._visualComponent.disable();
     }
 });

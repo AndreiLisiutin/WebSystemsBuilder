@@ -1,11 +1,15 @@
 Ext.define('WebSystemsBuilder.utils.controlTypes.BaseComponentFactory', {
+    extend: 'WebSystemsBuilder.utils.operands.BaseControlHandler',
     alternateClassName: ['BaseComponentFactory'],
-
+    requires: [
+        'WebSystemsBuilder.utils.mapping.EventTypes',
+        'WebSystemsBuilder.utils.mapping.ValueTypes'
+    ],
     focusEvent: 'focus',
     isDocked: false,
     isColumn: false,
 
-    addComponent: function(win, parentComponent, componentInfo) {
+    addComponent: function (win, parentComponent, componentInfo) {
         var component = this.get(win, parentComponent, componentInfo);
 
         if (this.isDocked) {

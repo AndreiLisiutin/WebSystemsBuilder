@@ -22,6 +22,29 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.NumberColumnFactory', {
             align: 'right',
             minWidth: 50
         });
+    },
+
+    //----------------------------------FORM GENERATOR------------------------------------------------------------------
+
+    getSelfArrayName:function(properties) {
+        return 'columns';
+    },
+    //----------------------------------EVENTS--------------------------------------------------------------------------
+    bindLoad: function (handler) {
+        this._visualComponent.on('afterrender', handler);
+    },
+    bindClick: function (handler) {
+        this._visualComponent.on('click', handler);
+    },
+    bindChangeValue: function (handler) {
+        this._visualComponent.on('change', handler);
+    },
+    //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
+    executeEnable: function (handler) {
+        this._visualComponent.enable();
+    },
+    executeDisable: function (handler) {
+        this._visualComponent.disable();
     }
 
 });

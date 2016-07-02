@@ -49,5 +49,19 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.WindowFactory', {
             c.tools['collapse-top'].hide();
         });
         return component;
-    }
+    },
+
+    //----------------------------------FORM GENERATOR------------------------------------------------------------------
+
+    //----------------------------------EVENTS--------------------------------------------------------------------------
+    bindLoad: function (handler) {
+        this._visualComponent.on('afterrender', handler);
+    },
+    bindClick: function (handler) {
+        this._visualComponent.on('click', handler);
+    },
+    bindClose: function (handler) {
+        this._visualComponent.on('close', handler);
+    },
+    //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
 });
