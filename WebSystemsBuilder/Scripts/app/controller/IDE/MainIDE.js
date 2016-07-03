@@ -171,6 +171,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         Queries.clear();
         Random.clear();
         Focused.clearFocusedCmp();
+        FormControlsIDE.init(form);
         FormParametersIDE.init(FormParametersGrid);
         MousedComponentsIDE.clear();
 
@@ -294,6 +295,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     ExtJsClass: draggedClone.get('ExtJsClass'),
                     Properties: draggedClone.get('Properties'),
                     PropertiesList: draggedClone.get('PropertiesList'),
+                    EventTypesList: draggedClone.get('EventTypesList'),
                     Icon: draggedClone.get('Icon')
                 };
 
@@ -557,6 +559,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 ExtJsClass: ControlType.ExtJsClass,
                 Properties: currentControlTypeRecord.get('Properties'),
                 PropertiesList: currentControlTypeRecord.get('PropertiesList'),
+                EventTypesList: currentControlTypeRecord.get('EventTypesList'),
                 Icon: currentControlTypeRecord.get('Icon'),
                 ControlID: Control.ControlID,
                 OperandID: Control.OperandID
@@ -665,7 +668,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      */
     onIDEComponentFocused: function (win, focusedComponent) {
         var propertiesPanel = win.down('panel[name=propertiesPanel]');
+        var propertiesFilter = propertiesPanel.down('textfield[name=propertyFilter]');
         var propertiesGrid = win.down('propertygrid[name=properties]');
+        var eventsGrid = win.down('gridpanel[name=events]');
         var propertiesOwner = win.down('panel[name=propertiesOwner]');
         var tree = win.down('treepanel');
 
@@ -687,12 +692,15 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             propertiesGrid.setSource(focusedComponent.componentInfo.Properties);
             propertiesPanel.setDisabled(false);
 
+            eventsGrid.getStore().loadData(focusedComponent.componentInfo.EventTypesList, false);
+
         } else if (!WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp()) {
             propertiesGrid.setSource([]);
             propertiesOwner.update('');
             propertiesFilter.setValue('');
             tree.getSelectionModel().deselectAll();
             propertiesPanel.setDisabled(true);
+            eventsGrid.getStore().loadData([], false);
         }
     },
 
@@ -1402,51 +1410,31 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     //region Events
 
     /**
-     * ������� ��������� ������� � ����������
-     * @param btn ������ "����������", ��������� �������
-     */
-    onShowEvent: function (btn) {
-        var _this = this;
-        var win = btn.up('window');
-        var form = win.down('form[name=mainPanel]');
-        var eventsGrid = win.down('gridpanel[name=events]');
-        var selected = eventsGrid.getSelectionModel().getSelection()[0];
-        if (!selected) {
-            WebSystemsBuilder.utils.MessageBox.show('�������� �������.', null, -1);
-            return;
-        }
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventAction');
-        var eventAction = WebSystemsBuilder.utils.Windows.open('EventAction', {
-            form: form,
-            isShowOnly: true,
-            actions: selected.get('actions')
-        }, null, true);
-    },
-
-    /**
-     * ������� �������������� ������� � ����������
-     * @param btn ������ "�������������", ��������� �������
+     * Edit control event
+     * @param btn Button "Edit event"
      */
     onEditEvent: function (btn) {
         var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
         var eventsGrid = win.down('gridpanel[name=events]');
-        var selected = eventsGrid.getSelectionModel().getSelection()[0];
-        if (!selected) {
-            WebSystemsBuilder.utils.MessageBox.show('�������� �������.', null, -1);
+
+        var selectedEvent = eventsGrid.getSelectionModel().getSelection()[0];
+        if (!selectedEvent) {
+            MessageBox.error('Choose event to edit');
             return;
         }
+
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventAction');
         var eventAction = WebSystemsBuilder.utils.Windows.open('EventAction', {
             form: form,
             isShowOnly: false,
-            actions: selected.get('actions')
+            actions: selectedEvent.get('actions')
         }, null, true);
         eventAction.on('EventActionIsReadyToSave', function (winDialog, action) {
             // �������� ����
-            selected.set('actions', action);
-            selected.commit();
+            selectedEvent.set('actions', action);
+            selectedEvent.commit();
             // ������� ������� �� ���������
             eventsGrid.fireEvent('RecordChanged', eventsGrid);
         });

@@ -55,6 +55,17 @@ namespace WebSystemsBuilder.ClientWeb
             return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary> 
+        /// Get all clent action types
+        /// </summary>
+        /// <returns>List with all clent action types, wrapped with IResponsePackage</returns>
+        [HttpGet]
+        public JsonResult GetClientActionTypeList()
+        {
+            var list = new ClientActionTypeBll().GetClientActionTypeList();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
         /// <summary>
         /// Save all the form meta-descriptions
         /// </summary>

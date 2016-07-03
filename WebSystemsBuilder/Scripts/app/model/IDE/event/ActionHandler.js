@@ -23,3 +23,34 @@ Ext.define('WebSystemsBuilder.model.IDE.event.HandlerParams', {
         'controlName'
     ]
 });
+
+Ext.define('WebSystemsBuilder.model.IDE.event.Control', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'componentInfo' ,
+        {
+            name: 'Name',
+            convert: function (v, record) {
+                var componentInfo = record.get('componentInfo');
+                if (!componentInfo) return null;
+                return componentInfo.Name + '[id=' + componentInfo.uniqueID + ']';
+            }
+        },
+        {
+            name: 'UniqueID',
+            convert: function (v, record) {
+                var componentInfo = record.get('componentInfo');
+                if (!componentInfo) return null;
+                return componentInfo.uniqueID;
+            }
+        }
+    ]
+});
+
+Ext.define('WebSystemsBuilder.model.IDE.event.ClientActionType', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'ClientActionTypeID',
+        'Name'
+    ]
+});

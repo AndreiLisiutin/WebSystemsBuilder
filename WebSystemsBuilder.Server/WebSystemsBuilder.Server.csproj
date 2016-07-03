@@ -69,6 +69,7 @@
     <Compile Include="BLL\FormGeneration\QueryTypeBLL.cs" />
     <Compile Include="BLL\FormGeneration\ValueTypesBLL.cs" />
     <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
+    <Compile Include="BLL\IDE\ClientActionTypeBll.cs" />
     <Compile Include="BLL\IDE\ControlTypeGroupBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeBLL.cs" />
     <Compile Include="BLL\IDE\FormBll.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Models\Business\FormGeneration\Query\QueryActionOutInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Query\QueryActionInInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Query\QueryActionInstance.cs" />
+    <Compile Include="Models\Business\IDE\EventTypeInstance.cs" />
     <Compile Include="Models\Business\IDE\PropertyInstance.cs" />
     <Compile Include="Models\Business\IDE\ControlTypeInctance.cs" />
     <Compile Include="Models\Business\IDE\PropertyTypeInstance.cs" />

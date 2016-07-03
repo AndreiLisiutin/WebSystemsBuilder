@@ -2,24 +2,17 @@
     extend: 'Ext.window.Window',
     alias: 'widget.EventAction',
     name: 'EventAction',
-    id: 'winEventAction',
 
     modal: true,
     constrain: true,
-    title: 'Событие',
+    title: 'Event handler',
 
     height: 300,
     width: 500,
     minHeight: 300,
     minWidth: 500,
 
-    layout: {
-        type: 'anchor'
-    },
-
-    actions:undefined,
-    form:undefined,
-    isShowOnly:undefined,
+    layout: 'fit',
 
     initComponent: function () {
         var me = this;
@@ -27,86 +20,81 @@
         var actionStore = Ext.create('WebSystemsBuilder.store.IDE.event.Action');
 
         Ext.applyIf(me, {
-
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'right',
-                    items: [
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Закрыть',
-                            action: 'onClose',
-                            border: true,
-                            icon: 'Scripts/resources/icons/close.png',
-                            iconAlign: 'top'
-                        },
-                        {
-                            xtype: 'tbseparator'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Сохранить',
-                            action: 'onSave',
-                            border: true,
-                            icon: 'Scripts/resources/icons/save.png',
-                            iconAlign: 'top'
-                        }
-                    ]
-                }
-            ],
-
             items: [
                 {
-                    xtype: 'fieldset',
-                    anchor: '0 0',
-                    margin: 5,
-                    padding: 2,
-                    title:'Действия события',
-                    layout:'fit',
-                    name: 'fsActions',
-                    items:[
+                    xtype: 'panel',
+                    layout: 'anchor',
+                    dockedItems: [
                         {
-                            xtype: 'gridpanel',
-                            name: 'actionGrid',
-                            store: actionStore,
-                            columns: [
+                            xtype: 'toolbar',
+                            dock: 'right',
+                            items: [
                                 {
-                                    xtype:'rownumberer',
-                                    text:'№'
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Close',
+                                    action: 'onClose',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/close.png',
+                                    iconAlign: 'top'
                                 },
                                 {
-                                    xtype:'gridcolumn',
-                                    flex:1,
-                                    text:'Действие',
-                                    dataIndex:'name'
-                                }
-                            ],
-                            dockedItems:[
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    border: true,
+                                    text: 'Add action',
+                                    icon: 'Scripts/resources/icons/add.png',
+                                    iconAlign: 'top',
+                                    action: 'onAddAction',
+                                    menu:[
+                                        {
+                                            xtype:'menuitem',
+                                            text: 'Add client action',
+                                            icon: 'Scripts/resources/icons/add.png',
+                                            action: 'onAddClientAction'
+                                        }
+                                    ]
+                                },
                                 {
-                                    xtype:'toolbar',
-                                    dock:'right',
-                                    items:[
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Delete action',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/delete.png',
+                                    iconAlign: 'top',
+                                    action: 'onDeleteAction'
+                                }
+                            ]
+                        }
+                    ],
+                    items: [
+                        {
+                            xtype: 'fieldset',
+                            anchor: '0 0',
+                            margin: 5,
+                            padding: 2,
+                            title: 'Event handler actions',
+                            layout: 'fit',
+                            name: 'fsActions',
+                            items: [
+                                {
+                                    xtype: 'gridpanel',
+                                    name: 'actionGrid',
+                                    store: actionStore,
+                                    columns: [
                                         {
-                                            xtype:'button',
-                                            scale:'medium',
-                                            border:true,
-                                            icon:'Scripts/resources/icons/add.png',
-                                            tooltip:'Добавить действие',
-                                            action: 'onAddAction'
+                                            xtype: 'rownumberer',
+                                            width:50,
+                                            text: '№'
                                         },
                                         {
-                                            xtype:'tbseparator'
-                                        },
-                                        {
-                                            xtype:'button',
-                                            scale:'medium',
-                                            border:true,
-                                            icon:'Scripts/resources/icons/delete.png',
-                                            tooltip:'Удалить действие',
-                                            action: 'onDeleteAction'
+                                            xtype: 'gridcolumn',
+                                            flex: 1,
+                                            text: 'Action',
+                                            dataIndex: 'ClientActionType'
                                         }
                                     ]
                                 }

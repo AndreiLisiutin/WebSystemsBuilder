@@ -12,5 +12,6 @@ namespace WebSystemsBuilder.Server.Models
         public ControlTypeGroup ControlTypeGroup { get; set; }
         public List<PropertyTypeInstance> PropertiesList { get;set; }
         public Dictionary<string, object> Properties { get; set; }
+        public List<EventTypeInstance> EventTypesList { get; set; }
     }
 }

@@ -15,6 +15,7 @@ Ext.application({
         'WebSystemsBuilder.utils.IDE.ControlTypeDependencies',
         'WebSystemsBuilder.utils.IDE.MousedComponentsIDE',
         'WebSystemsBuilder.utils.IDE.FormParametersIDE',
+        'WebSystemsBuilder.utils.IDE.FormControlsIDE',
 
         'WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils',
         'WebSystemsBuilder.utils.controlTypes.BaseComponentFactory',

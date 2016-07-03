@@ -4,11 +4,9 @@
     views: [
         'WebSystemsBuilder.view.IDE.event.EventAction'
     ],
-
     models: [
         'WebSystemsBuilder.model.IDE.event.EventAction'
     ],
-
     stores: [
         'WebSystemsBuilder.store.IDE.event.EventAction'
     ],
@@ -18,14 +16,11 @@
             'EventAction': {
                 afterrender: this.onLoad
             },
-            'EventAction button[action=onAddAction]': {
-                click: this.onAddAction
+            'EventAction [action=onAddClientAction]': {
+                click: this.onAddClientAction
             },
             'EventAction button[action=onDeleteAction]': {
                 click: this.onDeleteAction
-            },
-            'EventAction button[action=onSave]': {
-                click: this.onSave
             },
             'EventAction button[action=onClose]': {
                 click: this.onClose
@@ -34,100 +29,56 @@
     },
 
     /**
-     * Функция инициализации компонентов формы. Вызывается сразу после загрузке формы (afterrender).
-     * @param win Окно, представляющее данную форму.
+     * Load the form (afterrender).
+     * @param win Window EventAction
      */
     onLoad: function (win) {
         var actionGrid = win.down('gridpanel[name=actionGrid]');
-        var btnSave = win.down('button[action=onSave]');
-        var btnDel = win.down('button[action=onDeleteAction]');
-        var btnAdd = win.down('button[action=onAddAction]');
-        if (win.isShowOnly){
-            btnSave.disable();
-            btnDel.disable();
-            btnAdd.disable();
-        }
+
         if (win.actions) {
             actionGrid.getStore().loadData(win.actions, false);
         }
     },
 
     /**
-     * Функция сохранения обработчика события
-     * @param btn Кнопка "Сохранить"
+     * Add client action as new handler
+     * @param btn Button "Add"
      */
-    onSave: function (btn) {
+    onAddClientAction: function (btn) {
         var win = btn.up('window');
         var actionGrid = win.down('gridpanel[name=actionGrid]');
-        if (actionGrid.getStore().getCount() == 0){
-            WebSystemsBuilder.utils.MessageBox.show('Задайте хотя бы одно действие событию.', null, -1);
-            return;
-        }
-        var obj = [];
-        actionGrid.getStore().data.items.forEach(function(item){
-            var newObj = {
-                ID:item.get('ID'),
-                orderNumber:actionGrid.getStore().getCount() + 1,
-                eventID:item.get('eventID'),
-                actionTypeID:item.get('actionTypeID'),
-                name:item.get('name'),
-                parameters:item.get('parameters')
-            };
-            obj.push(newObj);
-        });
-        win.fireEvent('EventActionIsReadyToSave', win, obj);
-        this.onClose(btn);
-    },
 
-    /**
-     * Функция добавления обработчика события
-     * @param btn Кнопка "Добавить"
-     */
-    onAddAction: function (btn) {
-        var win = btn.up('window');
-        var actionGrid = win.down('gridpanel[name=actionGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.ActionHandler');
-        var actionHandler = WebSystemsBuilder.utils.Windows.open('ActionHandler', {
-            params:undefined,
-            form:win.form
-        }, null, true);
-        actionHandler.on('ActionHandlerSaved', function (winDialog, obj) {
-//            var obj = {
-//                ID:actionID, // не реальный
-//                orderNumber:undefined,
-//                actionTypeID:handler.getValue(),
-//                eventID:undefined,
-//                parameters:params
-//            };
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.ClientAction');
+        var actionWin = WebSystemsBuilder.utils.Windows.open('ClientAction', { }, null, true);
+        actionWin.on('ClientActionSaved', function (obj) {
             actionGrid.getStore().add(obj);
+            win.fireEvent('EventChanged');
         });
     },
 
     /**
-     * Функция удаления обработчика события
-     * @param btn Кнопка "Удалить"
+     * Delete client action
+     * @param btn Button "Delete"
      */
     onDeleteAction: function (btn) {
         var win = btn.up('window');
         var actionGrid = win.down('gridpanel[name=actionGrid]');
+
         var selected = actionGrid.getSelectionModel().getSelection()[0];
-        if (!selected){
+        if (!selected) {
             WebSystemsBuilder.utils.MessageBox.show('Не выбрано действие.', null, -1);
-        } else {
-            var record = actionGrid.getStore().findRecord('ID', selected.get('ID'));
-            if (record) actionGrid.getStore().remove(record);
         }
+
+        var record = actionGrid.getStore().findRecord('ID', selected.get('ID'));
+        if (record) actionGrid.getStore().remove(record);
     },
 
     /**
-     * Функция акрытия формы.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * Close the window
+     * @param btn Button "Close"
      */
     onClose: function (btn) {
-        var win = btn.up('EventAction');
-        if (win && win.close) {
-            win.close();
-        }
+        btn.up('window').close();
     }
 
 });
