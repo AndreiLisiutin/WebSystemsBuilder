@@ -19,9 +19,9 @@
             'OperandExplorer radiofield': {
                 change: this.onOperandProviderChange
             },
-//            'OperandExplorer button[action=onSave]': {
-//                click: this.onSave
-//            },
+            'OperandExplorer button[action=onChoose]': {
+                click: this.onChoose
+            },
             'OperandExplorer button[action=onClose]': {
                 click: this.onClose
             }
@@ -40,11 +40,16 @@
         var formParameter = win.down('combobox[name=formParameter]');
         var constant = win.down('combobox[name=constant]');
 
-//        var controlList = FormControlsIDE.getControlList();
-//        control.getStore().loadData(controlList, false);
+        var controlList = FormControlsIDE.getControlList();
+        control.getStore().loadData(controlList, false);
+
+        var formParametersList = FormParametersIDE.getFormParameters();
+        formParametersList.forEach(function (currentParameter) {
+            formParameter.getStore().add({formParameter: currentParameter});
+        });
     },
 
-    onOperandProviderChange: function(radiofield, newValue , oldValue , eOpts) {
+    onOperandProviderChange: function (radiofield, newValue, oldValue, eOpts) {
         var win = radiofield.up('window');
         var controlRadioField = win.down('radiofield[id=ControlValueProvider]');
         var formParameterRadioField = win.down('radiofield[id=FormParameterValueProvider]');
@@ -62,53 +67,52 @@
      * Save function
      * @param btn Button "Save"
      */
-    onSave: function (btn) {
+    onChoose: function (btn) {
         var win = btn.up('window');
+        var controlRadioField = win.down('radiofield[id=ControlValueProvider]');
+        var formParameterRadioField = win.down('radiofield[id=FormParameterValueProvider]');
+        var constantRadioField = win.down('radiofield[id=ConstantValueProvider]');
         var control = win.down('combobox[name=control]');
-        var clientActionType = win.down('combobox[name=clientActionType]');
-
-        if (!control.getValue()) {
-            MessageBox.error('Choose control');
-            return;
-        }
-        if (!clientActionType.getValue()) {
-            MessageBox.error('Choose action type');
-            return;
-        }
+        var formParameter = win.down('combobox[name=formParameter]');
+        var constant = win.down('combobox[name=constant]');
 
         var obj = {
-            EventInstance: {
-                Event: {
-                    EventID: null,
-                    EventTypeControlTypeID: null,
-                    ControlID: control.getValue()
-                },
-                EventType: {
-                    EventTypeID: null,
-                    Name: null
-                },
-                EventTypeControlType: {
-                    EventTypeControlTypeID: null,
-                    EventTypeID: null,
-                    ControlTypeID: null
-                }
-            },
-            EventActions: [
-                {
-                    UniqueID: Random.get(),
-                    ControlUniqueID: control.getValue(),
-                    ActionTypeID: clientActionType.getValue(),
-                    EventAction: {
-                        ActionID: null,
-                        ActionIDParent: null,
-                        EventID: null
-                    },
-                    ChildActions: []
-                }
-            ]
+            IsControl: controlRadioField.getValue(),
+            IsFormParameter: formParameterRadioField.getValue(),
+            IsConstant: constantRadioField.getValue(),
+            Control: control.getValue(),
+            FormParameter: formParameter.getValue(),
+            Constant: constant.getValue(),
+            Value: null
         };
 
-        win.fireEvent('ClientActionSaved', obj);
+        if (!obj.IsControl && !obj.IsFormParameter && !obj.IsConstant) {
+            MessageBox.error('Operand has not chosen');
+            return;
+        }
+        if (obj.IsControl) {
+            if (!obj.Control) {
+                MessageBox.error('Control has not chosen');
+                return;
+            }
+            obj.Value = obj.Control;
+        }
+        if (obj.IsFormParameter) {
+            if (!obj.FormParameter) {
+                MessageBox.error('Form parameter has not chosen');
+                return;
+            }
+            obj.Value = obj.FormParameter;
+        }
+        if (obj.IsConstant) {
+            if (!obj.Constant) {
+                MessageBox.error('Constant has not chosen');
+                return;
+            }
+            obj.Value = obj.Constant;
+        }
+
+        win.fireEvent('OperandChosen', obj);
         win.close();
     },
 

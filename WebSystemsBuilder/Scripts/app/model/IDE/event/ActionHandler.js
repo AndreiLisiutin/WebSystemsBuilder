@@ -47,6 +47,30 @@ Ext.define('WebSystemsBuilder.model.IDE.event.Control', {
     ]
 });
 
+Ext.define('WebSystemsBuilder.model.IDE.event.FormParameter', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'formParameter' ,
+        {
+            name: 'Name',
+            convert: function (v, record) {
+                var formParameter = record.get('formParameter');
+                if (!formParameter) return null;
+                return formParameter.FormParameter.Name;
+            }
+        },
+        {
+            name: 'UniqueID',
+            convert: function (v, record) {
+                var formParameter = record.get('formParameter');
+                if (!formParameter) return null;
+                return formParameter.FormParameter.UniqueID;
+            }
+        },
+        'Value'
+    ]
+});
+
 Ext.define('WebSystemsBuilder.model.IDE.event.ClientActionType', {
     extend: 'Ext.data.Model',
     fields: [

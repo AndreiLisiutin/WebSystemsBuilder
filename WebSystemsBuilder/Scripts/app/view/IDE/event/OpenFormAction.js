@@ -7,9 +7,9 @@
     constrain: true,
     title: 'Open Form Action',
 
-    height: 150,
+    height: 300,
     width: 500,
-    minHeight: 150,
+    minHeight: 300,
     minWidth: 500,
 
     layout: 'fit',
@@ -45,6 +45,18 @@
                                 {
                                     xtype: 'button',
                                     scale: 'medium',
+                                    text: 'Set Parameter',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/edit.png',
+                                    iconAlign: 'top',
+                                    action: 'onSetFormParameter'
+                                },
+                                {
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
                                     text: 'Save',
                                     action: 'onSave',
                                     border: true,
@@ -73,7 +85,9 @@
                             xtype: 'fieldset',
                             name: 'FormParametersFieldset',
                             title: 'Form parameters',
-                            anchor: '0',
+                            margin: 5,
+                            padding: 2,
+                            anchor: '0 -30',
                             layout: 'fit',
                             items: [
                                 {

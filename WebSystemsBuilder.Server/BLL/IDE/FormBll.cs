@@ -23,6 +23,18 @@ namespace WebSystemsBuilder.Server
         }
 
         /// <summary>
+        /// Get all form parameters list of current form
+        /// </summary>
+        /// <returns></returns>
+        public List<FormParameter> GetFormParametersList(int formID)
+        {
+            using (var db = this.CreateContext())
+            {
+                return db.FormParameters.Where(x => x.FormID == formID).ToList();
+            }
+        }
+        
+        /// <summary>
         /// Add new form - Save all the form meta descriptions
         /// </summary>
         /// <param name="formInstance">Form meta-descriptions to save</param>

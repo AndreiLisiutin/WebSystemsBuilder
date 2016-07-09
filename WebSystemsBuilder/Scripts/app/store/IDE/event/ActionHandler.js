@@ -51,6 +51,13 @@ Ext.define('WebSystemsBuilder.store.IDE.event.Control', {
     data: []
 });
 
+Ext.define('WebSystemsBuilder.store.IDE.event.FormParameter', {
+    extend:'Ext.data.Store',
+    model: 'WebSystemsBuilder.model.IDE.event.FormParameter',
+    autoLoad: false,
+    data: []
+});
+
 Ext.define('WebSystemsBuilder.store.IDE.event.ClientActionType', {
     extend:'Ext.data.Store',
     model: 'WebSystemsBuilder.model.IDE.event.ClientActionType',

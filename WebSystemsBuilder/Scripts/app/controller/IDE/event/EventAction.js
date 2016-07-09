@@ -19,6 +19,12 @@
             'EventAction [action=onAddClientAction]': {
                 click: this.onAddClientAction
             },
+            'EventAction [action=onAddOpenFormAction]': {
+                click: this.onAddOpenFormAction
+            },
+            'EventAction [action=onAddQueryAction]': {
+                click: this.onAddQueryAction
+            },
             'EventAction button[action=onDeleteAction]': {
                 click: this.onDeleteAction
             },
@@ -54,6 +60,35 @@
             actionGrid.getStore().add(obj);
             win.fireEvent('EventChanged');
         });
+    },
+
+    /**
+     * Add open form action as new handler
+     * @param btn Menu item "Add open form action"
+     */
+    onAddOpenFormAction: function (btn) {
+        var win = btn.up('window');
+        var actionGrid = win.down('gridpanel[name=actionGrid]');
+
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OpenFormAction');
+        var actionWin = WebSystemsBuilder.utils.Windows.open('OpenFormAction', { }, null, true);
+        actionWin.on('OpenFormActionSaved', function (obj) {
+            actionGrid.getStore().add(obj);
+            win.fireEvent('EventChanged');
+        });
+    },
+
+    /**
+     * Add query action as new handler
+     * @param btn Menu item "Add query action"
+     */
+    onAddQueryAction: function (btn) {
+        var win = btn.up('window');
+        var actionGrid = win.down('gridpanel[name=actionGrid]');
+
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.CreateQuery');
+        var actionWin = WebSystemsBuilder.utils.Windows.open('CreateQuery', { }, null, true);
+
     },
 
     /**

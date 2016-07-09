@@ -4,11 +4,9 @@
     views: [
         'WebSystemsBuilder.view.IDE.query.QueryFrom'
     ],
-
     models: [
         'WebSystemsBuilder.model.IDE.query.QueryFrom'
     ],
-
     stores: [
         'WebSystemsBuilder.store.IDE.query.QueryFrom'
     ],
@@ -149,10 +147,7 @@
      * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
      */
     onClose: function (btn) {
-        var win = btn.up('QueryFrom');
-        if (win && win.close) {
-            win.close();
-        }
+        btn.up('window').close();
     }
 
 });

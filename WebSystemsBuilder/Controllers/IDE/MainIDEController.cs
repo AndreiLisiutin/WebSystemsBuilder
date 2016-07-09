@@ -44,6 +44,17 @@ namespace WebSystemsBuilder.ClientWeb
             return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get all form parameters list of current form
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetFormParametersList(int formID)
+        {
+            var list = new FormBll().GetFormParametersList(formID);
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
         /// <summary> 
         /// Get list of all control type dependencies in system
         /// </summary>

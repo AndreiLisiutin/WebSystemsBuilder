@@ -4,11 +4,9 @@
     views: [
         'WebSystemsBuilder.view.IDE.query.CreateQuery'
     ],
-
     models: [
         'WebSystemsBuilder.model.IDE.query.CreateQuery'
     ],
-
     stores: [
         'WebSystemsBuilder.store.IDE.query.CreateQuery'
     ],
@@ -18,8 +16,8 @@
             'CreateQuery': {
                 afterrender: this.onLoad
             },
-            'CreateQuery button[action=onAddDictionary]': {
-                click: this.onAddDictionary
+            'CreateQuery button[action=onAddDataTable]': {
+                click: this.onAddDataTable
             },
             'CreateQuery button[action=onDeleteDictionary]': {
                 click: this.onDeleteDictionary
@@ -59,6 +57,7 @@
         var query = win.down('textareafield[name=query]');
         var btnSave = win.down('button[action=onSave]');
         var btnRefresh = win.down('button[action=onRefreshSQL]');
+
         if (win.queryTypeID){
             fieldsGrid.up('fieldset').setDisabled(true);
             dictsGrid.up('fieldset').setDisabled(true);
@@ -196,20 +195,20 @@
     },
 
     /**
-     * Функция добавления Источника данных
-     * @param btn Кнопка "Добавить"
+     * Add new data table for query
+     * @param btn Button "Add Data Table "
      */
-    onAddDictionary: function (btn) {
+    onAddDataTable: function (btn) {
         var win = btn.up('window');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
+        var dataTableGrid = win.down('gridpanel[name=fromGrid]');
+
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryFrom');
-        var queryFrom = WebSystemsBuilder.utils.Windows.open('QueryFrom',
-            {
-                dictionaries: dictsGrid.getStore().data.items
-            }, null, true);
-        queryFrom.on('QueryFromIsReadyToSave', function (winDialog, query) {
+        var dataTableWin = WebSystemsBuilder.utils.Windows.open('QueryFrom', {
+            dictionaries: dataTableGrid.getStore().data.items
+        }, null, true);
+        dataTableWin.on('QueryFromIsReadyToSave', function (winDialog, query) {
             var condition = '';
-            if (dictsGrid.getStore().data.items != null && dictsGrid.getStore().data.items.length > 0) {
+            if (dataTableGrid.getStore().data.items != null && dataTableGrid.getStore().data.items.length > 0) {
                 condition = query.table['name'] + '.' + query.table.field['name'];
                 condition += ' = ';
                 condition += query.anotherTable['name'] + '.' + query.anotherTable.field['name'];
@@ -221,7 +220,7 @@
                 condition: condition,
                 obj: query
             };
-            dictsGrid.getStore().add(newFrom);
+            dataTableGrid.getStore().add(newFrom);
         });
     },
 
@@ -252,10 +251,9 @@
         var fieldsGrid = win.down('gridpanel[name=selectGrid]');
         var dictsGrid = win.down('gridpanel[name=fromGrid]');
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QuerySelect');
-        var queryFrom = WebSystemsBuilder.utils.Windows.open('QuerySelect',
-            {
-                dictionaries: dictsGrid.getStore().data.items
-            }, null, true);
+        var queryFrom = WebSystemsBuilder.utils.Windows.open('QuerySelect', {
+            dictionaries: dictsGrid.getStore().data.items
+        }, null, true);
         queryFrom.on('QuerySelectIsReadyToSave', function (winDialog, query) {
             var newSelect = {
                 ID: query.table.field['ID'],
@@ -407,10 +405,7 @@
      * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
      */
     onClose: function (btn) {
-        var win = btn.up('CreateQuery');
-        if (win && win.close) {
-            win.close();
-        }
+        btn.up('window').close();
     }
 
 });

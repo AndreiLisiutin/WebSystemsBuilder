@@ -2,11 +2,10 @@
     extend: 'Ext.window.Window',
     alias: 'widget.QueryFrom',
     name: 'QueryFrom',
-    id: 'winQueryFrom',
 
     modal: true,
     constrain: true,
-    title: 'Источники данных',
+    title: 'Data table',
 
     height: 140,
     width: 600,
@@ -18,8 +17,6 @@
     layout: {
         type: 'anchor'
     },
-
-    dictionaries:undefined,
 
     initComponent: function () {
         var me = this;

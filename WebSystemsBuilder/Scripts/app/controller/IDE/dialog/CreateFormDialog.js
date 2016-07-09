@@ -3,18 +3,9 @@
     views: [
         'WebSystemsBuilder.view.IDE.dialog.CreateFormDialog'
     ],
-    //stores: [
-    //    'WebSystemsBuilder.store.IDE.query.QueryFrom'
-    //],
-    //models: [
-    //    'WebSystemsBuilder.model.IDE.query.QueryFrom'
-    //],
 
     init: function () {
         this.control({
-            'CreateFormDialog': {
-                afterrender: this.onLoad
-            },
             'CreateFormDialog button[action=onCreate]': {
                 click: this.onCreateForm
             },
@@ -22,20 +13,6 @@
                 click: this.onClose
             }
         });
-    },
-
-    /**
-     * Load form (afterrender)
-     * @param win Current window (CreateFormDialog)
-     */
-    onLoad: function (win) {
-        //var dictionary = win.down('combobox[name=dictionary]');
-        //win.body.mask('Загрузка...');
-        //dictionary.getStore().load({
-        //    callback:function(){
-        //        win.body.unmask();
-        //    }
-        //});
     },
 
     /**

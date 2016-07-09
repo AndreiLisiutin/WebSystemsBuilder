@@ -20,6 +20,7 @@
         var me = this;
 
         var controlStore = Ext.create('WebSystemsBuilder.store.IDE.event.Control');
+        var formParameterStore = Ext.create('WebSystemsBuilder.store.IDE.event.FormParameter');
 
         Ext.applyIf(me, {
             items: [
@@ -46,8 +47,8 @@
                                 {
                                     xtype: 'button',
                                     scale: 'medium',
-                                    text: 'Save',
-                                    action: 'onSave',
+                                    text: 'Choose',
+                                    action: 'onChoose',
                                     border: true,
                                     icon: 'Scripts/resources/icons/save.png',
                                     iconAlign: 'top'
@@ -110,13 +111,14 @@
                                     valueField: 'UniqueID',
                                     displayField: 'Name',
                                     queryMode: 'local',
-                                    store: controlStore
+                                    store: formParameterStore
                                 }
                             ]
                         },
                         {
                             xtype: 'container',
                             name: 'ConstantContainer',
+                            hidden: true,
                             margin: '5 5 5 5',
                             layout: 'hbox',
                             items: [

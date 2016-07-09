@@ -39,6 +39,9 @@
                                     iconAlign: 'top'
                                 },
                                 {
+                                    xtype: 'tbseparator'
+                                },
+                                {
                                     xtype: 'button',
                                     scale: 'medium',
                                     border: true,
@@ -50,8 +53,20 @@
                                         {
                                             xtype:'menuitem',
                                             text: 'Add client action',
-                                            icon: 'Scripts/resources/icons/add.png',
+                                            icon: 'Scripts/resources/icons/add_16.png',
                                             action: 'onAddClientAction'
+                                        },
+                                        {
+                                            xtype: 'menuitem',
+                                            text: 'Add open form action',
+                                            icon: 'Scripts/resources/icons/add_16.png',
+                                            action: 'onAddOpenFormAction'
+                                        },
+                                        {
+                                            xtype:'menuitem',
+                                            text: 'Add query action',
+                                            icon: 'Scripts/resources/icons/add_16.png',
+                                            action: 'onAddQueryAction'
                                         }
                                     ]
                                 },
