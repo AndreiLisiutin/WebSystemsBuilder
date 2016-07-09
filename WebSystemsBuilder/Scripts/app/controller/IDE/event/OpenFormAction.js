@@ -1,25 +1,27 @@
-﻿Ext.define('WebSystemsBuilder.controller.IDE.event.ClientAction', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.event.OpenFormAction', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.IDE.event.ClientAction'
+        'WebSystemsBuilder.view.IDE.event.OpenFormAction'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.event.ActionHandler'
+        'WebSystemsBuilder.model.IDE.event.OpenFormAction',
+        'WebSystemsBuilder.model.IDE.dialog.OpenFormDialog'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.event.ActionHandler'
+        'WebSystemsBuilder.store.IDE.event.OpenFormAction',
+        'WebSystemsBuilder.store.IDE.dialog.OpenFormDialog'
     ],
 
     init: function () {
         this.control({
-            'ClientAction': {
+            'OpenFormAction': {
                 afterrender: this.onLoad
             },
-            'ClientAction button[action=onSave]': {
+            'OpenFormAction button[action=onSave]': {
                 click: this.onSave
             },
-            'ClientAction button[action=onClose]': {
+            'OpenFormAction button[action=onClose]': {
                 click: this.onClose
             }
         });

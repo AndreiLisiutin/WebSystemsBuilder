@@ -16,6 +16,7 @@ Ext.application({
         'WebSystemsBuilder.utils.IDE.MousedComponentsIDE',
         'WebSystemsBuilder.utils.IDE.FormParametersIDE',
         'WebSystemsBuilder.utils.IDE.FormControlsIDE',
+        'WebSystemsBuilder.utils.mapping.EventTypeControlTypes',
 
         'WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils',
         'WebSystemsBuilder.utils.controlTypes.BaseComponentFactory',
@@ -43,6 +44,7 @@ Ext.application({
         Focused.init();
         MousedComponentsIDE.init();
         FormParametersIDE.init();
+        EventTypeControlTypes.init();
     },
 
     launch: function () {

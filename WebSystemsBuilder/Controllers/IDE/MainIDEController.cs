@@ -67,6 +67,17 @@ namespace WebSystemsBuilder.ClientWeb
         }
 
         /// <summary>
+        /// Get all pairs of control types and event types
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetEventTypeControlTypeList()
+        {
+            var list = new EventTypeControlTypeBLL().GetEventTypeControlTypeList();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// Save all the form meta-descriptions
         /// </summary>
         /// <param name="obj">Object with form meta-descriptions</param>

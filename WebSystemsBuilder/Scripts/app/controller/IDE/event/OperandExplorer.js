@@ -1,8 +1,8 @@
-﻿Ext.define('WebSystemsBuilder.controller.IDE.event.ClientAction', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.event.OperandExplorer', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.IDE.event.ClientAction'
+        'WebSystemsBuilder.view.IDE.event.OperandExplorer'
     ],
     models: [
         'WebSystemsBuilder.model.IDE.event.ActionHandler'
@@ -13,13 +13,16 @@
 
     init: function () {
         this.control({
-            'ClientAction': {
+            'OperandExplorer': {
                 afterrender: this.onLoad
             },
-            'ClientAction button[action=onSave]': {
-                click: this.onSave
+            'OperandExplorer radiofield': {
+                change: this.onOperandProviderChange
             },
-            'ClientAction button[action=onClose]': {
+//            'OperandExplorer button[action=onSave]': {
+//                click: this.onSave
+//            },
+            'OperandExplorer button[action=onClose]': {
                 click: this.onClose
             }
         });
@@ -27,21 +30,32 @@
 
     /**
      * Load the form (afterrender).
-     * @param win ClientAction Window
+     * @param win OperandExplorer Window
      */
     onLoad: function (win) {
+        var controlRadioField = win.down('radiofield[id=ControlValueProvider]');
+        var formParameterRadioField = win.down('radiofield[id=FormParameterValueProvider]');
+        var constantRadioField = win.down('radiofield[id=ConstantValueProvider]');
         var control = win.down('combobox[name=control]');
-        var clientActionType = win.down('combobox[name=clientActionType]');
+        var formParameter = win.down('combobox[name=formParameter]');
+        var constant = win.down('combobox[name=constant]');
 
-        var controlList = FormControlsIDE.getControlList();
-        control.getStore().loadData(controlList, false);
+//        var controlList = FormControlsIDE.getControlList();
+//        control.getStore().loadData(controlList, false);
+    },
 
-        clientActionType.getEl().mask('Loading...');
-        clientActionType.getStore().load({
-            callback: function () {
-                clientActionType.getEl().unmask();
-            }
-        });
+    onOperandProviderChange: function(radiofield, newValue , oldValue , eOpts) {
+        var win = radiofield.up('window');
+        var controlRadioField = win.down('radiofield[id=ControlValueProvider]');
+        var formParameterRadioField = win.down('radiofield[id=FormParameterValueProvider]');
+        var constantRadioField = win.down('radiofield[id=ConstantValueProvider]');
+        var control = win.down('combobox[name=control]');
+        var formParameter = win.down('combobox[name=formParameter]');
+        var constant = win.down('combobox[name=constant]');
+
+        control.setDisabled(!controlRadioField.getValue());
+        formParameter.setDisabled(!formParameterRadioField.getValue());
+        constant.setDisabled(!constantRadioField.getValue());
     },
 
     /**
