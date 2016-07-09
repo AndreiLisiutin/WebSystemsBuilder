@@ -107,5 +107,27 @@ namespace WebSystemsBuilder.ClientWeb
             return Json(this.CreateResponsePackage<FormInstance>(obj), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get all tables list
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetTableList()
+        {
+            var list = new TableBLL().GetTableList();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get all table columns list
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetTableColumnList(int tableID)
+        {
+            var list = new ColumnBLL().GetTableColumnList(tableID);
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

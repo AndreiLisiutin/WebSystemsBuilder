@@ -6,11 +6,20 @@
 Ext.define('WebSystemsBuilder.model.IDE.query.From', {
     extend: 'Ext.data.Model',
     fields: [
-        'ID',
-        'name',
-        'condition',
-        'tableName',
-        'obj'
+        'Table',
+        'JoinTable',
+        'JoinKind',
+        {
+            name: 'JoinKindName',
+            convert: function (v, record) {
+                var joinKind = record.get('JoinKind');
+                if (!joinKind) return null;
+                return joinKind.Name;
+            }
+        },
+        'Condition',
+        'TableID',
+        'Name'
     ]
 });
 

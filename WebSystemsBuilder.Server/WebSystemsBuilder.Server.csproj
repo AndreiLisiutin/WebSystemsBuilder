@@ -70,6 +70,8 @@
     <Compile Include="BLL\FormGeneration\ValueTypesBLL.cs" />
     <Compile Include="BLL\FormGeneration\FormMetaBLL.cs" />
     <Compile Include="BLL\IDE\ClientActionTypeBll.cs" />
+    <Compile Include="BLL\IDE\ColumnBll.cs" />
+    <Compile Include="BLL\IDE\TableBll.cs" />
     <Compile Include="BLL\IDE\EventTypeControlTypeBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeGroupBLL.cs" />
     <Compile Include="BLL\IDE\ControlTypeBLL.cs" />

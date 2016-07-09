@@ -7,141 +7,158 @@
     constrain: true,
     title: 'Data table',
 
-    height: 140,
+    height: 170,
     width: 600,
-    minHeight: 140,
+    minHeight: 170,
     minWidth: 600,
     maxWidth: 600,
-    maxHeight: 140,
+    maxHeight: 170,
 
     layout: {
-        type: 'anchor'
+        type: 'fit'
     },
 
     initComponent: function () {
         var me = this;
 
-        var allDictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.AllDictionary');
-        var dictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
-        var allFieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
-        var fieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var joinTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
+        var newDataTable = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
+        var joinTableFieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var newTableFieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var joinKindStore = Ext.create('WebSystemsBuilder.store.IDE.query.JoinKind');
 
         Ext.applyIf(me, {
-
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'right',
-                    items: [
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Закрыть',
-                            action: 'onClose',
-                            border: true,
-                            icon: 'Scripts/resources/icons/close.png',
-                            iconAlign: 'top'
-                        },
-                        {
-                            xtype: 'tbseparator'
-                        },
-                        {
-                            xtype: 'button',
-                            scale: 'medium',
-                            text: 'Сохранить',
-                            action: 'onSave',
-                            border: true,
-                            icon: 'Scripts/resources/icons/save.png',
-                            iconAlign: 'top'
-                        }
-                    ]
-                }
-            ],
-
             items: [
                 {
-                    xtype: 'container',
-                    anchor: '0',
-                    layout: {
-                        align: 'stretch',
-                        type: 'hbox'
-                    },
-                    items: [
+                    xtype: 'panel',
+                    layout: 'anchor',
+
+                    dockedItems: [
                         {
-                            xtype: 'fieldset',
-                            flex: 1,
-                            margin:'5 5 5 5',
-                            padding:2,
-                            title: 'Новый источник данных',
+                            xtype: 'toolbar',
+                            dock: 'right',
                             items: [
                                 {
-                                    xtype: 'combobox',
-                                    anchor:'0',
-                                    margin: '5 5 5 5',
-                                    labelSeparator: '',
-                                    valueField: 'ID',
-                                    displayField: 'name',
-                                    queryMode: 'local',
-                                    editable: false,
-                                    fieldLabel: 'Источник',
-                                    labelWidth: 55,
-                                    name: 'addDict',
-                                    store: dictionaryStore
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Close',
+                                    action: 'onClose',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/close.png',
+                                    iconAlign: 'top'
                                 },
                                 {
-                                    xtype: 'combobox',
-                                    anchor:'0',
-                                    margin: '5 5 5 5',
-                                    labelSeparator: '',
-                                    valueField: 'ID',
-                                    displayField: 'name',
-                                    queryMode: 'local',
-                                    editable: false,
-                                    fieldLabel: 'Поле',
-                                    labelWidth: 55,
-                                    name: 'addField',
-                                    store: fieldStore
+                                    xtype: 'tbseparator'
+                                },
+                                {
+                                    xtype: 'button',
+                                    scale: 'medium',
+                                    text: 'Save',
+                                    action: 'onSave',
+                                    border: true,
+                                    icon: 'Scripts/resources/icons/save.png',
+                                    iconAlign: 'top'
                                 }
                             ]
+                        }
+                    ],
+                    items: [
+                        {
+                            xtype: 'combobox',
+                            name: 'joinKind',
+                            labelWidth: 55,
+                            width: 150,
+                            margin: '5 5 5 5',
+                            labelSeparator: '',
+                            fieldLabel: 'Join kind',
+                            valueField: 'JoinKindID',
+                            displayField: 'Name',
+                            queryMode: 'local',
+                            editable: false,
+                            store: joinKindStore
                         },
                         {
-                            xtype: 'fieldset',
-                            flex: 1,
-                            margin:'5 5 5 0',
-                            padding:2,
-                            name:'fsDataBinding',
+                            xtype: 'container',
+                            anchor: '0',
                             layout: {
-                                type: 'anchor'
+                                align: 'stretch',
+                                type: 'hbox'
                             },
-                            title: 'Источник данных для привязки',
                             items: [
                                 {
-                                    xtype: 'combobox',
-                                    anchor:'0',
+                                    xtype: 'fieldset',
+                                    flex: 1,
                                     margin: '5 5 5 5',
-                                    labelSeparator: '',
-                                    valueField: 'ID',
-                                    displayField: 'name',
-                                    queryMode: 'local',
-                                    editable: false,
-                                    fieldLabel: 'Источник',
-                                    labelWidth: 55,
-                                    name: 'allDict',
-                                    store: allDictionaryStore
+                                    padding: 2,
+                                    title: 'New data table',
+                                    items: [
+                                        {
+                                            xtype: 'combobox',
+                                            anchor: '0',
+                                            margin: '5 5 5 5',
+                                            labelSeparator: '',
+                                            valueField: 'TableID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            fieldLabel: 'Table',
+                                            labelWidth: 55,
+                                            name: 'newDataTable',
+                                            store: newDataTable
+                                        },
+                                        {
+                                            xtype: 'combobox',
+                                            anchor: '0',
+                                            margin: '5 5 5 5',
+                                            labelSeparator: '',
+                                            valueField: 'ColumnID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            fieldLabel: 'Join column',
+                                            labelWidth: 55,
+                                            name: 'newTableField',
+                                            store: newTableFieldStore
+                                        }
+                                    ]
                                 },
                                 {
-                                    xtype: 'combobox',
-                                    anchor:'0',
-                                    margin: '5 5 5 5',
-                                    labelSeparator: '',
-                                    valueField: 'ID',
-                                    displayField: 'name',
-                                    queryMode: 'local',
-                                    editable: false,
-                                    fieldLabel: 'Поле',
-                                    labelWidth: 55,
-                                    name: 'allField',
-                                    store: allFieldStore
+                                    xtype: 'fieldset',
+                                    flex: 1,
+                                    margin: '5 5 5 0',
+                                    padding: 2,
+                                    layout: 'anchor',
+                                    title: 'Join data table',
+                                    items: [
+                                        {
+                                            xtype: 'combobox',
+                                            name: 'joinTable',
+                                            fieldLabel: 'Join Table',
+                                            labelWidth: 55,
+                                            anchor: '0',
+                                            margin: '5 5 5 5',
+                                            labelSeparator: '',
+                                            valueField: 'TableID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            store: joinTableStore
+                                        },
+                                        {
+                                            xtype: 'combobox',
+                                            name: 'joinTableField',
+                                            anchor: '0',
+                                            margin: '5 5 5 5',
+                                            labelSeparator: '',
+                                            valueField: 'ColumnID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            fieldLabel: 'Join column',
+                                            labelWidth: 55,
+                                            store: joinTableFieldStore
+                                        }
+                                    ]
                                 }
                             ]
                         }

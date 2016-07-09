@@ -16,8 +16,8 @@
             'QueryFrom': {
                 afterrender: this.onLoad
             },
-            'QueryFrom combobox[name=addDict], combobox[name=allDict]': {
-                change: this.onChangeDictionary
+            'QueryFrom combobox[name=newDataTable], combobox[name=joinTable]': {
+                change: this.onChangeTable
             },
             'QueryFrom button[action=onSave]': {
                 click: this.onSave
@@ -29,117 +29,152 @@
     },
 
     /**
-     * Функция инициализации компонентов формы. Вызывается сразу после загрузке формы (afterrender).
-     * @param win Окно, представляющее данную форму.
+     * Load the form (afterrender).
+     * @param win Window QueryFrom
      */
     onLoad: function (win) {
-        var fsDataBinding = win.down('fieldset[name=fsDataBinding]');
-        var addDict = win.down('combobox[name=addDict]');
-        var allDict = win.down('combobox[name=allDict]');
-        var addField = win.down('combobox[name=addField]');
-        var allField = win.down('combobox[name=allField]');
-        var fl1 = false, fl2 = false;
-        var isNew = win.dictionaries == null || win.dictionaries.length == 0;
-        win.body.mask('Загрузка...');
-        // Новый источник данных
-        addDict.getStore().load({
-            callback:function(){
-                fl1 = true;
-                if (fl1 && fl2){
-                    win.body.unmask();
-                }
-            }
-        });
-        if (isNew){
-            fsDataBinding.setDisabled(true);
-            addField.setDisabled(true);
-        } else {
-            // Источник данных для привязки
-            allDict.getStore().loadData(win.dictionaries, false);
-        }
-        fl2 = true;
-        if (fl1 && fl2){
-            win.body.unmask();
-        }
-    },
+        var joinKind = win.down('combobox[name=joinKind]');
+        var newDataTable = win.down('combobox[name=newDataTable]');
+        var joinTable = win.down('combobox[name=joinTable]');
+        var newTableField = win.down('combobox[name=newTableField]');
+        var joinTableField = win.down('combobox[name=joinTableField]');
+        var joinFieldSet = joinTable.up('fieldset');
+        var isNew = win.queryDataTables == null || win.queryDataTables.length == 0;
 
-    /**
-     * При изменении какого-либо комбобокса с источником данных подгружать поля
-     * @param combo Комбо, вызвавший событие
-     */
-    onChangeDictionary: function (combo) {
-        var win = combo.up('window');
-        var fs = combo.up('fieldset');
-        var comboField = fs.query('combobox')[1];
-        comboField.setValue(null);
-        if (!combo.getValue()){
-            comboField.getStore().loadData([], false);
-        } else {
-            win.body.mask('Загрузка...');
-            comboField.getStore().load({
-                params:{
-                    dictionaryID:combo.getValue() + ''
-                },
-                callback:function(){
-                    win.body.unmask();
+        var loadJoinKindCombo = function(joinKindID) {
+            CommonUtils.safeMask(joinKind);
+            joinKind.getStore().load({
+                callback: function () {
+                    if (joinKindID) {
+                        joinKind.setValue(joinKindID);
+                    }
+                    CommonUtils.safeUnmask(joinKind);
                 }
             });
+        };
+        var loadJoinTableCombo = function () {
+            if (win.queryDataTables) {
+                joinTable.getStore().loadData(win.queryDataTables, false);
+            }
+        };
+        var loadNewTableCombo = function(tableID) {
+            CommonUtils.safeMask(newDataTable);
+            newDataTable.getStore().load({
+                callback: function () {
+                    if (tableID) {
+                        newDataTable.setValue(tableID);
+                    }
+                    CommonUtils.safeUnmask(newDataTable);
+                }
+            });
+        };
+
+        if (isNew) {
+            loadJoinKindCombo();
+            loadNewTableCombo();
+            joinKind.setDisabled(true);
+            joinFieldSet.setDisabled(true);
+            newTableField.setDisabled(true);
+        } else {
+            loadJoinKindCombo(1);
+            loadJoinTableCombo();
+            loadNewTableCombo();
         }
     },
 
     /**
-     * Функция сохранения источника данных
-     * @param btn Кнопка "Сохранить", вызвавшая событие
+     * Change any table - load field list
+     * @param combo
      */
-    onSave:function(btn){
-        var win = btn.up('window');
-        var addDict = win.down('combobox[name=addDict]');
-        var allDict = win.down('combobox[name=allDict]');
-        var addField = win.down('combobox[name=addField]');
-        var allField = win.down('combobox[name=allField]');
-        var error = '';
-        var isNew = win.dictionaries == null || win.dictionaries.length == 0;
-        if (!isNew){
-            if (!allField.getValue() || !addField.getValue()){
-                error = 'Привяжите новый источник данных к старому по какому-либо полю.';
-                WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-                return;
-            }
-        }
-        if (!addDict.getValue()){
-            error = 'Выберите новый источник данных.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
+    onChangeTable: function (combo) {
+        var fs = combo.up('fieldset');
+        var comboField = fs.query('combobox')[1];
+
+        comboField.setValue(null);
+        if (!combo.getValue()) {
+            comboField.getStore().loadData([], false);
             return;
         }
 
-        // Сгененировать событие, сообщающее основной форме о том,
-        // что источник данных готов к сохранению
-        var newFrom = {
-            table:{
-                ID:addDict.getValue(),
-                name:addDict.getRawValue(),
-                tableName:addDict.findRecordByValue(addDict.getValue()).get('tableName'),
-                field:{
-                    ID:addField.getValue(),
-                    name:addField.getRawValue(),
-                    columnName:addField.getValue() ? addField.findRecordByValue(addField.getValue()).get('columnName') : null,
-                    dictionaryID:addField.getValue() ? addField.findRecordByValue(addField.getValue()).get('dictionaryID') : null
+        CommonUtils.safeMask(comboField);
+        comboField.getStore().load({
+            params: {
+                tableID: combo.getValue()
+            },
+            callback: function () {
+                CommonUtils.safeUnmask(comboField);
+            }
+        });
+    },
+
+    /**
+     * Save data table
+     * @param btn Button "Save"
+     */
+    onSave: function (btn) {
+        var win = btn.up('window');
+        var joinKind = win.down('combobox[name=joinKind]');
+        var newDataTable = win.down('combobox[name=newDataTable]');
+        var joinTable = win.down('combobox[name=joinTable]');
+        var newTableField = win.down('combobox[name=newTableField]');
+        var joinTableField = win.down('combobox[name=joinTableField]');
+        var joinFieldSet = joinTable.up('fieldset');
+        var isNew = win.queryDataTables == null || win.queryDataTables.length == 0;
+
+        if (!newDataTable.getValue()) {
+            MessageBox.show('Choose new data table');
+            return;
+        }
+        if (!isNew) {
+            if (!joinTableField.getValue() || !newTableField.getValue()) {
+                MessageBox.error('Join new table to existing table.');
+                return;
+            }
+            if (!joinKind.getValue()) {
+                MessageBox.show('Choose join kind');
+                return;
+            }
+        }
+
+        // Event about new data table
+        var newDataTable = {
+            JoinKind: {
+                JoinKindID: joinKind.getValue(),
+                Name: joinKind.getRawValue()
+            },
+            Table: {
+                TableID: newDataTable.getValue(),
+                Name: newDataTable.getRawValue(),
+                PhysicalTable: newDataTable.findRecordByValue(newDataTable.getValue()).get('PhysicalTable'),
+                JoinColumn: {
+                    ColumnID: newTableField.getValue(),
+                    Name: newTableField.getRawValue(),
+                    PhysicalColumn: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('PhysicalColumn') : null,
+                    ValueTypeID: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('ValueTypeID') : null,
+                    TableID: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('TableID') : null
                 }
             },
-            anotherTable:{
-                ID:allDict.getValue(),
-                name:allDict.getRawValue(),
-                tableName:allDict.getValue() ? allDict.findRecordByValue(allDict.getValue()).get('tableName') : null,
-                field:{
-                    ID:allField.getValue(),
-                    name:allField.getRawValue(),
-                    columnName:allField.getValue() ? allField.findRecordByValue(allField.getValue()).get('columnName') : null,
-                    dictionaryID:allField.getValue() ? allField.findRecordByValue(allField.getValue()).get('dictionaryID') : null
+            JoinTable: {
+                TableID: joinTable.getValue(),
+                Name: joinTable.getRawValue(),
+                PhysicalTable: joinTable.getValue() ? joinTable.findRecordByValue(joinTable.getValue()).get('PhysicalTable') : null,
+                JoinColumn: {
+                    ColumnID: joinTableField.getValue(),
+                    Name: joinTableField.getRawValue(),
+                    PhysicalColumn: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('PhysicalColumn') : null,
+                    ValueTypeID: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('ValueTypeID') : null,
+                    JoinTableID: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('TableID') : null
                 }
             }
         };
-        win.fireEvent('QueryFromIsReadyToSave', win, newFrom);
-        this.onClose(btn);
+
+        if (!isNew) {
+            newDataTable.Condition = newDataTable.Table.Name + '.' + newDataTable.Table.JoinColumn.Name;
+            newDataTable.Condition += ' = ';
+            newDataTable.Condition += newDataTable.JoinTable.Name + '.' + newDataTable.JoinTable.JoinColumn.Name;
+        }
+        win.fireEvent('QueryFromIsReadyToSave', newDataTable);
+        win.close();
     },
 
     /**

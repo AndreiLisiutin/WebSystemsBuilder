@@ -19,7 +19,7 @@ Ext.define('WebSystemsBuilder.store.IDE.query.Dictionary', {
         type: 'ajax',
 
         api: {
-            read: 'QueryEditor/GetAllDictionaries'
+            read: 'MainIDE/GetTableList'
         },
 
         reader: {
@@ -39,7 +39,7 @@ Ext.define('WebSystemsBuilder.store.IDE.query.Field', {
         type: 'ajax',
 
         api: {
-            read: 'QueryEditor/GetDictionaryFields'
+            read: 'MainIDE/GetTableColumnList'
         },
 
         reader: {
@@ -48,4 +48,14 @@ Ext.define('WebSystemsBuilder.store.IDE.query.Field', {
             successProperty: 'Code'
         }
     }
+});
+
+Ext.define('WebSystemsBuilder.store.IDE.query.JoinKind', {
+    extend:'Ext.data.Store',
+    model: 'WebSystemsBuilder.model.IDE.query.JoinKind',
+    autoLoad: false,
+    data:[
+        { JoinKindID: 1, Name: 'INNER' },
+        { JoinKindID: 2, Name: 'LEFT' }
+    ]
 });

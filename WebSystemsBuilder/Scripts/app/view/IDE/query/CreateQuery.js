@@ -102,13 +102,19 @@
                                             xtype: 'gridcolumn',
                                             width: 150,
                                             text: 'Table',
-                                            dataIndex: 'name'
+                                            dataIndex: 'Name'
+                                        },
+                                        {
+                                            xtype: 'gridcolumn',
+                                            width: 60,
+                                            text: 'Join kind',
+                                            dataIndex: 'JoinKindName'
                                         },
                                         {
                                             xtype: 'gridcolumn',
                                             flex: 1,
                                             text: 'Join condition',
-                                            dataIndex: 'condition'
+                                            dataIndex: 'Condition'
                                         }
                                     ],
                                     dockedItems: [
@@ -133,7 +139,7 @@
                                                     border: true,
                                                     icon: 'Scripts/resources/icons/delete.png',
                                                     tooltip: 'Удалить источник данных',
-                                                    action: 'onDeleteDictionary'
+                                                    action: 'onDeleteDataTable'
                                                 }
                                             ]
                                         }

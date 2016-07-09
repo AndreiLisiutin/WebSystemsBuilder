@@ -6,19 +6,27 @@
 Ext.define('WebSystemsBuilder.model.IDE.query.Dictionary', {
     extend: 'Ext.data.Model',
     fields: [
-        'ID',
-        'name',
-        'tableName'
+        'TableID',
+        'Name',
+        'PhysicalTable'
     ]
 });
 
 Ext.define('WebSystemsBuilder.model.IDE.query.Field', {
     extend: 'Ext.data.Model',
     fields: [
-        'ID',
-        'name',
-        'columnName',
-        'domainValueTypeID',
-        'dictionaryID'
+        'ColumnID',
+        'Name',
+        'PhysicalColumn',
+        'ValueTypeID',
+        'TableID'
+    ]
+});
+
+Ext.define('WebSystemsBuilder.model.IDE.query.JoinKind', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'JoinKindID',
+        'Name'
     ]
 });
