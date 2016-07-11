@@ -26,10 +26,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
         var controlTypeGroupStore = Ext.create('WebSystemsBuilder.store.IDE.ControlTypeGroup');
         var controlTypesStore = Ext.create('WebSystemsBuilder.store.IDE.ControlType');
         var projectInspectorStore = Ext.create('WebSystemsBuilder.store.IDE.ProjectInspector');
-        var queryStore = Ext.create('WebSystemsBuilder.store.IDE.query.FormQuery');
-        var queryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
-        var queryKeyFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
-        var dictionaryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.DictionaryField');
         var formParametersStore = Ext.create('WebSystemsBuilder.store.IDE.FormParameters');
         var eventsStore = Ext.create('WebSystemsBuilder.store.IDE.event.ComponentEvent');
 

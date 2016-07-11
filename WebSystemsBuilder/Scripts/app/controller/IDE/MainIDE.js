@@ -7,16 +7,14 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
 
     models: [
         'WebSystemsBuilder.model.IDE.MainIDE',
-        'WebSystemsBuilder.model.IDE.query.FormQuery',
         'WebSystemsBuilder.model.IDE.event.ComponentEvent',
-        'WebSystemsBuilder.model.IDE.query.QueryFrom'
+        'WebSystemsBuilder.model.IDE.query.QueryActionDataTable'
     ],
 
     stores: [
         'WebSystemsBuilder.store.IDE.MainIDE',
-        'WebSystemsBuilder.store.IDE.query.FormQuery',
         'WebSystemsBuilder.store.IDE.event.ComponentEvent',
-        'WebSystemsBuilder.store.IDE.query.QueryFrom'
+        'WebSystemsBuilder.store.IDE.query.QueryActionDataTable'
     ],
 
     requires: [
@@ -28,6 +26,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
 
     init: function () {
         this.control({
+            // Initialize form
             'MainIDE': {
                 afterrender: this.onLoad,
                 IDEComponentFocused: this.onIDEComponentFocused
@@ -35,6 +34,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             'MainIDE form[name=mainPanel]': {
                 render: this.onMainPanelRender
             },
+
+            // Main actions buttons
             'MainIDE menuitem[action=onSaveForm], button[action=onSaveForm]': {
                 click: function (btn) {
                     this.onSaveForm(btn, false);
@@ -49,6 +50,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             'MainIDE menuitem[action=onRefactorForm]': {
                 click: this.onRefactorForm
             },
+
+            // Code and design buttons
             'MainIDE button[action=onCode]': {
                 click: this.onCode
             },
@@ -56,6 +59,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 click: this.onDesign
             },
 
+            // Form parameters
             'MainIDE button[action=onAddFormParameter]': {
                 click: this.onAddFormParameter
             },
@@ -66,6 +70,23 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 click: this.onDeleteFormParameter
             },
 
+            // Control properties
+            'MainIDE textfield[name=propertyFilter]': {
+                change: this.onContextPropertySearch
+            },
+            'MainIDE propertygrid[name=properties]': {
+                propertychange: this.onProperyChange
+            },
+
+            // Control events
+            'MainIDE button[action=onEditEvent]': {
+                click: this.onEditEvent
+            },
+            'MainIDE button[action=onDeleteEvent]': {
+                click: this.onDeleteEvent
+            },
+
+            // other stuff
             'MainIDE gridpanel[name=componentsGroups]': {
                 selectionchange: function (selModel) {
                     this.onContextControlSearch(selModel.view.up('window'));
@@ -75,30 +96,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 change: function (textfield) {
                     this.onContextControlSearch(textfield.up('window'));
                 }
-            },
-            'MainIDE textfield[name=propertyFilter]': {
-                change: this.onContextPropertySearch
-            },
-            'MainIDE propertygrid[name=properties]': {
-                propertychange: this.onProperyChange
-            },
-            'MainIDE button[action=onEditEvent]': {
-                click: this.onEditEvent
-            },
-            'MainIDE button[action=onShowEvent]': {
-                click: this.onShowEvent
-            },
-            'MainIDE button[action=onDeleteEvent]': {
-                click: this.onDeleteEvent
-            },
-            'MainIDE button[action=onAddQuery]': {
-                click: this.onAddQuery
-            },
-            'MainIDE button[action=onSetParam]': {
-                click: this.onSetParam
-            },
-            'MainIDE combobox[name=query]': {
-                change: this.onQueryTypeSelectionChange
             },
             'MainIDE button[action=onClose], menuitem[action=onClose]': {
                 click: this.onClose
@@ -111,32 +108,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * @param win Main window
      */
     onLoad: function (win) {
-        Ext.getBody().on('contextmenu', function (e) {
-            e.preventDefault();
-            var focused = Focused.getFocusedCmp();
-            var moused = MousedComponentsIDE.getUpperMousedComponent();
-            if (focused && moused && moused == focused) {
-                var menu = ComponentFactoryUtils.getContextMenu();
-                menu.down('menuitem[action=onDelete]').on('click', function () {
-                    Focused.clearFocusedCmp();
-                    win.fireEvent('ComponentRemoved', win, focused.up(), focused);
-
-                    // Get factory by control type ID
-                    var ControlTypeID = focused.componentInfo.ControlTypeID;
-                    var factory = ComponentFactoryUtils.getFactory(ControlTypeID);
-                    factory.onRemoveComponent(focused.up(), focused);
-                });
-                menu.showAt(e.getXY());
-            }
-        }, null, { preventDefault: true });
-
-        Ext.getBody().on('click', function (e) {
-            var moused = MousedComponentsIDE.getUpperMousedComponent();
-            if (moused) {
-                win.fireEvent('IDEComponentFocused', win, moused);
-            }
-        }, null, { preventDefault: true });
-
         var _this = this;
         var componentsPanel = win.down('panel[name=componentsPanel]');
         var projectPanel = win.down('panel[name=projectPanel]');
@@ -150,17 +121,13 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var tree = win.down('treepanel');
         var btnCode = win.down('button[action=onCode]');
         var btnDesign = win.down('button[action=onDesign]');
-        var btnCopyToClipboard = win.down('button[action=onCopyToClipboard]');
         var btnSaveOnFile = win.down('button[action=onSaveOnFile]');
         var btnLabel = win.down('button[action=onLabel]');
         var FormParametersGrid = win.down('gridpanel[name=FormParametersGrid]');
-        // �������
-        var eventPanel = win.down('gridpanel[name=events]');
-        // ������
-        var dataPanel = win.down('panel[action=data]');
-        var query = win.down('combobox[name=query]');
-        var queryField = win.down('combobox[name=queryField]');
-        var queryKeyField = win.down('combobox[name=queryKeyField]');
+        var EventHandlersGrid = win.down('gridpanel[name=events]');
+
+        // Initialize click and right click events of the whole screen space
+        _this.initializeClickEvents(win);
 
         // disable some components on main form
         componentsPanel.setDisabled(true);
@@ -221,35 +188,42 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
 //            }
 //        });
 
-//        query.on('change', function (comboChanged) {
-//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-//            if (focused) {
-//                focused.record.get('data')['queryID'] = query.getValue();
-//            }
-//        });
-//        queryField.on('change', function (comboChanged) {
-//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-//            if (focused) {
-//                focused.record.get('data')['queryOutValueID'] = queryField.getValue();
-//            }
-//        });
-//        queryKeyField.on('change', function (comboChanged) {
-//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-//            if (focused) {
-//                focused.record.get('data')['queryOutKeyID'] = queryKeyField.getValue();
-//            }
-//        });
-//        dictionaryField.on('change', function (comboChanged) {
-//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-//            if (focused) {
-//                focused.record.get('data')['saveField'] = dictionaryField.getValue();
-//            }
-//        });
-
         // Events about adding and removing components from designed form
         // Handlers shows it by adding/removing components on Project Inspector
         win.on('ComponentAdded', _this.onAddComponent);
         win.on('ComponentRemoved', _this.onRemoveComponent);
+    },
+
+    /**
+     * Initialize click and right click events of the whole screen space
+     * @param win Window MainIDE
+     */
+    initializeClickEvents: function(win) {
+        Ext.getBody().on('contextmenu', function (e) {
+            e.preventDefault();
+            var focused = Focused.getFocusedCmp();
+            var moused = MousedComponentsIDE.getUpperMousedComponent();
+            if (focused && moused && moused == focused) {
+                var menu = ComponentFactoryUtils.getContextMenu();
+                menu.down('menuitem[action=onDelete]').on('click', function () {
+                    Focused.clearFocusedCmp();
+                    win.fireEvent('ComponentRemoved', win, focused.up(), focused);
+
+                    // Get factory by control type ID
+                    var ControlTypeID = focused.componentInfo.ControlTypeID;
+                    var factory = ComponentFactoryUtils.getFactory(ControlTypeID);
+                    factory.onRemoveComponent(focused.up(), focused);
+                });
+                menu.showAt(e.getXY());
+            }
+        }, null, {preventDefault: true});
+
+        Ext.getBody().on('click', function (e) {
+            var moused = MousedComponentsIDE.getUpperMousedComponent();
+            if (moused) {
+                win.fireEvent('IDEComponentFocused', win, moused);
+            }
+        }, null, {preventDefault: true});
     },
 
     /**
@@ -348,9 +322,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
 
         // Tree-like object
         var obj = _this.getJsonForm(form);
-        var getPropertyTypeInstance = function(componentInfo, stringProperty) {
+        var getPropertyTypeInstance = function (componentInfo, stringProperty) {
             var PropertyTypeInstance = null;
-            componentInfo.PropertiesList.forEach(function(property) {
+            componentInfo.PropertiesList.forEach(function (property) {
                 if (stringProperty == property.PropertyType.Name) {
                     PropertyTypeInstance = property;
                 }
@@ -408,7 +382,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         Ext.Ajax.request({
             url: 'MainIDE/SaveMetaDescriptions',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             jsonData: {
                 obj: formMetaDescriptions
             },
@@ -446,7 +420,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
 
-        var openForm = function() {
+        var openForm = function () {
             WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.dialog.OpenFormDialog');
             var openFormDialog = WebSystemsBuilder.utils.Windows.open('OpenFormDialog', {}, null, true);
             openFormDialog.on('FormIsReadyToOpen', function (formID) {
@@ -486,7 +460,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         Ext.Ajax.request({
             url: 'FormMeta/GetFormMetaDescriptions',
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             params: {
                 formID: formID + ''
             },
@@ -510,9 +484,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Draw recieved form on the Main Form
+     * Draw received form on the Main Form
      * @param win Main IDE Window
-     * @param formMetaDescriptions Recieved meta-descriptions of the form
+     * @param formMetaDescriptions Received meta-descriptions of the form
      */
     drawForm: function (win, formMetaDescriptions) {
         var _this = this;
@@ -530,11 +504,12 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
 
         if (FormParameters) {
-            FormParameters.forEach(function(formParameter) {
+            FormParameters.forEach(function (formParameter) {
                 FormParametersIDE.addParameter(formParameter);
             });
         }
 
+        // Recursive function - draws form, received from server
         var MetaDescriptionsToView = function (currentControlDescriptions, parentControl) {
             if (!currentControlDescriptions || !currentControlDescriptions.Control) {
                 MessageBox.error('Component is empty');
@@ -677,11 +652,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         if (focusedComponent) {
             Focused.setFocusedCmp(focusedComponent);
             propertiesOwner.update(
-                    '<span style="margin:3px;position:absolute;">' +
-                    CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
-                    focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
-                    '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
-                    '</span>'
+                '<span style="margin:3px;position:absolute;">' +
+                CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
+                focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
+                '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
+                '</span>'
             );
 
             var treeNode = tree.getRootNode().findChild('id', focusedComponent.componentInfo.uniqueID, true);
@@ -785,9 +760,9 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             'panel', 'tab', 'tabpanel', 'textfield', 'toolbar'
         ];
 
-        var getDefaultValue = function(componentInfo, stringProperty) {
+        var getDefaultValue = function (componentInfo, stringProperty) {
             var defaultValue = null;
-            componentInfo.PropertiesList.forEach(function(property) {
+            componentInfo.PropertiesList.forEach(function (property) {
                 if (stringProperty == property.PropertyType.Name) {
                     defaultValue = property.ControlTypePropertyType.DefaultValue;
                 }
@@ -844,29 +819,24 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             obj.uniqueID = item.componentInfo.uniqueID;
             obj.componentInfo = componentInfo;
 
-//            var data = JSON.parse(JSON.stringify(item.record.get('data')));
-//            var events = JSON.parse(JSON.stringify(item.record.get('events')));
-//            obj.data = data;
-//            obj.events = events;
-
             // recursion
             if (items.length > 0) {
                 if (item.xtype == 'gridpanel') {
                     obj.columns = [];
-                    items.forEach(function (i) {
-                        obj.columns.push(GetMetaDescriptionsRecursive(i));
+                    items.forEach(function (currentChildControl) {
+                        obj.columns.push(GetMetaDescriptionsRecursive(currentChildControl));
                     });
                 } else {
                     obj.items = [];
-                    items.forEach(function (i) {
-                        obj.items.push(GetMetaDescriptionsRecursive(i));
+                    items.forEach(function (currentChildControl) {
+                        obj.items.push(GetMetaDescriptionsRecursive(currentChildControl));
                     });
                 }
             }
             if (dockedItems.length > 0) {
                 obj.dockedItems = [];
-                dockedItems.forEach(function (i) {
-                    obj.dockedItems.push(GetMetaDescriptionsRecursive(i));
+                dockedItems.forEach(function (currentChildControl) {
+                    obj.dockedItems.push(GetMetaDescriptionsRecursive(currentChildControl));
                 });
             }
 
@@ -878,7 +848,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     },
 
     /**
-     * Clear everything
+     * Clear everything in current form
      * @param form main form
      */
     clearCurrentForm: function (form) {
@@ -967,62 +937,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             console.log('Removing node error. Can\'t find node to remove : ' + removedItem);
         } else {
             parentNode.removeChild(removedNode);
-        }
-    },
-
-    //endregion
-
-    //region Form Queries
-
-    /**
-     * ������� ���������� ������ ������� � ������������
-     * @param btn ������ "+", ��������� �������
-     */
-    onAddQuery: function (btn) {
-        var win = btn.up('window');
-        var query = win.down('combobox[name=query]');
-        var form = win.down('form[name=mainPanel]');
-
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.FormQueries');
-        var createQuery = WebSystemsBuilder.utils.Windows.open('FormQueries', {
-            form: form
-        }, null, true);
-        createQuery.on('FormQuerySaved', function (winQuery, obj) {
-            WebSystemsBuilder.utils.IDE.Queries.add(obj);
-            // ����������� ����� � ���������
-            query.getStore().loadData(WebSystemsBuilder.utils.IDE.Queries.get(), false);
-            var newQuery = query.getStore().findRecord('_ID', obj._ID);
-            if (newQuery) {
-                query.select(newQuery);
-            }
-        });
-    },
-
-    /**
-     * ����������� ������� ���������� ��� ������ �������
-     * @param combo ����� ������
-     */
-    onQueryTypeSelectionChange: function (combo) {
-        var win = combo.up('window');
-        var query = win.down('combobox[name=query]');
-        var queryField = win.down('combobox[name=queryField]');
-        var queryKeyField = win.down('combobox[name=queryKeyField]');
-        queryField.clearValue();
-        queryKeyField.clearValue();
-        if (!query.getValue()) {
-            queryField.getStore().loadData([], false);
-            queryKeyField.getStore().loadData([], false);
-        } else {
-            queryField.getStore().load({
-                params: {
-                    ID: query.findRecordByValue(query.getValue()).get('queryTypeID')
-                }
-            });
-            queryKeyField.getStore().load({
-                params: {
-                    ID: query.findRecordByValue(query.getValue()).get('queryTypeID')
-                }
-            });
         }
     },
 
@@ -1209,7 +1123,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
 
         var someComponentsArray = ['window', 'panel', 'tabpanel', 'newtab', 'gridpanel', 'toolbar', 'container (hbox)',
-            'container (vbox)', 'fieldset' , 'button'];
+            'container (vbox)', 'fieldset', 'button'];
         if (Ext.Array.contains(someComponentsArray, componentName)) {
             switch (recordId) {
                 case 'activeTab':
@@ -1414,7 +1328,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * @param btn Button "Edit event"
      */
     onEditEvent: function (btn) {
-        var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
         var eventsGrid = win.down('gridpanel[name=events]');
@@ -1425,45 +1338,46 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             return;
         }
 
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventAction');
-        var eventAction = WebSystemsBuilder.utils.Windows.open('EventAction', {
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventHandler');
+        var eventAction = WebSystemsBuilder.utils.Windows.open('EventHandler', {
             form: form,
-            isShowOnly: false,
             actions: selectedEvent.get('actions')
         }, null, true);
-        eventAction.on('EventActionIsReadyToSave', function (winDialog, action) {
+        eventAction.on('EventActionIsReadyToSave', function (action) {
             // �������� ����
             selectedEvent.set('actions', action);
             selectedEvent.commit();
-            // ������� ������� �� ���������
+
             eventsGrid.fireEvent('RecordChanged', eventsGrid);
         });
     },
 
     /**
-     * ������� �������� ������� � ����������
-     * @param btn ������ "�������", ��������� �������
+     * Delete event handler
+     * @param btn Button "Delete event handler"
      */
     onDeleteEvent: function (btn) {
-        var _this = this;
         var win = btn.up('window');
         var form = win.down('form[name=mainPanel]');
         var eventsGrid = win.down('gridpanel[name=events]');
 
-        var selected = eventsGrid.getSelectionModel().getSelection()[0];
-        if (!selected) {
-            WebSystemsBuilder.utils.MessageBox.show('�������� �������.', null, -1);
+        var selectedEvent = eventsGrid.getSelectionModel().getSelection()[0];
+        if (!selectedEvent) {
+            MessageBox.error('Choose event to delete');
             return;
         }
-        WebSystemsBuilder.utils.MessageBox.question('�������� ���������� �������' + (selected.get('name') ? (' "' + selected.get('name') + '"') : '') + '?', function (res) {
-            if (res == 'yes') {
-                // �������� ����
-                selected.set('actions', null);
-                selected.commit();
-                // ������� ������� �� ���������
-                eventsGrid.fireEvent('RecordChanged', eventsGrid);
-            }
-        }, Ext.Msg.YESNO);
+
+        WebSystemsBuilder.utils.MessageBox.question('Do you want to delete handler of "' + selectedEvent.get('Name') + '" event?',
+            function (res) {
+                if (res == 'yes') {
+                    selectedEvent.set('actions', null);
+                    selectedEvent.commit();
+
+                    eventsGrid.fireEvent('RecordChanged', eventsGrid);
+                }
+            },
+            Ext.Msg.YESNO
+        );
     },
 
     //endregion
@@ -1474,7 +1388,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * Add form parameter. Uses FormParametersIDE as parameters storage
      * @param button Button "Add form parameter"
      */
-    onAddFormParameter: function(button) {
+    onAddFormParameter: function (button) {
         var MainIDE = button.up('MainIDE');
         var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
 
@@ -1492,7 +1406,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * Edit form parameter. Uses FormParametersIDE as parameters storage
      * @param button Button "Edit form parameter"
      */
-    onEditFormParameter: function(button) {
+    onEditFormParameter: function (button) {
         var MainIDE = button.up('MainIDE');
         var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
         var selectedFormParameter = FormParametersGrid.getSelectionModel().getSelection()[0];
@@ -1512,11 +1426,12 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
 //            FormParametersGrid.getStore().loadData(formParameters, false);
 //        });
     },
+
     /**
      * Delete form parameter. Uses FormParametersIDE as parameters storage
      * @param button Button "Delete form parameter"
      */
-    onDeleteFormParameter: function(button) {
+    onDeleteFormParameter: function (button) {
         var MainIDE = button.up('MainIDE');
         var FormParametersGrid = MainIDE.down('gridpanel[name=FormParametersGrid]');
         var selectedFormParameter = FormParametersGrid.getSelectionModel().getSelection()[0];

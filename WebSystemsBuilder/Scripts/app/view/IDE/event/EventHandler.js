@@ -1,7 +1,7 @@
-﻿Ext.define('WebSystemsBuilder.view.IDE.event.EventAction', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.event.EventHandler', {
     extend: 'Ext.window.Window',
-    alias: 'widget.EventAction',
-    name: 'EventAction',
+    alias: 'widget.EventHandler',
+    name: 'EventHandler',
 
     modal: true,
     constrain: true,

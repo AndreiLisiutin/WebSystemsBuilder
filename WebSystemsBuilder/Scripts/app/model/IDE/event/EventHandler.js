@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.model.IDE.event.EventAction', {
+﻿Ext.define('WebSystemsBuilder.model.IDE.event.EventHandler', {
     extend: 'Ext.data.Model',
     fields: []
 });

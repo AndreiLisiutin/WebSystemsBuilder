@@ -1,46 +1,49 @@
-﻿Ext.define('WebSystemsBuilder.controller.IDE.query.CreateQuery', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.query.QueryAction', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.IDE.query.CreateQuery'
+        'WebSystemsBuilder.view.IDE.query.QueryAction'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.query.CreateQuery'
+        'WebSystemsBuilder.model.IDE.query.QueryAction'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.query.CreateQuery'
+        'WebSystemsBuilder.store.IDE.query.QueryAction'
     ],
 
     init: function () {
         this.control({
-            'CreateQuery': {
+            'QueryAction': {
                 afterrender: this.onLoad
             },
-            'CreateQuery button[action=onAddDataTable]': {
+            // Data table section (FROM)
+            'QueryAction button[action=onAddDataTable]': {
                 click: this.onAddDataTable
             },
-            'CreateQuery button[action=onDeleteDictionary]': {
+            'QueryAction button[action=onDeleteDictionary]': {
                 click: this.onDeleteDataTable
             },
-            'CreateQuery button[action=onAddField]': {
-                click: this.onAddField
+            // Column section (SELECT)
+            'QueryAction button[action=onAddField]': {
+                click: this.onAddColumn
             },
-            'CreateQuery button[action=onDeleteField]': {
-                click: this.onDeleteField
+            'QueryAction button[action=onDeleteField]': {
+                click: this.onDeleteColumn
             },
-            'CreateQuery button[action=onAddConditionAnd], button[action=onAddConditionOr]': {
+            // Conditions section (WHERE)
+            'QueryAction button[action=onAddConditionAnd], button[action=onAddConditionOr]': {
                 click: this.onAddCondition
             },
-            'CreateQuery button[action=onDeleteCondition]': {
+            'QueryAction button[action=onDeleteCondition]': {
                 click: this.onDeleteCondition
             },
-            'CreateQuery button[action=onRefreshSQL]': {
+            'QueryAction button[action=onRefreshSQL]': {
                 click: this.onRefreshSQL
             },
-            'CreateQuery button[action=onSave]': {
+            'QueryAction button[action=onSave]': {
                 click: this.onSave
             },
-            'CreateQuery button[action=onClose]': {
+            'QueryAction button[action=onClose]': {
                 click: this.onClose
             }
         });
@@ -51,10 +54,10 @@
      * @param win Окно, представляющее данную форму.
      */
     onLoad: function (win) {
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var condGrid = win.down('gridpanel[name=whereGrid]');
-        var query = win.down('textareafield[name=query]');
+        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var queryString = win.down('textareafield[name=queryString]');
         var btnSave = win.down('button[action=onSave]');
         var btnRefresh = win.down('button[action=onRefreshSQL]');
 
@@ -62,13 +65,13 @@
             fieldsGrid.up('fieldset').setDisabled(true);
             dictsGrid.up('fieldset').setDisabled(true);
             condGrid.up('fieldset').setDisabled(true);
-            query.setReadOnly(true);
+            queryString.setReadOnly(true);
             btnSave.disable();
             btnRefresh.disable();
             Ext.Ajax.request({
                 url: 'QueryEditor/GetFullQueryType',
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 params: {
                     ID: win.queryTypeID + ''
                 },
@@ -77,7 +80,7 @@
                     win.body.unmask();
                     if (jsonResp.Code == 0) {
                         var obj = jsonResp.Data;
-                        query.setValue(obj.queryType['sqlText']);
+                        queryString.setValue(obj.queryType['sqlText']);
                     } else {
                         WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, -1);
                     }
@@ -97,10 +100,10 @@
      */
     getObject: function (win) {
         var _this = this;
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var condGrid = win.down('gridpanel[name=whereGrid]');
-        var query = win.down('textareafield[name=query]');
+        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var queryString = win.down('textareafield[name=queryString]');
         var SQL = _this.getQuery(win.down('button'));
         var inParams = [], outParams = [];
 
@@ -118,7 +121,7 @@
         // where
         condGrid.getStore().data.items.forEach(function (item) {
             var obj = item.get('obj');
-            if (obj['condition'] != 'is null' && obj['condition'] != 'is not null') {
+            if (!Ext.Array.contains(['IS NULL', 'IS NOT NULL'], (obj['condition'] || '').trim().toUpperCase())) {
                 if (obj['isValue']) {
                     var inParam = {
                         ID: -1,
@@ -148,9 +151,9 @@
     onSave: function (btn) {
         var _this = this;
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var condGrid = win.down('gridpanel[name=whereGrid]');
+        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var condGrid = win.down('gridpanel[name=conditionsGrid]');
 
         // объект запроса
         var obj = this.getObject(win);
@@ -170,7 +173,7 @@
         Ext.Ajax.request({
             url: 'QueryEditor/SaveQueryType',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             jsonData: {
                 queryType: obj.queryType,
                 queryInParameters: obj.queryInParameters,
@@ -195,18 +198,20 @@
         });
     },
 
+    //region Data table (FROM)
+
     /**
      * Add new data table for query
      * @param btn Button "Add Data Table "
      */
     onAddDataTable: function (btn) {
         var win = btn.up('window');
-        var dataTableGrid = win.down('gridpanel[name=fromGrid]');
+        var dataTableGrid = win.down('gridpanel[name=dataTablesGrid]');
         var currentDataTables = dataTableGrid.getStore().data.items;
         var isEdit = currentDataTables != null && currentDataTables.length > 0;
 
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryFrom');
-        var dataTableWin = WebSystemsBuilder.utils.Windows.open('QueryFrom', {
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryActionDataTable');
+        var dataTableWin = WebSystemsBuilder.utils.Windows.open('QueryActionDataTable', {
             queryDataTables: currentDataTables
         }, null, true);
         dataTableWin.on('QueryFromIsReadyToSave', function (query) {
@@ -229,32 +234,45 @@
      */
     onDeleteDataTable: function (btn) {
         var win = btn.up('window');
-        var dataTablesGrid = win.down('gridpanel[name=fromGrid]');
-        var selectedDataTable = dataTablesGrid.getSelectionModel().getSelection()[0];
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
 
+        var selectedDataTable = dataTablesGrid.getSelectionModel().getSelection()[0];
         if (!selectedDataTable) {
-            var error = 'Choose data table to delete.';
-            MessageBox.error(error);
+            MessageBox.error('Choose data table to delete.');
+            return;
         }
 
-        var ID = selectedDataTable.get('ID');
-        var record = dataTablesGrid.getStore().findRecord('ID', ID);
-        dataTablesGrid.getStore().remove(record);
+        MessageBox.question('Do you want to delete data table "' + selectedDataTable.get('Name') + '" from current query?',
+            function (res) {
+                if (res == 'yes') {
+                    var TableID = selectedDataTable.get('TableID');
+                    var record = dataTablesGrid.getStore().findRecord('TableID', TableID);
+                    dataTablesGrid.getStore().remove(record);
+                }
+            },
+            Ext.Msg.YESNO
+        );
     },
 
+    //endregion
+
+    //region Column (SELECT)
+
     /**
-     * Функция добавления Поля
-     * @param btn Кнопка "Добавить"
+     * Add out column to query
+     * @param btn Button "Add column"
      */
-    onAddField: function (btn) {
+    onAddColumn: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QuerySelect');
-        var queryFrom = WebSystemsBuilder.utils.Windows.open('QuerySelect', {
-            dictionaries: dictsGrid.getStore().data.items
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var currentDataTables = dataTableGrid.getStore().data.items;
+
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryActionColumn');
+        var newColumnWin = WebSystemsBuilder.utils.Windows.open('QueryActionColumn', {
+            queryDataTables: currentDataTables
         }, null, true);
-        queryFrom.on('QuerySelectIsReadyToSave', function (winDialog, query) {
+        newColumnWin.on('QuerySelectIsReadyToSave', function (query) {
             var newSelect = {
                 ID: query.table.field['ID'],
                 field: query.table.field['name'],
@@ -263,28 +281,40 @@
                 dictionary: query.table['name'],
                 obj: query
             };
-            fieldsGrid.getStore().add(newSelect);
-        });
+            columnsGrid.getStore().add(newSelect);
+        }, this, {single: true});
     },
 
     /**
-     * Функция удаления Источника данных
-     * @param btn Кнопка "Удалить"
+     * Delete out column from query
+     * @param btn Button "Delete column"
      */
-    onDeleteField: function (btn) {
+    onDeleteColumn: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var selection = fieldsGrid.getSelectionModel().getSelection()[0];
-        if (!selection) {
-            var error = 'Выберите поле для удаления.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-        } else {
-            var ID = selection.get('ID');
-            var record = fieldsGrid.getStore().findRecord('ID', ID);
-            fieldsGrid.getStore().remove(record);
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+
+        var selectedColumn = columnsGrid.getSelectionModel().getSelection()[0];
+        if (!selectedColumn) {
+            MessageBox.error('Choose column to delete');
+            return;
         }
+
+        MessageBox.question('Do you want to delete out column "' + selectedColumn.get('Name') + '" from current query?',
+            function (res) {
+                if (res == 'yes') {
+                    var ColumnID = selectedColumn.get('ColumnID');
+                    var record = columnsGrid.getStore().findRecord('ColumnID', ColumnID);
+                    columnsGrid.getStore().remove(record);
+                }
+            },
+            Ext.Msg.YESNO
+        );
     },
+
+    //endregion
+
+    //region Condition (WHERE)
 
     /**
      * Функция добавления условия
@@ -292,19 +322,20 @@
      */
     onAddCondition: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var condGrid = win.down('gridpanel[name=whereGrid]');
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryWhere');
-        var queryWhere = WebSystemsBuilder.utils.Windows.open('QueryWhere',
-            {
-                dictionaries: dictsGrid.getStore().data.items
-            }, null, true);
-        queryWhere.on('QueryWhereIsReadyToSave', function (winDialog, query) {
-            var operation = btn.action == 'onAddConditionAnd' ? 'AND' : 'OR';
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
+        var currentDataTables = dataTablesGrid.getStore().getRange();
+
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryActionCondition');
+        var queryActionConditionWin = WebSystemsBuilder.utils.Windows.open('QueryActionCondition', {
+            queryDataTables: currentDataTables
+        }, null, true);
+        queryActionConditionWin.on('QueryActionConditionSaved', function (query) {
             var newWhere = {
                 ID: query['ID'],
-                operation: operation,
+                operation: btn.operation,
                 condition: query['conditionStr'],
                 domainValueTypeID: query.firstField.field['domainValueTypeID'],
                 obj: query
@@ -319,9 +350,9 @@
      */
     onDeleteCondition: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var condGrid = win.down('gridpanel[name=whereGrid]');
+        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var condGrid = win.down('gridpanel[name=conditionsGrid]');
         var selection = condGrid.getSelectionModel().getSelection()[0];
         if (!selection) {
             var error = 'Выберите условие для удаления.';
@@ -333,6 +364,60 @@
         }
     },
 
+    //endregion
+
+    //region Query in parameters
+
+    /**
+     * Add in parameter to query
+     * @param btn
+     */
+    onAddQueryInParameter: function(btn) {
+        var win = btn.up('window');
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
+
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
+        var newColumnWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer');
+        newColumnWin.on('OperandChosen', function (operand) {
+            var newParameter = {
+                Name: operand.Value
+            };
+            queryInParametersGrid.getStore().add(newParameter);
+        }, this, {single: true});
+    },
+
+    /**
+     * Delete data table
+     * @param btn Button "Delete data table"
+     */
+    onDeleteQueryInParameter: function (btn) {
+        var win = btn.up('window');
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
+        var selectedQueryInParameter = queryInParametersGrid.getSelectionModel().getSelection()[0];
+
+        if (!selectedQueryInParameter) {
+            MessageBox.error('Choose query in parameter to delete.');
+            return;
+        }
+
+        MessageBox.question('Do you want to delete query in parameter "' + selectedQueryInParameter.get('Name') + '" from current query?',
+            function (res) {
+                if (res == 'yes') {
+                    var Name = selectedQueryInParameter.get('Name');
+                    var record = queryInParametersGrid.getStore().findRecord('Name', Name);
+                    queryInParametersGrid.getStore().remove(record);
+                }
+            },
+            Ext.Msg.YESNO
+        );
+    },
+
+    //endregion
+
     /**
      * Обновить текстовое поле с SQL
      * @param btn Кнопка "Обновить"
@@ -340,9 +425,9 @@
     onRefreshSQL: function (btn) {
         var win = btn.up('window');
         var _this = this;
-        var query = win.down('textareafield[name=query]');
+        var queryString = win.down('textareafield[name=queryString]');
         var SQL = _this.getQuery(btn);
-        query.setValue(SQL);
+        queryString.setValue(SQL);
     },
 
     /**
@@ -352,18 +437,20 @@
      */
     getQuery: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=selectGrid]');
-        var dictsGrid = win.down('gridpanel[name=fromGrid]');
-        var condGrid = win.down('gridpanel[name=whereGrid]');
-        var query = win.down('textareafield[name=query]');
-        var SQL = '', select = '', from = '', where = '';
+        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var queryString = win.down('textareafield[name=queryString]');
+
+        var select = '', from = '', where = '';
+
         fieldsGrid.getStore().data.items.forEach(function (item) {
             var obj = item.get('obj');
             select += select == '' ? '' : ', ';
             select += obj.table['tableName'] + '.' + obj.table.field['columnName'];
         });
-        select = 'SELECT ' + select;
-        select += '\n';
+        select = 'SELECT ' + select + '\n';
+
         dictsGrid.getStore().data.items.forEach(function (item) {
             var obj = item.get('obj');
             var str = '';
@@ -378,6 +465,7 @@
             from += str + '\n';
         });
         from = 'FROM ' + from;
+
         // where
         condGrid.getStore().data.items.forEach(function (item) {
             var obj = item.get('obj');
@@ -385,7 +473,7 @@
             str += obj.firstField.table['tableName'] + '.' + obj.firstField.field['columnName'];
             str += ' ' + obj['condition'].toUpperCase();
             // если не is null || is not null
-            if (obj['condition'] != 'is null' && obj['condition'] != 'is not null') {
+            if (!Ext.Array.contains(['IS NULL', 'IS NOT NULL'], (obj['condition'] || '').trim().toUpperCase())) {
                 if (obj['isValue']) {
                     str += ' ' + obj.secondField['value'];
                 } else {
@@ -396,13 +484,12 @@
         });
         where = 'WHERE 1=1 ' + where;
 
-        SQL = select + from + where;
-        return SQL;
+        return select + from + where;
     },
 
     /**
-     * Функция акрытия формы.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * Close the form (button click)
+     * @param btn Button "Close"
      */
     onClose: function (btn) {
         btn.up('window').close();

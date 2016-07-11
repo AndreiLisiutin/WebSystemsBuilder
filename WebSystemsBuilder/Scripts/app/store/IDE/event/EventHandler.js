@@ -1,9 +1,8 @@
-﻿Ext.define('WebSystemsBuilder.store.IDE.event.EventAction', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.event.EventHandler', {
     extend:'Ext.data.Store',
     fields:[]
 });
 
-// Список действий события
 Ext.define('WebSystemsBuilder.store.IDE.event.Action', {
     extend:'Ext.data.Store',
     model: 'WebSystemsBuilder.model.IDE.event.Action',

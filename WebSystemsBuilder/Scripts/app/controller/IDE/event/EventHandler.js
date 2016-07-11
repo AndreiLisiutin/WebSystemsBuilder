@@ -1,34 +1,34 @@
-﻿Ext.define('WebSystemsBuilder.controller.IDE.event.EventAction', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.event.EventHandler', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.IDE.event.EventAction'
+        'WebSystemsBuilder.view.IDE.event.EventHandler'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.event.EventAction'
+        'WebSystemsBuilder.model.IDE.event.EventHandler'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.event.EventAction'
+        'WebSystemsBuilder.store.IDE.event.EventHandler'
     ],
 
     init: function () {
         this.control({
-            'EventAction': {
+            'EventHandler': {
                 afterrender: this.onLoad
             },
-            'EventAction [action=onAddClientAction]': {
+            'EventHandler [action=onAddClientAction]': {
                 click: this.onAddClientAction
             },
-            'EventAction [action=onAddOpenFormAction]': {
+            'EventHandler [action=onAddOpenFormAction]': {
                 click: this.onAddOpenFormAction
             },
-            'EventAction [action=onAddQueryAction]': {
+            'EventHandler [action=onAddQueryAction]': {
                 click: this.onAddQueryAction
             },
-            'EventAction button[action=onDeleteAction]': {
+            'EventHandler button[action=onDeleteAction]': {
                 click: this.onDeleteAction
             },
-            'EventAction button[action=onClose]': {
+            'EventHandler button[action=onClose]': {
                 click: this.onClose
             }
         });
@@ -36,7 +36,7 @@
 
     /**
      * Load the form (afterrender).
-     * @param win Window EventAction
+     * @param win Window EventHandler
      */
     onLoad: function (win) {
         var actionGrid = win.down('gridpanel[name=actionGrid]');
@@ -86,8 +86,8 @@
         var win = btn.up('window');
         var actionGrid = win.down('gridpanel[name=actionGrid]');
 
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.CreateQuery');
-        var actionWin = WebSystemsBuilder.utils.Windows.open('CreateQuery', { }, null, true);
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryAction');
+        var actionWin = WebSystemsBuilder.utils.Windows.open('QueryAction', { }, null, true);
 
     },
 

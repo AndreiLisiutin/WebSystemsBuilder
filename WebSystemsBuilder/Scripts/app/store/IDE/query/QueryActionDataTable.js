@@ -1,4 +1,4 @@
-﻿Ext.define('WebSystemsBuilder.store.IDE.query.QueryFrom', {
+﻿Ext.define('WebSystemsBuilder.store.IDE.query.QueryActionDataTable', {
     extend:'Ext.data.Store',
     fields:[]
 });

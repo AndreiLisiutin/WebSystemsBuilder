@@ -43,7 +43,7 @@
      * @param btn "Close" button
      */
     onClose: function (btn) {
-        btn.up('CreateFormDialog').close();
+        btn.up('window').close();
     }
 
 });

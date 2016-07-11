@@ -3,7 +3,6 @@
     fields:[]
 });
 
-// Список действий события
 Ext.define('WebSystemsBuilder.store.IDE.event.Handler', {
     extend:'Ext.data.Store',
     model: 'WebSystemsBuilder.model.IDE.event.Handler',

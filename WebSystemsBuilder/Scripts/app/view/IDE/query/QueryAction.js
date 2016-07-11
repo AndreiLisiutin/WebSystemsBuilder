@@ -1,14 +1,14 @@
-﻿Ext.define('WebSystemsBuilder.view.IDE.query.CreateQuery', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.QueryAction', {
     extend: 'Ext.window.Window',
-    alias: 'widget.CreateQuery',
-    name: 'CreateQuery',
+    alias: 'widget.QueryAction',
+    name: 'QueryAction',
 
     modal: true,
     title: 'Query Action',
 
-    height: 600,
+    height: 700,
     width: 730,
-    minHeight: 600,
+    minHeight: 700,
     minWidth: 730,
 
     layout: 'fit',
@@ -16,9 +16,10 @@
     initComponent: function () {
         var me = this;
 
-        var fromStore = Ext.create('WebSystemsBuilder.store.IDE.query.From');
-        var selectStore = Ext.create('WebSystemsBuilder.store.IDE.query.Select');
-        var whereStore = Ext.create('WebSystemsBuilder.store.IDE.query.Where');
+        var dataTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
+        var columnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Column');
+        var conditionStore = Ext.create('WebSystemsBuilder.store.IDE.query.Condition');
+        var parametersStore = Ext.create('WebSystemsBuilder.store.IDE.query.QueryInParameters');
 
         Ext.applyIf(me, {
             items: [
@@ -70,16 +71,15 @@
                         {
                             xtype: 'fieldset',
                             anchor: '0',
+                            layout: 'fit',
                             height: 97,
                             margin: 5,
                             padding: 2,
-                            title: 'Запрос',
-                            layout: 'fit',
-                            name: 'fsQuery',
+                            title: 'Query',
                             items: [
                                 {
                                     xtype: 'textareafield',
-                                    name: 'query'
+                                    name: 'queryString'
                                 }
                             ]
                         },
@@ -89,14 +89,70 @@
                             height: 135,
                             margin: 5,
                             padding: 2,
-                            title: 'Data tables',
+                            title: 'Out columns (SELECT)',
                             layout: 'fit',
-                            name: 'fsFrom',
                             items: [
                                 {
                                     xtype: 'gridpanel',
-                                    name: 'fromGrid',
-                                    store: fromStore,
+                                    name: 'columnsGrid',
+                                    store: columnStore,
+                                    columns: [
+                                        {
+                                            xtype: 'gridcolumn',
+                                            width: 150,
+                                            text: 'Data table',
+                                            dataIndex: 'dictionary'
+                                        },
+                                        {
+                                            xtype: 'gridcolumn',
+                                            flex: 1,
+                                            text: 'Column',
+                                            dataIndex: 'field'
+                                        }
+                                    ],
+                                    dockedItems: [
+                                        {
+                                            xtype: 'toolbar',
+                                            dock: 'right',
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    scale: 'medium',
+                                                    border: true,
+                                                    icon: 'Scripts/resources/icons/add.png',
+                                                    tooltip: 'Add column',
+                                                    action: 'onAddColumn'
+                                                },
+                                                {
+                                                    xtype: 'tbseparator'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    scale: 'medium',
+                                                    border: true,
+                                                    icon: 'Scripts/resources/icons/delete.png',
+                                                    tooltip: 'Delete column',
+                                                    action: 'onDeleteColumn'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'fieldset',
+                            anchor: '0',
+                            height: 135,
+                            margin: 5,
+                            padding: 2,
+                            title: 'Data tables (FROM)',
+                            layout: 'fit',
+                            items: [
+                                {
+                                    xtype: 'gridpanel',
+                                    name: 'dataTablesGrid',
+                                    store: dataTableStore,
                                     columns: [
                                         {
                                             xtype: 'gridcolumn',
@@ -127,7 +183,7 @@
                                                     scale: 'medium',
                                                     border: true,
                                                     icon: 'Scripts/resources/icons/add.png',
-                                                    tooltip: 'Добавить источник данных',
+                                                    tooltip: 'Add data table',
                                                     action: 'onAddDataTable'
                                                 },
                                                 {
@@ -138,7 +194,7 @@
                                                     scale: 'medium',
                                                     border: true,
                                                     icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Удалить источник данных',
+                                                    tooltip: 'Delete data table',
                                                     action: 'onDeleteDataTable'
                                                 }
                                             ]
@@ -149,87 +205,28 @@
                         },
                         {
                             xtype: 'fieldset',
-                            anchor: '0',
-                            height: 135,
+                            width: 100,
                             margin: 5,
                             padding: 2,
-                            title: 'Выбираемые данные',
+                            title: 'Conditions (WHERE)',
                             layout: 'fit',
-                            name: 'fsSelect',
                             items: [
                                 {
                                     xtype: 'gridpanel',
-                                    name: 'selectGrid',
-                                    store: selectStore,
-                                    columns: [
-                                        {
-                                            xtype: 'gridcolumn',
-                                            width: 150,
-                                            text: 'Источник данных',
-                                            dataIndex: 'dictionary'
-                                        },
-                                        {
-                                            xtype: 'gridcolumn',
-                                            flex: 1,
-                                            text: 'Поле',
-                                            dataIndex: 'field'
-                                        }
-                                    ],
-                                    dockedItems: [
-                                        {
-                                            xtype: 'toolbar',
-                                            dock: 'right',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/add.png',
-                                                    tooltip: 'Добавить поле',
-                                                    action: 'onAddField'
-                                                },
-                                                {
-                                                    xtype: 'tbseparator'
-                                                },
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Удалить поле',
-                                                    action: 'onDeleteField'
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'fieldset',
-                            anchor: '0 -380',
-                            margin: 5,
-                            padding: 2,
-                            title: 'Условие выборки',
-                            layout: 'fit',
-                            name: 'fsWhere',
-                            items: [
-                                {
-                                    xtype: 'gridpanel',
-                                    name: 'whereGrid',
-                                    store: whereStore,
+                                    name: 'conditionsGrid',
+                                    store: conditionStore,
                                     columns: [
                                         {
                                             xtype: 'gridcolumn',
                                             width: 70,
-                                            text: 'Операция',
-                                            dataIndex: 'operation'
+                                            text: 'Operation',
+                                            dataIndex: 'Operation'
                                         },
                                         {
                                             xtype: 'gridcolumn',
                                             flex: 1,
-                                            text: 'Условие',
-                                            dataIndex: 'condition'
+                                            text: 'Condition',
+                                            dataIndex: 'Condition'
                                         }
                                     ],
                                     dockedItems: [
@@ -243,8 +240,9 @@
                                                     border: true,
                                                     icon: 'Scripts/resources/icons/add.png',
                                                     iconAlign: 'top',
-                                                    tooltip: 'Добавить условие AND',
+                                                    tooltip: 'Add AND condition',
                                                     text: 'AND',
+                                                    operation: 'AND',
                                                     action: 'onAddConditionAnd'
                                                 },
                                                 {
@@ -256,21 +254,11 @@
                                                     border: true,
                                                     icon: 'Scripts/resources/icons/add.png',
                                                     iconAlign: 'top',
-                                                    tooltip: 'Добавить условие OR',
+                                                    tooltip: 'Add OR condition',
                                                     text: 'OR',
+                                                    operation: 'OR',
                                                     action: 'onAddConditionOr'
                                                 },
-//                                        {
-//                                            xtype:'tbseparator'
-//                                        },
-//                                        {
-//                                            xtype:'button',
-//                                            scale:'medium',
-//                                            border:true,
-//                                            icon:'Scripts/resources/icons/edit.png',
-//                                            tooltip:'Изменить условие',
-//                                            action: 'onEditCondition'
-//                                        },
                                                 {
                                                     xtype: 'tbseparator'
                                                 },
@@ -279,8 +267,65 @@
                                                     scale: 'medium',
                                                     border: true,
                                                     icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Удалить условие',
+                                                    tooltip: 'Delete condition',
                                                     action: 'onDeleteCondition'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'fieldset',
+                            anchor: '0 -480',
+                            margin: 5,
+                            padding: 2,
+                            title: 'In parameters',
+                            layout: 'fit',
+                            items: [
+                                {
+                                    xtype: 'gridpanel',
+                                    name: 'queryInParametersGrid',
+                                    store: parametersStore,
+                                    columns: [
+                                        {
+                                            xtype: 'gridcolumn',
+                                            width: 70,
+                                            text: 'Parameter',
+                                            dataIndex: 'Name'
+                                        },
+                                        {
+                                            xtype: 'gridcolumn',
+                                            flex: 1,
+                                            text: 'Type',
+                                            dataIndex: 'ValueType'
+                                        }
+                                    ],
+                                    dockedItems: [
+                                        {
+                                            xtype: 'toolbar',
+                                            dock: 'right',
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    scale: 'medium',
+                                                    border: true,
+                                                    icon: 'Scripts/resources/icons/add.png',
+                                                    iconAlign: 'top',
+                                                    tooltip: 'Add parameter',
+                                                    action: 'onAddQueryInParameter'
+                                                },
+                                                {
+                                                    xtype: 'tbseparator'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    scale: 'medium',
+                                                    border: true,
+                                                    icon: 'Scripts/resources/icons/delete.png',
+                                                    tooltip: 'Delete parameter',
+                                                    action: 'onDeleteQueryInParameter'
                                                 }
                                             ]
                                         }

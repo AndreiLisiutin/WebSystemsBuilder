@@ -1,7 +1,7 @@
-﻿Ext.define('WebSystemsBuilder.view.IDE.query.QueryFrom', {
+﻿Ext.define('WebSystemsBuilder.view.IDE.query.QueryActionDataTable', {
     extend: 'Ext.window.Window',
-    alias: 'widget.QueryFrom',
-    name: 'QueryFrom',
+    alias: 'widget.QueryActionDataTable',
+    name: 'QueryActionDataTable',
 
     modal: true,
     constrain: true,
@@ -14,9 +14,7 @@
     maxWidth: 600,
     maxHeight: 170,
 
-    layout: {
-        type: 'fit'
-    },
+    layout: 'fit',
 
     initComponent: function () {
         var me = this;

@@ -1,28 +1,28 @@
-﻿Ext.define('WebSystemsBuilder.controller.IDE.query.QueryFrom', {
+﻿Ext.define('WebSystemsBuilder.controller.IDE.query.QueryActionDataTable', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'WebSystemsBuilder.view.IDE.query.QueryFrom'
+        'WebSystemsBuilder.view.IDE.query.QueryActionDataTable'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.query.QueryFrom'
+        'WebSystemsBuilder.model.IDE.query.QueryActionDataTable'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.query.QueryFrom'
+        'WebSystemsBuilder.store.IDE.query.QueryActionDataTable'
     ],
 
     init: function () {
         this.control({
-            'QueryFrom': {
+            'QueryActionDataTable': {
                 afterrender: this.onLoad
             },
-            'QueryFrom combobox[name=newDataTable], combobox[name=joinTable]': {
+            'QueryActionDataTable combobox[name=newDataTable], combobox[name=joinTable]': {
                 change: this.onChangeTable
             },
-            'QueryFrom button[action=onSave]': {
+            'QueryActionDataTable button[action=onSave]': {
                 click: this.onSave
             },
-            'QueryFrom button[action=onClose]': {
+            'QueryActionDataTable button[action=onClose]': {
                 click: this.onClose
             }
         });
@@ -30,7 +30,7 @@
 
     /**
      * Load the form (afterrender).
-     * @param win Window QueryFrom
+     * @param win Window QueryActionDataTable
      */
     onLoad: function (win) {
         var joinKind = win.down('combobox[name=joinKind]');
@@ -178,8 +178,8 @@
     },
 
     /**
-     * Функция акрытия формы.
-     * @param btn Кнопка "Закрыть", вызвавшая событие закрытия формы
+     * Close the form (button click)
+     * @param btn Button "Close"
      */
     onClose: function (btn) {
         btn.up('window').close();
