@@ -5,10 +5,12 @@
         'WebSystemsBuilder.view.IDE.query.QueryAction'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.query.QueryAction'
+        'WebSystemsBuilder.model.IDE.query.QueryAction',
+        'WebSystemsBuilder.model.IDE.query.QueryActionDataTable'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.query.QueryAction'
+        'WebSystemsBuilder.store.IDE.query.QueryAction',
+        'WebSystemsBuilder.store.IDE.query.QueryActionDataTable'
     ],
 
     init: function () {
@@ -24,7 +26,7 @@
                 click: this.onDeleteDataTable
             },
             // Column section (SELECT)
-            'QueryAction button[action=onAddField]': {
+            'QueryAction button[action=onAddColumn]': {
                 click: this.onAddColumn
             },
             'QueryAction button[action=onDeleteField]': {
@@ -37,8 +39,20 @@
             'QueryAction button[action=onDeleteCondition]': {
                 click: this.onDeleteCondition
             },
+            // Query Parameters
+            'QueryAction button[action=onAddQueryInParameter]': {
+                click: this.onAddQueryInParameter
+            },
+            'QueryAction button[action=onDeleteQueryInParameter]': {
+                click: this.onDeleteQueryInParameter
+            },
+
+            'QueryAction radiogroup[name=rgSqlType]': {
+                change: this.onChangeSqlType
+            },
+
             'QueryAction button[action=onRefreshSQL]': {
-                click: this.onRefreshSQL
+                click: this.onRefreshSqlString
             },
             'QueryAction button[action=onSave]': {
                 click: this.onSave
@@ -50,53 +64,70 @@
     },
 
     /**
-     * Функция инициализации компонентов формы. Вызывается сразу после загрузке формы (afterrender).
-     * @param win Окно, представляющее данную форму.
+     * Load the form (afterrender).
+     * @param win Window QueryAction
      */
     onLoad: function (win) {
-        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
-        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
-        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var conditionsGrid = win.down('gridpanel[name=conditionsGrid]');
         var queryString = win.down('textareafield[name=queryString]');
         var btnSave = win.down('button[action=onSave]');
         var btnRefresh = win.down('button[action=onRefreshSQL]');
+        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
 
-        if (win.queryTypeID) {
-            fieldsGrid.up('fieldset').setDisabled(true);
-            dictsGrid.up('fieldset').setDisabled(true);
-            condGrid.up('fieldset').setDisabled(true);
-            queryString.setReadOnly(true);
-            btnSave.disable();
-            btnRefresh.disable();
-            Ext.Ajax.request({
-                url: 'QueryEditor/GetFullQueryType',
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'},
-                params: {
-                    ID: win.queryTypeID + ''
-                },
-                success: function (objServerResponse) {
-                    var jsonResp = Ext.decode(objServerResponse.responseText);
-                    win.body.unmask();
-                    if (jsonResp.Code == 0) {
-                        var obj = jsonResp.Data;
-                        queryString.setValue(obj.queryType['sqlText']);
-                    } else {
-                        WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, -1);
-                    }
-                },
-                failure: function (objServerResponse) {
-                    win.body.unmask();
-                    WebSystemsBuilder.utils.MessageBox.show(objServerResponse.responseText, null, -1);
-                }
-            });
+        rgSqlType.setValue({'data': 'SELECT'});
+    },
+
+    /**
+     * Change sql type
+     * @param radioGroup
+     */
+    onChangeSqlType: function(radioGroup) {
+        var win = radioGroup.up('window');
+        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
+        var sqlActionTabPanel = win.down('tabpanel[name=sqlActionTabPanel]');
+        var selectPanel = win.down('panel[name=selectSqlAction]');
+        var insertPanel = win.down('panel[name=insertSqlAction]');
+        var deletePanel = win.down('panel[name=deleteSqlAction]');
+
+        if (rgSqlType.getValue()) {
+            switch (rgSqlType.getValue().data) {
+                case 'SELECT':
+                    sqlActionTabPanel.setActiveTab(selectPanel);
+                    selectPanel.setDisabled(false);
+                    insertPanel.setDisabled(true);
+                    deletePanel.setDisabled(true);
+                    break;
+                case 'INSERT':
+                case 'UPDATE':
+                    sqlActionTabPanel.setActiveTab(insertPanel);
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(false);
+                    deletePanel.setDisabled(true);
+                    break;
+                case 'DELETE':
+                    sqlActionTabPanel.setActiveTab(deletePanel);
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(true);
+                    deletePanel.setDisabled(false);
+                    break;
+                default:
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(true);
+                    deletePanel.setDisabled(true);
+                    break;
+            }
+        } else {
+            selectPanel.setDisabled(true);
+            insertPanel.setDisabled(true);
+            deletePanel.setDisabled(true);
         }
     },
 
     /**
-     * Получить объект для сохранения запроса
-     * @param win Окно
-     * @returns {{queryType: {SQL: string, ID: number}, queryInParameters: Array, queryOutParameters: Array}}
+     * Get object to save the query
+     * @param win Window
      */
     getObject: function (win) {
         var _this = this;
@@ -146,7 +177,8 @@
     },
 
     /**
-     * Функция сохранения запроса
+     * Save the query
+     * @param btn Button "Save"
      */
     onSave: function (btn) {
         var _this = this;
@@ -264,6 +296,7 @@
      */
     onAddColumn: function (btn) {
         var win = btn.up('window');
+        var dataTableGrid = win.down('gridpanel[name=dataTablesGrid]');
         var columnsGrid = win.down('gridpanel[name=columnsGrid]');
         var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
         var currentDataTables = dataTableGrid.getStore().data.items;
@@ -272,16 +305,14 @@
         var newColumnWin = WebSystemsBuilder.utils.Windows.open('QueryActionColumn', {
             queryDataTables: currentDataTables
         }, null, true);
-        newColumnWin.on('QuerySelectIsReadyToSave', function (query) {
-            var newSelect = {
-                ID: query.table.field['ID'],
-                field: query.table.field['name'],
-                columnName: query.table.field['columnName'],
-                domainValueTypeID: query.table.field['domainValueTypeID'],
-                dictionary: query.table['name'],
-                obj: query
+        newColumnWin.on('QuerySelectIsReadyToSave', function (column) {
+            var newColumn = {
+                Table: column.Table,
+                Column: column.Column,
+                Name: column.Column.Name,
+                TableName: column.Table.Name
             };
-            columnsGrid.getStore().add(newSelect);
+            columnsGrid.getStore().add(newColumn);
         }, this, {single: true});
     },
 
@@ -324,7 +355,7 @@
         var win = btn.up('window');
         var columnsGrid = win.down('gridpanel[name=columnsGrid]');
         var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
-        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var conditionsGrid = win.down('gridpanel[name=conditionsGrid]');
         var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
         var currentDataTables = dataTablesGrid.getStore().getRange();
 
@@ -332,15 +363,16 @@
         var queryActionConditionWin = WebSystemsBuilder.utils.Windows.open('QueryActionCondition', {
             queryDataTables: currentDataTables
         }, null, true);
-        queryActionConditionWin.on('QueryActionConditionSaved', function (query) {
-            var newWhere = {
-                ID: query['ID'],
-                operation: btn.operation,
-                condition: query['conditionStr'],
-                domainValueTypeID: query.firstField.field['domainValueTypeID'],
-                obj: query
+        queryActionConditionWin.on('QueryActionConditionSaved', function (condition) {
+            var newCondition = {
+                UniqueID: condition.UniqueID,
+                FirstPart: condition.FirstPart,
+                SecondPart: condition.SecondPart,
+                ConditionSign: condition.ConditionSign,
+                ConditionString: condition.ConditionString,
+                Operation: btn.operation // AND/OR
             };
-            condGrid.getStore().add(newWhere);
+            conditionsGrid.getStore().add(newCondition);
         });
     },
 
@@ -350,18 +382,19 @@
      */
     onDeleteCondition: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
-        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
-        var condGrid = win.down('gridpanel[name=conditionsGrid]');
-        var selection = condGrid.getSelectionModel().getSelection()[0];
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var conditionsGrid = win.down('gridpanel[name=conditionsGrid]');
+
+        var selection = conditionsGrid.getSelectionModel().getSelection()[0];
         if (!selection) {
-            var error = 'Выберите условие для удаления.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-        } else {
-            var ID = selection.get('ID');
-            var record = condGrid.getStore().findRecord('ID', ID);
-            condGrid.getStore().remove(record);
+            MessageBox.error('Выберите условие для удаления.');
+            return;
         }
+
+        var UniqueID = selection.get('UniqueID');
+        var record = conditionsGrid.getStore().findRecord('UniqueID', UniqueID);
+        conditionsGrid.getStore().remove(record);
     },
 
     //endregion
@@ -372,19 +405,18 @@
      * Add in parameter to query
      * @param btn
      */
-    onAddQueryInParameter: function(btn) {
+    onAddQueryInParameter: function (btn) {
         var win = btn.up('window');
         var columnsGrid = win.down('gridpanel[name=columnsGrid]');
         var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
         var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
-        var newColumnWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer');
+        var newColumnWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer', {
+            includeControls: false
+        });
         newColumnWin.on('OperandChosen', function (operand) {
-            var newParameter = {
-                Name: operand.Value
-            };
-            queryInParametersGrid.getStore().add(newParameter);
+            queryInParametersGrid.getStore().add(operand);
         }, this, {single: true});
     },
 
@@ -422,12 +454,16 @@
      * Обновить текстовое поле с SQL
      * @param btn Кнопка "Обновить"
      */
-    onRefreshSQL: function (btn) {
+    onRefreshSqlString: function (btn) {
         var win = btn.up('window');
         var _this = this;
         var queryString = win.down('textareafield[name=queryString]');
-        var SQL = _this.getQuery(btn);
-        queryString.setValue(SQL);
+
+        // Get sql string from 4 tables
+        var sqlString = _this.getQuery(btn);
+
+        // Display sql string
+        queryString.setValue(sqlString);
     },
 
     /**
@@ -437,54 +473,56 @@
      */
     getQuery: function (btn) {
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
-        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
-        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesList = win.down('gridpanel[name=dataTablesGrid]');
+        var conditionsGrid = win.down('gridpanel[name=conditionsGrid]');
         var queryString = win.down('textareafield[name=queryString]');
 
-        var select = '', from = '', where = '';
-
-        fieldsGrid.getStore().data.items.forEach(function (item) {
-            var obj = item.get('obj');
-            select += select == '' ? '' : ', ';
-            select += obj.table['tableName'] + '.' + obj.table.field['columnName'];
+        // SELECT string
+        var columnsList = [];
+        columnsGrid.getStore().getRange().forEach(function (currentColumn) {
+            var table = currentColumn.get('Table');
+            var column = currentColumn.get('Column');
+            columnsList.push(table.Name + '.' + column.Name);
         });
-        select = 'SELECT ' + select + '\n';
+        if (columnsList.length == 0) {
+            MessageBox.error('Choose any out column');
+            return;
+        }
+        var selectString = 'SELECT ' + columnsList.join(', ') + '\n';
 
-        dictsGrid.getStore().data.items.forEach(function (item) {
-            var obj = item.get('obj');
-            var str = '';
-            // если идет join
-            if (obj.anotherTable['tableName']) {
-                str += 'LEFT JOIN ' + obj.table['tableName'] + ' on ';
-                str += obj.table['tableName'] + '.' + obj.table.field['columnName'] + ' = ';
-                str += obj.anotherTable['tableName'] + '.' + obj.anotherTable.field['columnName'];
+        // FROM string
+        var fromString = '';
+        if (dataTablesList.getStore().getRange() == 0) {
+            MessageBox.error('Choose any data table');
+            return;
+        }
+        dataTablesList.getStore().getRange().forEach(function (currentTable) {
+            var table = currentTable.get('Table');
+            var joinTable = currentTable.get('JoinTable');
+            var joinKind = currentTable.get('JoinKind');
+            var condition = currentTable.get('Condition');
+
+            if (!joinTable || !joinTable.TableID) {
+                fromString += 'FROM ' + table.Name + '\n';
             } else {
-                str += obj.table['tableName'];
+                fromString += (joinKind.Name || 'LEFT') + ' JOIN ' + table.Name + ' ON ' + condition + '\n';
             }
-            from += str + '\n';
         });
-        from = 'FROM ' + from;
 
-        // where
-        condGrid.getStore().data.items.forEach(function (item) {
-            var obj = item.get('obj');
-            var str = item.get('operation') ? (item.get('operation') + ' ') : '';
-            str += obj.firstField.table['tableName'] + '.' + obj.firstField.field['columnName'];
-            str += ' ' + obj['condition'].toUpperCase();
-            // если не is null || is not null
-            if (!Ext.Array.contains(['IS NULL', 'IS NOT NULL'], (obj['condition'] || '').trim().toUpperCase())) {
-                if (obj['isValue']) {
-                    str += ' ' + obj.secondField['value'];
-                } else {
-                    str += ' ' + obj.secondField.table['tableName'] + '.' + obj.secondField.field['columnName'];
-                }
-            }
-            where += str + '\n';
+        // WHERE string
+        var conditionsList = [];
+        conditionsGrid.getStore().data.items.forEach(function (item) {
+            var condition = item.get('ConditionString') + '\n';
+            conditionsList.push(condition);
         });
-        where = 'WHERE 1=1 ' + where;
+        var whereString = '';
+        if (conditionsList.length > 0) {
+            whereString = 'WHERE ' + conditionsList.join(' AND ');
+        }
 
-        return select + from + where;
+        // Full query string
+        return selectString + fromString + whereString;
     },
 
     /**

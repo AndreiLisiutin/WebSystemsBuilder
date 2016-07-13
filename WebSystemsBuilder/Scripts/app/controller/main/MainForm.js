@@ -32,10 +32,10 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
     },
 
     onOpenIDE: function (button) {
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.MainIDE');
-        WebSystemsBuilder.utils.Windows.open('MainIDE');
-//        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
-//        WebSystemsBuilder.utils.Windows.open('OperandExplorer');
+        // WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.MainIDE');
+        // WebSystemsBuilder.utils.Windows.open('MainIDE');
+       WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryAction');
+       WebSystemsBuilder.utils.Windows.open('QueryAction');
     },
 
     test: function () {

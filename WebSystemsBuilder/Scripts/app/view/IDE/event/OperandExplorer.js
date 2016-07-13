@@ -15,12 +15,15 @@
     layout: {
         type: 'fit'
     },
+    
+    includeFormParameters: true,
+    includeControls: true,
 
     initComponent: function () {
         var me = this;
 
         var controlStore = Ext.create('WebSystemsBuilder.store.IDE.event.Control');
-        var formParameterStore = Ext.create('WebSystemsBuilder.store.IDE.event.FormParameter');
+        var formParameterStore = Ext.create('WebSystemsBuilder.store.IDE.FormParameters');
 
         Ext.applyIf(me, {
             items: [

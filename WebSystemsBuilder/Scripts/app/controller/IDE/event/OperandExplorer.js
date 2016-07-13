@@ -5,10 +5,12 @@
         'WebSystemsBuilder.view.IDE.event.OperandExplorer'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.event.ActionHandler'
+        'WebSystemsBuilder.model.IDE.event.ActionHandler',
+        'WebSystemsBuilder.model.IDE.MainIDE'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.event.ActionHandler'
+        'WebSystemsBuilder.store.IDE.event.ActionHandler',
+        'WebSystemsBuilder.store.IDE.MainIDE'
     ],
 
     init: function () {
@@ -44,9 +46,7 @@
         control.getStore().loadData(controlList, false);
 
         var formParametersList = FormParametersIDE.getFormParameters();
-        formParametersList.forEach(function (currentParameter) {
-            formParameter.getStore().add({formParameter: currentParameter});
-        });
+        formParameter.getStore().loadData(formParametersList, false);
     },
 
     onOperandProviderChange: function (radiofield, newValue, oldValue, eOpts) {
@@ -80,10 +80,19 @@
             IsControl: controlRadioField.getValue(),
             IsFormParameter: formParameterRadioField.getValue(),
             IsConstant: constantRadioField.getValue(),
-            Control: control.getValue(),
-            FormParameter: formParameter.getValue(),
+            Control: {
+                UniqueID: control.getValue(),
+                Name: control.getRawValue()
+            },
+            FormParameter: {
+                UniqueID: formParameter.getValue(),
+                Name: formParameter.getRawValue(),
+                FormParameter: formParameter.getValue() ? formParameter.findRecordByValue(formParameter.getValue()).get('FormParameter') : null,
+                PropertyValueType: formParameter.getValue() ? formParameter.findRecordByValue(formParameter.getValue()).get('PropertyValueType') : null,
+            },
             Constant: constant.getValue(),
-            Value: null
+            Value: null,
+            Name: null
         };
 
         if (!obj.IsControl && !obj.IsFormParameter && !obj.IsConstant) {
@@ -95,21 +104,24 @@
                 MessageBox.error('Control has not chosen');
                 return;
             }
-            obj.Value = obj.Control;
+            obj.Value = control.getValue();
+            obj.Name = control.getRawValue();
         }
         if (obj.IsFormParameter) {
             if (!obj.FormParameter) {
                 MessageBox.error('Form parameter has not chosen');
                 return;
             }
-            obj.Value = obj.FormParameter;
+            obj.Value = formParameter.getValue();
+            obj.Name = formParameter.getRawValue();
         }
         if (obj.IsConstant) {
             if (!obj.Constant) {
                 MessageBox.error('Constant has not chosen');
                 return;
             }
-            obj.Value = obj.Constant;
+            obj.Value = constant.getValue();
+            obj.Name = constant.getValue();
         }
 
         win.fireEvent('OperandChosen', obj);

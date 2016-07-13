@@ -1344,7 +1344,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             actions: selectedEvent.get('actions')
         }, null, true);
         eventAction.on('EventActionIsReadyToSave', function (action) {
-            // �������� ����
             selectedEvent.set('actions', action);
             selectedEvent.commit();
 

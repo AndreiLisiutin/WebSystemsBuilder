@@ -7,9 +7,9 @@
     title: 'Query Action',
 
     height: 700,
-    width: 730,
+    width: 800,
     minHeight: 700,
-    minWidth: 730,
+    minWidth: 800,
 
     layout: 'fit',
 
@@ -20,6 +20,10 @@
         var columnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Column');
         var conditionStore = Ext.create('WebSystemsBuilder.store.IDE.query.Condition');
         var parametersStore = Ext.create('WebSystemsBuilder.store.IDE.query.QueryInParameters');
+        var insertDataTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
+        var insertColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
+        var deleteTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
+        var deleteColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
 
         Ext.applyIf(me, {
             items: [
@@ -70,10 +74,9 @@
                     items: [
                         {
                             xtype: 'fieldset',
-                            anchor: '0',
                             layout: 'fit',
-                            height: 97,
-                            margin: 5,
+                            height: 100,
+                            margin: '5 5 5 5',
                             padding: 2,
                             title: 'Query',
                             items: [
@@ -83,204 +86,13 @@
                                 }
                             ]
                         },
+                        // Params
                         {
                             xtype: 'fieldset',
+                            height: 100,
+                            margin: '0 5 5 5',
+                            padding: 2,
                             anchor: '0',
-                            height: 135,
-                            margin: 5,
-                            padding: 2,
-                            title: 'Out columns (SELECT)',
-                            layout: 'fit',
-                            items: [
-                                {
-                                    xtype: 'gridpanel',
-                                    name: 'columnsGrid',
-                                    store: columnStore,
-                                    columns: [
-                                        {
-                                            xtype: 'gridcolumn',
-                                            width: 150,
-                                            text: 'Data table',
-                                            dataIndex: 'dictionary'
-                                        },
-                                        {
-                                            xtype: 'gridcolumn',
-                                            flex: 1,
-                                            text: 'Column',
-                                            dataIndex: 'field'
-                                        }
-                                    ],
-                                    dockedItems: [
-                                        {
-                                            xtype: 'toolbar',
-                                            dock: 'right',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/add.png',
-                                                    tooltip: 'Add column',
-                                                    action: 'onAddColumn'
-                                                },
-                                                {
-                                                    xtype: 'tbseparator'
-                                                },
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Delete column',
-                                                    action: 'onDeleteColumn'
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'fieldset',
-                            anchor: '0',
-                            height: 135,
-                            margin: 5,
-                            padding: 2,
-                            title: 'Data tables (FROM)',
-                            layout: 'fit',
-                            items: [
-                                {
-                                    xtype: 'gridpanel',
-                                    name: 'dataTablesGrid',
-                                    store: dataTableStore,
-                                    columns: [
-                                        {
-                                            xtype: 'gridcolumn',
-                                            width: 150,
-                                            text: 'Table',
-                                            dataIndex: 'Name'
-                                        },
-                                        {
-                                            xtype: 'gridcolumn',
-                                            width: 60,
-                                            text: 'Join kind',
-                                            dataIndex: 'JoinKindName'
-                                        },
-                                        {
-                                            xtype: 'gridcolumn',
-                                            flex: 1,
-                                            text: 'Join condition',
-                                            dataIndex: 'Condition'
-                                        }
-                                    ],
-                                    dockedItems: [
-                                        {
-                                            xtype: 'toolbar',
-                                            dock: 'right',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/add.png',
-                                                    tooltip: 'Add data table',
-                                                    action: 'onAddDataTable'
-                                                },
-                                                {
-                                                    xtype: 'tbseparator'
-                                                },
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Delete data table',
-                                                    action: 'onDeleteDataTable'
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'fieldset',
-                            width: 100,
-                            margin: 5,
-                            padding: 2,
-                            title: 'Conditions (WHERE)',
-                            layout: 'fit',
-                            items: [
-                                {
-                                    xtype: 'gridpanel',
-                                    name: 'conditionsGrid',
-                                    store: conditionStore,
-                                    columns: [
-                                        {
-                                            xtype: 'gridcolumn',
-                                            width: 70,
-                                            text: 'Operation',
-                                            dataIndex: 'Operation'
-                                        },
-                                        {
-                                            xtype: 'gridcolumn',
-                                            flex: 1,
-                                            text: 'Condition',
-                                            dataIndex: 'Condition'
-                                        }
-                                    ],
-                                    dockedItems: [
-                                        {
-                                            xtype: 'toolbar',
-                                            dock: 'right',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/add.png',
-                                                    iconAlign: 'top',
-                                                    tooltip: 'Add AND condition',
-                                                    text: 'AND',
-                                                    operation: 'AND',
-                                                    action: 'onAddConditionAnd'
-                                                },
-                                                {
-                                                    xtype: 'tbseparator'
-                                                },
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/add.png',
-                                                    iconAlign: 'top',
-                                                    tooltip: 'Add OR condition',
-                                                    text: 'OR',
-                                                    operation: 'OR',
-                                                    action: 'onAddConditionOr'
-                                                },
-                                                {
-                                                    xtype: 'tbseparator'
-                                                },
-                                                {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Delete condition',
-                                                    action: 'onDeleteCondition'
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'fieldset',
-                            anchor: '0 -480',
-                            margin: 5,
-                            padding: 2,
                             title: 'In parameters',
                             layout: 'fit',
                             items: [
@@ -326,6 +138,446 @@
                                                     icon: 'Scripts/resources/icons/delete.png',
                                                     tooltip: 'Delete parameter',
                                                     action: 'onDeleteQueryInParameter'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+
+                        {
+                            xtype: 'container',
+                            width: 300,
+                            layout: {
+                                align: 'stretch',
+                                type: 'hbox'
+                            },
+                            items: [
+                                {
+                                    xtype: 'radiogroup',
+                                    name: 'rgSqlType',
+                                    margin: '0 5 5 5',
+                                    flex: 1,
+                                    items: [
+                                        {
+                                            xtype: 'radiofield',
+                                            action: 'rbSelect',
+                                            boxLabel: 'SELECT',
+                                            name: 'data',
+                                            inputValue: 'SELECT'
+                                        },
+                                        {
+                                            xtype: 'radiofield',
+                                            action: 'rbInsert',
+                                            boxLabel: 'INSERT',
+                                            name: 'data',
+                                            inputValue: 'INSERT'
+                                        },
+                                        {
+                                            xtype: 'radiofield',
+                                            action: 'rbUpdate',
+                                            boxLabel: 'UPDATE',
+                                            name: 'data',
+                                            inputValue: 'UPDATE'
+                                        },
+                                        {
+                                            xtype: 'radiofield',
+                                            action: 'rbDelete',
+                                            boxLabel: 'DELETE',
+                                            name: 'data',
+                                            inputValue: 'DELETE'
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'tabpanel',
+                            anchor: '0 -240',
+                            name: 'sqlActionTabPanel',
+                            items: [
+                                {
+                                    xtype: 'panel',
+                                    layout: {
+                                        type: 'vbox',
+                                        align: 'stretch'
+                                    },
+                                    title: 'SELECT',
+                                    disabled: true,
+                                    name: 'selectSqlAction',
+                                    items: [
+                                        {
+                                            xtype: 'container',
+                                            flex: 1,
+                                            layout: {
+                                                type: 'hbox',
+                                                align: 'stretch'
+                                            },
+                                            items: [
+                                                // SELECT
+                                                {
+                                                    xtype: 'fieldset',
+                                                    flex: 1,
+                                                    margin: 5,
+                                                    padding: 2,
+                                                    title: 'Out columns (SELECT)',
+                                                    layout: 'fit',
+                                                    items: [
+                                                        {
+                                                            xtype: 'gridpanel',
+                                                            name: 'columnsGrid',
+                                                            store: columnStore,
+                                                            columns: [
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    width: 150,
+                                                                    text: 'Data table',
+                                                                    dataIndex: 'dictionary'
+                                                                },
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    flex: 1,
+                                                                    text: 'Column',
+                                                                    dataIndex: 'field'
+                                                                }
+                                                            ],
+                                                            dockedItems: [
+                                                                {
+                                                                    xtype: 'toolbar',
+                                                                    dock: 'right',
+                                                                    items: [
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/add.png',
+                                                                            tooltip: 'Add column',
+                                                                            action: 'onAddColumn'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'tbseparator'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/delete.png',
+                                                                            tooltip: 'Delete column',
+                                                                            action: 'onDeleteColumn'
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                // FROM
+                                                {
+                                                    xtype: 'fieldset',
+                                                    margin: 5,
+                                                    padding: 2,
+                                                    flex: 1,
+                                                    title: 'Data tables (FROM)',
+                                                    layout: 'fit',
+                                                    items: [
+                                                        {
+                                                            xtype: 'gridpanel',
+                                                            name: 'dataTablesGrid',
+                                                            store: dataTableStore,
+                                                            columns: [
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    width: 150,
+                                                                    text: 'Table',
+                                                                    dataIndex: 'Name'
+                                                                },
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    width: 60,
+                                                                    text: 'Join kind',
+                                                                    dataIndex: 'JoinKindName'
+                                                                },
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    flex: 1,
+                                                                    text: 'Join condition',
+                                                                    dataIndex: 'Condition'
+                                                                }
+                                                            ],
+                                                            dockedItems: [
+                                                                {
+                                                                    xtype: 'toolbar',
+                                                                    dock: 'right',
+                                                                    items: [
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/add.png',
+                                                                            tooltip: 'Add data table',
+                                                                            action: 'onAddDataTable'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'tbseparator'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/delete.png',
+                                                                            tooltip: 'Delete data table',
+                                                                            action: 'onDeleteDataTable'
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'container',
+                                            flex: 1,
+                                            layout: {
+                                                type: 'hbox',
+                                                align: 'stretch'
+                                            },
+                                            items: [
+                                                // WHERE
+                                                {
+                                                    xtype: 'fieldset',
+                                                    margin: 5,
+                                                    flex: 1,
+                                                    padding: 2,
+                                                    title: 'Conditions (WHERE)',
+                                                    layout: 'fit',
+                                                    items: [
+                                                        {
+                                                            xtype: 'gridpanel',
+                                                            name: 'conditionsGrid',
+                                                            store: conditionStore,
+                                                            columns: [
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    width: 70,
+                                                                    text: 'Operation',
+                                                                    dataIndex: 'Operation'
+                                                                },
+                                                                {
+                                                                    xtype: 'gridcolumn',
+                                                                    flex: 1,
+                                                                    text: 'Condition',
+                                                                    dataIndex: 'Condition'
+                                                                }
+                                                            ],
+                                                            dockedItems: [
+                                                                {
+                                                                    xtype: 'toolbar',
+                                                                    dock: 'right',
+                                                                    items: [
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/add.png',
+                                                                            iconAlign: 'top',
+                                                                            tooltip: 'Add AND condition',
+                                                                            text: 'AND',
+                                                                            operation: 'AND',
+                                                                            action: 'onAddConditionAnd'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'tbseparator'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/add.png',
+                                                                            iconAlign: 'top',
+                                                                            tooltip: 'Add OR condition',
+                                                                            text: 'OR',
+                                                                            operation: 'OR',
+                                                                            action: 'onAddConditionOr'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'tbseparator'
+                                                                        },
+                                                                        {
+                                                                            xtype: 'button',
+                                                                            scale: 'medium',
+                                                                            border: true,
+                                                                            icon: 'Scripts/resources/icons/delete.png',
+                                                                            tooltip: 'Delete condition',
+                                                                            action: 'onDeleteCondition'
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: 'panel',
+                                    title: 'INSERT/UPDATE',
+                                    disabled: true,
+                                    layout: {
+                                        type: 'vbox',
+                                        align: 'stretch'
+                                    },
+                                    name: 'insertSqlAction',
+                                    items: [
+                                        {
+                                            xtype: 'combobox',
+                                            name: 'insertDataTable',
+                                            fieldLabel: 'Data table',
+                                            margin: '5 5 5 5',
+                                            valueField: 'TableID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            labelWidth: 55,
+                                            store: insertDataTableStore
+                                        },
+                                        {
+                                            xtype: 'fieldset',
+                                            margin: 5,
+                                            padding: 2,
+                                            flex: 1,
+                                            title: 'Columns',
+                                            layout: 'fit',
+                                            items: [
+                                                {
+                                                    xtype: 'gridpanel',
+                                                    name: 'insertTableColumnsGrid',
+                                                    store: insertColumnsStore,
+                                                    columns: [
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 150,
+                                                            text: 'Column',
+                                                            dataIndex: 'Name'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            flex: 1,
+                                                            text: 'Value',
+                                                            dataIndex: 'Value'
+                                                        }
+                                                    ],
+                                                    dockedItems: [
+                                                        {
+                                                            xtype: 'toolbar',
+                                                            dock: 'right',
+                                                            items: [
+                                                                {
+                                                                    xtype: 'button',
+                                                                    scale: 'medium',
+                                                                    border: true,
+                                                                    icon: 'Scripts/resources/icons/edit.png',
+                                                                    tooltip: 'Edit column value',
+                                                                    action: 'onInsert_EditColumnValue'
+                                                                },
+                                                                {
+                                                                    xtype: 'tbseparator'
+                                                                },
+                                                                {
+                                                                    xtype: 'button',
+                                                                    scale: 'medium',
+                                                                    border: true,
+                                                                    icon: 'Scripts/resources/icons/delete.png',
+                                                                    tooltip: 'Delete data table',
+                                                                    action: 'onInsert_DeleteColumnValue'
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: 'panel',
+                                    title: 'DELETE',
+                                    disabled: true,
+                                    layout: {
+                                        type: 'vbox',
+                                        align: 'stretch'
+                                    },
+                                    name: 'deleteSqlAction',
+                                    items: [
+                                        {
+                                            xtype: 'combobox',
+                                            name: 'deleteDataTable',
+                                            fieldLabel: 'Data table',
+                                            margin: '5 5 5 5',
+                                            valueField: 'TableID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            labelWidth: 55,
+                                            store: deleteTableStore
+                                        },
+                                        {
+                                            xtype: 'fieldset',
+                                            margin: 5,
+                                            padding: 2,
+                                            flex: 1,
+                                            title: 'Columns',
+                                            layout: 'fit',
+                                            items: [
+                                                {
+                                                    xtype: 'gridpanel',
+                                                    name: 'deleteTableColumnsGrid',
+                                                    store: deleteColumnsStore,
+                                                    columns: [
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 150,
+                                                            text: 'Column',
+                                                            dataIndex: 'Name'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            flex: 1,
+                                                            text: 'Condition',
+                                                            dataIndex: 'Condition'
+                                                        }
+                                                    ],
+                                                    dockedItems: [
+                                                        {
+                                                            xtype: 'toolbar',
+                                                            dock: 'right',
+                                                            items: [
+                                                                {
+                                                                    xtype: 'button',
+                                                                    scale: 'medium',
+                                                                    border: true,
+                                                                    icon: 'Scripts/resources/icons/add.png',
+                                                                    tooltip: 'Add column condition',
+                                                                    action: 'onDelete_AddColumnCondition'
+                                                                },
+                                                                {
+                                                                    xtype: 'tbseparator'
+                                                                },
+                                                                {
+                                                                    xtype: 'button',
+                                                                    scale: 'medium',
+                                                                    border: true,
+                                                                    icon: 'Scripts/resources/icons/delete.png',
+                                                                    tooltip: 'Delete column condition',
+                                                                    action: 'onDelete_DeleteColumnCondition'
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }

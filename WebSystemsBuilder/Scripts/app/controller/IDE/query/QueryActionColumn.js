@@ -81,7 +81,6 @@
         var dataTable = win.down('combobox[name=dataTable]');
         var column = win.down('combobox[name=column]');
 
-        var error = '';
         if (!dataTable.getValue()) {
             MessageBox.error('Choose data table');
             return;
@@ -92,21 +91,21 @@
         }
 
         // Event about successfull save
-        var newSelect = {
-            table: {
-                ID: dataTable.getValue(),
-                name: dataTable.getRawValue(),
-                tableName: dataTable.findRecordByValue(dataTable.getValue()).get('tableName'),
-                field: {
-                    ID: column.getValue(),
-                    name: column.getRawValue(),
-                    columnName: column.getValue() ? column.findRecordByValue(column.getValue()).get('columnName') : null,
-                    domainValueTypeID: column.getValue() ? column.findRecordByValue(column.getValue()).get('domainValueTypeID') : null,
-                    dictionaryID: column.getValue() ? column.findRecordByValue(column.getValue()).get('dictionaryID') : null
-                }
+        var newColumn = {
+            Table: {
+                TableID: dataTable.getValue(),
+                Name: dataTable.getRawValue(),
+                PhysicalTable: dataTable.getValue() ? dataTable.findRecordByValue(dataTable.getValue()).get('PhysicalTable') : null
+            },
+            Column: {
+                ColumnID: column.getValue(),
+                TableID: column.getValue() ? column.findRecordByValue(column.getValue()).get('TableID') : null,
+                Name: column.getRawValue(),
+                PhysicalColumn: column.getValue() ? column.findRecordByValue(column.getValue()).get('PhysicalColumn') : null,
+                ValueTypeID: column.getValue() ? column.findRecordByValue(column.getValue()).get('ValueTypeID') : null
             }
         };
-        win.fireEvent('QuerySelectIsReadyToSave', newSelect);
+        win.fireEvent('QuerySelectIsReadyToSave', newColumn);
         win.close();
     },
 

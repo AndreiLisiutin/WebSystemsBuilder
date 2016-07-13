@@ -7,12 +7,12 @@
     constrain: true,
     title: 'Query condition',
 
-    height: 175,
-    width: 600,
-    minHeight: 175,
-    minWidth: 600,
-    maxWidth: 600,
-    maxHeight: 175,
+    height: 225,
+    width: 700,
+    minHeight: 225,
+    minWidth: 700,
+    maxWidth: 700,
+    maxHeight: 225,
 
     layout: {
         type: 'anchor'
@@ -25,6 +25,7 @@
         var secondDataTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
         var firstColumnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
         var secondColumnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var secondFormParameterStore = Ext.create('WebSystemsBuilder.store.IDE.FormParameters');
 
         Ext.applyIf(me, {
             items: [
@@ -162,7 +163,7 @@
                                                     items: [
                                                         {
                                                             xtype: 'radiofield',
-                                                            flex: 1,
+                                                            width:60,
                                                             action: 'rbField',
                                                             boxLabel: 'Column',
                                                             name: 'data',
@@ -170,11 +171,19 @@
                                                         },
                                                         {
                                                             xtype: 'radiofield',
-                                                            width: 130,
+                                                            flex: 1,
+                                                            action: 'rbParameter',
+                                                            boxLabel: 'Form parameter',
+                                                            name: 'data',
+                                                            inputValue: '2'
+                                                        },
+                                                        {
+                                                            xtype: 'radiofield',
+                                                            width:60,
                                                             action: 'rbValue',
                                                             boxLabel: 'Constant',
                                                             name: 'data',
-                                                            inputValue: '2'
+                                                            inputValue: '3'
                                                         }
                                                     ]
                                                 }
@@ -205,6 +214,19 @@
                                             labelWidth: 55,
                                             name: 'secondColumn',
                                             store: firstColumnStore
+                                        },
+                                        {
+                                            xtype: 'combobox',
+                                            name: 'secondFormParameter',
+                                            fieldLabel: 'Form parameter',
+                                            anchor: '0',
+                                            margin: '5 5 5 5',
+                                            valueField: 'UniqueID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            labelWidth: 55,
+                                            store: secondFormParameterStore
                                         },
                                         {
                                             xtype: 'textfield',

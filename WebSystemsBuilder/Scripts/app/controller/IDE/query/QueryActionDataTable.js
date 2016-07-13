@@ -137,7 +137,7 @@
         }
 
         // Event about new data table
-        var newDataTable = {
+        var newTable = {
             JoinKind: {
                 JoinKindID: joinKind.getValue(),
                 Name: joinKind.getRawValue()
@@ -169,11 +169,11 @@
         };
 
         if (!isNew) {
-            newDataTable.Condition = newDataTable.Table.Name + '.' + newDataTable.Table.JoinColumn.Name;
-            newDataTable.Condition += ' = ';
-            newDataTable.Condition += newDataTable.JoinTable.Name + '.' + newDataTable.JoinTable.JoinColumn.Name;
+            newTable.Condition = newTable.Table.Name + '.' + newTable.Table.JoinColumn.Name;
+            newTable.Condition += ' = ';
+            newTable.Condition += newTable.JoinTable.Name + '.' + newTable.JoinTable.JoinColumn.Name;
         }
-        win.fireEvent('QueryFromIsReadyToSave', newDataTable);
+        win.fireEvent('QueryFromIsReadyToSave', newTable);
         win.close();
     },
 

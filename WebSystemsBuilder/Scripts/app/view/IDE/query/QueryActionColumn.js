@@ -7,12 +7,12 @@
     constrain: true,
     title: 'Columns',
 
-    height: 140,
-    width: 600,
-    minHeight: 140,
-    minWidth: 600,
-    maxWidth: 600,
-    maxHeight: 140,
+    height: 150,
+    width: 400,
+    minHeight: 150,
+    minWidth: 400,
+    maxWidth: 400,
+    maxHeight: 150,
 
     layout: 'fit',
 
