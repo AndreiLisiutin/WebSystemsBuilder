@@ -413,7 +413,7 @@
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
         var newColumnWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer', {
-            includeControls: false
+            hideControl: true
         });
         newColumnWin.on('OperandChosen', function (operand) {
             queryInParametersGrid.getStore().add(operand);

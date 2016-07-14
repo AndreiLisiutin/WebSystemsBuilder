@@ -16,8 +16,9 @@
         type: 'fit'
     },
     
-    includeFormParameters: true,
-    includeControls: true,
+    hideFormParameter: false,
+    hideControl: false,
+    hideConstant: true,
 
     initComponent: function () {
         var me = this;
@@ -63,6 +64,7 @@
                         {
                             xtype: 'container',
                             name: 'ControlContainer',
+                            hidden: true,
                             margin: '10 5 5 5',
                             layout: 'hbox',
                             items: [
@@ -93,6 +95,7 @@
                         {
                             xtype: 'container',
                             name: 'ParameterContainer',
+                            hidden: true,
                             margin: '5 5 5 5',
                             layout: 'hbox',
                             items: [

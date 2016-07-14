@@ -15,8 +15,13 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormControlsIDE', {
 
     getControlList: function () {
         var _this = this;
-        var localWindow = _this.form.down();
         var controlList = [];
+        if (!_this.form) {
+            console.warn('FormControlsIDE: form was not binded');
+            return controlList;
+        }
+
+        var localWindow = _this.form.down();
 
         var GetMetaDescriptionsRecursive = function (item) {
             if (item == null || typeof item == 'undefined') {

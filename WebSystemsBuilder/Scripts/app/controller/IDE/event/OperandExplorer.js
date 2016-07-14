@@ -41,7 +41,25 @@
         var control = win.down('combobox[name=control]');
         var formParameter = win.down('combobox[name=formParameter]');
         var constant = win.down('combobox[name=constant]');
+        var controlContainer = win.down('container[name=ControlContainer]');
+        var parameterContainer = win.down('container[name=ParameterContainer]');
+        var constantContainer = win.down('container[name=ConstantContainer]');
 
+        // Show/hide radios
+        controlContainer.setVisible(!win.hideControl);
+        parameterContainer.setVisible(!win.hideFormParameter);
+        constantContainer.setVisible(!win.hideConstant);
+
+        // Set default radiobutton
+        if (!win.hideControl) {
+            controlRadioField.setValue(true);
+        } else if (!win.hideFormParameter) {
+            formParameterRadioField.setValue(true);
+        } else if (!win.hideConstant) {
+            constantRadioField.setValue(true);
+        }
+
+        // Load stores
         var controlList = FormControlsIDE.getControlList();
         control.getStore().loadData(controlList, false);
 
