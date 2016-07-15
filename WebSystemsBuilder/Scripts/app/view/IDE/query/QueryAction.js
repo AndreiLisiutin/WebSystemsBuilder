@@ -20,9 +20,11 @@
         var columnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Column');
         var conditionStore = Ext.create('WebSystemsBuilder.store.IDE.query.Condition');
         var parametersStore = Ext.create('WebSystemsBuilder.store.IDE.query.QueryInParameters');
+        // INSERT
         var insertDataTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
         var insertColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
-        var deleteTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
+        // DELETE
+        var deleteTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
         var deleteColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
 
         Ext.applyIf(me, {
@@ -498,6 +500,34 @@
                                                             ]
                                                         }
                                                     ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'container',
+                                            name: 'updateConditionContainer',
+                                            layout: {
+                                                type: 'hbox',
+                                                align: 'stretch'
+                                            },
+                                            items: [
+                                                {
+                                                    xtype: 'textfield',
+                                                    name: 'updateCondition',
+                                                    readOnly: true,
+                                                    fieldLabel: 'WHERE',
+                                                    margin: '0 5 5 5',
+                                                    flex: 1,
+                                                    labelWidth: 55
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    margin: '0 5 5 0',
+                                                    scale: 'small',
+                                                    border: true,
+                                                    icon: 'Scripts/resources/icons/edit_16.png',
+                                                    tooltip: 'Set UPDATE condition',
+                                                    action: 'onSetUpdateCondition'
                                                 }
                                             ]
                                         }

@@ -87,7 +87,7 @@ Ext.define('WebSystemsBuilder.utils.CommonUtils', {
      * @param widget
      */
     safeUnmask: function (widget) {
-        if (widget && !widget.getEl()) {
+        if (widget && widget.getEl() && widget.getEl().unmask) {
             widget.getEl().unmask(true);
         }
     },
@@ -97,7 +97,7 @@ Ext.define('WebSystemsBuilder.utils.CommonUtils', {
      * @param widget
      */
     safeMask: function (widget, message) {
-        if (widget && !widget.getEl()) {
+        if (widget && widget.getEl() && widget.getEl().mask) {
             widget.getEl().mask(message || 'Loading...');
         }
     },

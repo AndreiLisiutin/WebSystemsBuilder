@@ -54,6 +54,14 @@
         if (win.queryDataTables && win.queryDataTables.length > 0) {
             secondDataTable.getStore().loadData(win.queryDataTables, false);
             firstDataTable.getStore().loadData(win.queryDataTables, false);
+            if (win.FirstTableID) {
+                firstDataTable.setValue(win.FirstTableID);
+                firstDataTable.setReadOnly(true);
+            }
+            if (win.SecondTableID) {
+                secondDataTable.setValue(win.SecondTableID);
+                secondDataTable.setReadOnly(true);
+            }
         }
 
         var formParameters = FormParametersIDE.getFormParameters();
@@ -241,7 +249,7 @@
                     Name: secondFormParameter.getRawValue(),
                     UniqueID: secondFormParameter.getValue(),
                     FormParameter: secondFormParameter.getValue() ? secondFormParameter.findRecordByValue(secondFormParameter.getValue()).get('FormParameter') : null,
-                    PropertyValueType: secondFormParameter.getValue() ? secondFormParameter.findRecordByValue(secondFormParameter.getValue()).get('PropertyValueType') : null,
+                    PropertyValueType: secondFormParameter.getValue() ? secondFormParameter.findRecordByValue(secondFormParameter.getValue()).get('PropertyValueType') : null
                 },
                 Constant: secondConstant.getValue(),
                 IsConstant: rbValue.checked,

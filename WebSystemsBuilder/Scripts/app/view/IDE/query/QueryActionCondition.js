@@ -17,6 +17,9 @@
     layout: {
         type: 'anchor'
     },
+    
+    FirstTableID: null,
+    SecondTableID: null,
 
     initComponent: function () {
         var me = this;
