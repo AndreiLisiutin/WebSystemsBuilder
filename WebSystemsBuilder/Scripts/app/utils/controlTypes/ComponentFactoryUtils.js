@@ -49,6 +49,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils', {
                     ExtJsClass: draggedClone.get('ExtJsClass'),
                     Properties: draggedClone.get('Properties'),
                     PropertiesList: draggedClone.get('PropertiesList'),
+                    EventTypesList: draggedClone.get('EventTypesList'),
                     Icon: draggedClone.get('Icon')
                 };
 

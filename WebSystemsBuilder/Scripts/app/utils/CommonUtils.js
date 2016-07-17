@@ -83,6 +83,26 @@ Ext.define('WebSystemsBuilder.utils.CommonUtils', {
     },
 
     /**
+     * Remove mask from GUI element
+     * @param widget
+     */
+    safeUnmask: function (widget) {
+        if (widget && widget.getEl() && widget.getEl().unmask) {
+            widget.getEl().unmask(true);
+        }
+    },
+
+    /**
+     * Set mask on GUI element
+     * @param widget
+     */
+    safeMask: function (widget, message) {
+        if (widget && widget.getEl() && widget.getEl().mask) {
+            widget.getEl().mask(message || 'Loading...');
+        }
+    },
+
+    /**
      * Функция, преобразовывающая первый символ строки к Uppercase
      * @param string Строка типа "string"
      * @returns {string} Строка типа "String" */

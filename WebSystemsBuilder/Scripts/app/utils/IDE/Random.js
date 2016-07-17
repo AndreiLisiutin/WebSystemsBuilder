@@ -1,8 +1,8 @@
 Ext.define('WebSystemsBuilder.utils.IDE.Random', {
     singleton: true,
-    alternateClassName: ['Random'],
+    alternateClassName: ['RandomIDE'],
 
-    usedNumbers: undefined,
+    usedNumbers: [],
 
     init:function(){
         this.usedNumbers = [];

@@ -30,7 +30,7 @@
     },
 
     /**
-     * Функция открытия выбранной формы
+     * Refactor the form
      * @param btn Button "Refactor"
      */
     onRefactor: function (btn) {
@@ -45,9 +45,7 @@
             WebSystemsBuilder.utils.MessageBox.error('Type form description.');
         }
 
-
-
-        // если форма сохранена, поменять ее имя
+        // if form alerady exists, save in server side
         if (win.formID) {
             win.body.mask('Refactor...');
             Ext.Ajax.request({
@@ -88,7 +86,7 @@
      * @param btn button "Close"
      */
     onClose: function (btn) {
-        btn.up('RefactorFormDialog').close();
+        btn.up('window').close();
     }
 
 });

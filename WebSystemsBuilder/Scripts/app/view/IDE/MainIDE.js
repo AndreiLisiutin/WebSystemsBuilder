@@ -26,12 +26,8 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
         var controlTypeGroupStore = Ext.create('WebSystemsBuilder.store.IDE.ControlTypeGroup');
         var controlTypesStore = Ext.create('WebSystemsBuilder.store.IDE.ControlType');
         var projectInspectorStore = Ext.create('WebSystemsBuilder.store.IDE.ProjectInspector');
-        var queryStore = Ext.create('WebSystemsBuilder.store.IDE.query.FormQuery');
-        var queryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
-        var queryKeyFieldStore = Ext.create('WebSystemsBuilder.store.IDE.QueryField');
-        var dictionaryFieldStore = Ext.create('WebSystemsBuilder.store.IDE.DictionaryField');
-        var eventsStore = Ext.create('WebSystemsBuilder.store.IDE.event.ComponentEvent');
         var formParametersStore = Ext.create('WebSystemsBuilder.store.IDE.FormParameters');
+        var eventsStore = Ext.create('WebSystemsBuilder.store.IDE.event.ComponentEvent');
 
         Ext.applyIf(me, {
             items: [
@@ -446,17 +442,16 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                             xtype: 'gridcolumn',
                                                             flex: 1,
                                                             text: 'Event',
-                                                            dataIndex: 'name'
+                                                            dataIndex: 'Name'
                                                         },
                                                         {
                                                             text: 'Handler',
                                                             xtype: 'gridcolumn',
                                                             resizable: false,
-                                                            dataIndex: 'hasHandler',
                                                             width: 70,
                                                             sortable: false,
                                                             renderer: function (val, meta, record) {
-                                                                if (record.get('actions') && record.get('actions').length > 0) {
+                                                                if (record.get('EventActions') && record.get('EventActions').length > 0) {
                                                                     return 'Yes';
                                                                 } else {
                                                                     return 'No';
@@ -473,19 +468,7 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                                     xtype: 'button',
                                                                     scale: 'medium',
                                                                     border: true,
-                                                                    icon: 'Scripts/resources/icons/find.png',
-                                                                    tooltip: '���������� �������',
-                                                                    action: 'onShowEvent'
-                                                                },
-                                                                {
-                                                                    xtype: 'tbseparator'
-                                                                },
-                                                                {
-                                                                    xtype: 'button',
-                                                                    scale: 'medium',
-                                                                    border: true,
                                                                     icon: 'Scripts/resources/icons/edit.png',
-                                                                    tooltip: '������������� �������',
                                                                     action: 'onEditEvent'
                                                                 },
                                                                 {
@@ -496,7 +479,6 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                                     scale: 'medium',
                                                                     border: true,
                                                                     icon: 'Scripts/resources/icons/delete.png',
-                                                                    tooltip: '������� �������',
                                                                     action: 'onDeleteEvent'
                                                                 }
                                                             ]

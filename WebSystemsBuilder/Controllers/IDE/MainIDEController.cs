@@ -44,6 +44,17 @@ namespace WebSystemsBuilder.ClientWeb
             return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get all form parameters list of current form
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetFormParametersList(int formID)
+        {
+            var list = new FormBll().GetFormParametersList(formID);
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
         /// <summary> 
         /// Get list of all control type dependencies in system
         /// </summary>
@@ -52,6 +63,28 @@ namespace WebSystemsBuilder.ClientWeb
         public JsonResult GetControlTypeDependencies()
         {
             var list = new ControlTypeBLL().GetControlTypeDependencies();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary> 
+        /// Get all clent action types
+        /// </summary>
+        /// <returns>List with all clent action types, wrapped with IResponsePackage</returns>
+        [HttpGet]
+        public JsonResult GetClientActionTypeList()
+        {
+            var list = new ClientActionTypeBll().GetClientActionTypeList();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get all pairs of control types and event types
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetEventTypeControlTypeList()
+        {
+            var list = new EventTypeControlTypeBLL().GetEventTypeControlTypeList();
             return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
         }
 
@@ -72,6 +105,28 @@ namespace WebSystemsBuilder.ClientWeb
                 obj = new FormBll().AddFormMetaDescriptions(obj);
             }
             return Json(this.CreateResponsePackage<FormInstance>(obj), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get all tables list
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetTableList()
+        {
+            var list = new TableBLL().GetTableList();
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get all table columns list
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetTableColumnList(int tableID)
+        {
+            var list = new ColumnBLL().GetTableColumnList(tableID);
+            return Json(this.CreateResponsePackage(list), JsonRequestBehavior.AllowGet);
         }
 
     }

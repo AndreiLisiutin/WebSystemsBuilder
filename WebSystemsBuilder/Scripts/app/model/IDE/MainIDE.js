@@ -18,6 +18,7 @@ Ext.define('WebSystemsBuilder.model.IDE.ControlType', {
         'ControlTypeGroup',
         'Properties',
         'PropertiesList',
+        'EventTypesList',
         {
             name: 'ControlTypeGroupID',
             convert: function (v, record) {
@@ -83,11 +84,6 @@ Ext.define('WebSystemsBuilder.model.IDE.ControlType', {
                 }
             }
         }
-        //'properties',
-        //'queryParams',
-        //'childComponents',
-        //'data',     // данные
-        //'events'    // события
     ]
 });
 
