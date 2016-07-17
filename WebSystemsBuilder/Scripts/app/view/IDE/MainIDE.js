@@ -448,11 +448,10 @@ Ext.define('WebSystemsBuilder.view.IDE.MainIDE', {
                                                             text: 'Handler',
                                                             xtype: 'gridcolumn',
                                                             resizable: false,
-                                                            dataIndex: 'Handler',
                                                             width: 70,
                                                             sortable: false,
                                                             renderer: function (val, meta, record) {
-                                                                if (record.get('Actions') && record.get('Actions').length > 0) {
+                                                                if (record.get('EventActions') && record.get('EventActions').length > 0) {
                                                                     return 'Yes';
                                                                 } else {
                                                                     return 'No';

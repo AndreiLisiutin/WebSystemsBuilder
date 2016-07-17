@@ -88,7 +88,7 @@
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
         var operandWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer');
         operandWin.on('OperandChosen', function(operand) {
-            selectedFormParameter.set('Value', operand.Value)
+            selectedFormParameter.set('Operand', operand);
         }, this, { single: true })
     },
 
@@ -106,46 +106,33 @@
             return;
         }
         var formParameterError = '';
+        var formParametersList = [];
         formParametersGrid.getStore().getRange().forEach(function(currentParameter) {
             if (!currentParameter.get('Value')) {
                 formParameterError = 'Form parameter "' + currentParameter.get('Name') + '" has not chosen';
             }
+            formParametersList.push({
+                UniqueID: currentParameter.get('UniqueID'),
+                Name: currentParameter.get('Name'),
+                Value: currentParameter.get('Operand')
+            });
         });
         if (formParameterError) {
             MessageBox.error(formParameterError);
             return;
         }
 
+        var actionType = ActionTypes.OpenForm;
         var obj = {
-//            EventInstance: {
-//                Event: {
-//                    EventID: null,
-//                    EventTypeControlTypeID: null,
-//                    ControlID: control.getValue()
-//                },
-//                EventType: {
-//                    EventTypeID: null,
-//                    Name: null
-//                },
-//                EventTypeControlType: {
-//                    EventTypeControlTypeID: null,
-//                    EventTypeID: null,
-//                    ControlTypeID: null
-//                }
-//            },
-//            EventActions: [
-//                {
-//                    UniqueID: Random.get(),
-//                    ControlUniqueID: control.getValue(),
-//                    ActionTypeID: clientActionType.getValue(),
-//                    EventAction: {
-//                        ActionID: null,
-//                        ActionIDParent: null,
-//                        EventID: null
-//                    },
-//                    ChildActions: []
-//                }
-//            ]
+            UniqueID: RandomIDE.get(),
+            EventActionTypeID: actionType,
+            EventActionType: ActionTypes.getActionTypeName(actionType),
+            Form: {
+                FormID: form.getValue(),
+                Name: form.getRawValue()
+            },
+            FormParameters: formParametersList,
+            ChildActions: []
         };
 
         win.fireEvent('OpenFormActionSaved', obj);

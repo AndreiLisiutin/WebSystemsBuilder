@@ -114,6 +114,7 @@
                                     margin: '0 0 0 5',
                                     flex: 1,
                                     labelSeparator: '',
+                                    editable: false,
                                     valueField: 'UniqueID',
                                     displayField: 'Name',
                                     queryMode: 'local',
@@ -137,18 +138,13 @@
                                     id: 'ConstantValueProvider'
                                 },
                                 {
-                                    xtype: 'combobox',
+                                    xtype: 'textfield',
                                     name: 'constant',
                                     disabled: true,
                                     anchor: '0',
                                     margin: '0 0 0 5',
                                     flex: 1,
-                                    labelSeparator: '',
-                                    valueField: 'UniqueID',
-                                    displayField: 'Name',
-                                    queryMode: 'local',
-                                    editable: false,
-                                    store: controlStore
+                                    labelSeparator: ''
                                 }
                             ]
                         }

@@ -20,8 +20,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
     requires: [
         'WebSystemsBuilder.utils.IDE.Focused',
         'WebSystemsBuilder.utils.IDE.Random',
-        'WebSystemsBuilder.utils.IDE.FormParametersIDE',
-        'WebSystemsBuilder.utils.IDE.Queries'
+        'WebSystemsBuilder.utils.IDE.FormParametersIDE'
     ],
 
     init: function () {
@@ -135,8 +134,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         btnDesign.toggle(true);
 
         // Clear some required stores and classes
-        Queries.clear();
-        Random.clear();
+        RandomIDE.clear();
         Focused.clearFocusedCmp();
         FormControlsIDE.init(form);
         FormParametersIDE.init(FormParametersGrid);
@@ -198,7 +196,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
      * Initialize click and right click events of the whole screen space
      * @param win Window MainIDE
      */
-    initializeClickEvents: function(win) {
+    initializeClickEvents: function (win) {
         Ext.getBody().on('contextmenu', function (e) {
             e.preventDefault();
             var focused = Focused.getFocusedCmp();
@@ -342,7 +340,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 },
                 ControlType: item.componentInfo.ControlType,
                 Properties: [],
-                ChildControls: []
+                ChildControls: [],
+                Events: EventsIDE.getEventsWithActionByControlUniqueID(item.componentInfo.uniqueID)
             };
 
             for (var prop in item) {
@@ -652,11 +651,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         if (focusedComponent) {
             Focused.setFocusedCmp(focusedComponent);
             propertiesOwner.update(
-                '<span style="margin:3px;position:absolute;">' +
-                CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
-                focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
-                '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
-                '</span>'
+                    '<span style="margin:3px;position:absolute;">' +
+                    CommonUtils.renderIcon(focusedComponent.componentInfo.Icon) + '&nbsp' +
+                    focusedComponent.componentInfo.Name + '&nbsp&nbsp' +
+                    '<i>' + focusedComponent.componentInfo.ExtJsClass + '</i>&nbsp' +
+                    '</span>'
             );
 
             var treeNode = tree.getRootNode().findChild('id', focusedComponent.componentInfo.uniqueID, true);
@@ -667,7 +666,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             propertiesGrid.setSource(focusedComponent.componentInfo.Properties);
             propertiesPanel.setDisabled(false);
 
-            eventsGrid.getStore().loadData(focusedComponent.componentInfo.EventTypesList, false);
+            var events = EventsIDE.getEventsByControlUniqueID(focusedComponent.componentInfo.uniqueID);
+            eventsGrid.getStore().loadData(events, false);
 
         } else if (!WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp()) {
             propertiesGrid.setSource([]);
@@ -859,8 +859,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
         form.removeAll();
 
-        Queries.clear();
-        Random.clear();
+        RandomIDE.clear();
         Focused.clearFocusedCmp();
         FormParametersIDE.clear();
 
@@ -1339,15 +1338,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         }
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.EventHandler');
-        var eventAction = WebSystemsBuilder.utils.Windows.open('EventHandler', {
-            form: form,
-            actions: selectedEvent.get('actions')
+        var eventHandlerWin = WebSystemsBuilder.utils.Windows.open('EventHandler', {
+            EventUniqueID: selectedEvent.get('EventUniqueID')
         }, null, true);
-        eventAction.on('EventActionIsReadyToSave', function (action) {
-            selectedEvent.set('actions', action);
-            selectedEvent.commit();
-
-            eventsGrid.fireEvent('RecordChanged', eventsGrid);
+        eventHandlerWin.on('EventChanged', function () {
+            win.fireEvent('IDEComponentFocused', win, Focused.getFocusedCmp());
         });
     },
 

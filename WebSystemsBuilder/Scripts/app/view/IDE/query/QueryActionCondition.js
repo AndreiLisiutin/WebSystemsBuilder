@@ -8,11 +8,11 @@
     title: 'Query condition',
 
     height: 225,
-    width: 700,
-    minHeight: 225,
-    minWidth: 700,
-    maxWidth: 700,
-    maxHeight: 225,
+    width: 850,
+    minHeight: 255,
+    minWidth: 850,
+    maxWidth: 850,
+    maxHeight: 255,
 
     layout: {
         type: 'anchor'
@@ -29,6 +29,7 @@
         var firstColumnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
         var secondColumnStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
         var secondFormParameterStore = Ext.create('WebSystemsBuilder.store.IDE.FormParameters');
+        var secondFormControlStore = Ext.create('WebSystemsBuilder.store.IDE.event.Control');
 
         Ext.applyIf(me, {
             items: [
@@ -104,7 +105,7 @@
                                             editable: false,
                                             fieldLabel: 'Column',
                                             labelWidth: 55,
-                                            store: secondColumnStore
+                                            store: firstColumnStore
                                         }
                                     ]
                                 },
@@ -116,32 +117,12 @@
                                         type: 'vbox'
                                     },
                                     items: [
-                                        {
-                                            xtype: 'combobox',
-                                            width: 80,
-                                            margin: '60 5 0 0',
-                                            valueField: 'name',
-                                            displayField: 'name',
-                                            queryMode: 'local',
-                                            editable: false,
-                                            name: 'conditionSign',
-                                            store: Ext.create('Ext.data.Store', {
-                                                fields: ['ID', 'name'],
-                                                data: [
-                                                    {"ID": "1", "name": ">"},
-                                                    {"ID": "2", "name": "<"},
-                                                    {"ID": "3", "name": "="},
-                                                    {"ID": "4", "name": "!="},
-                                                    {"ID": "5", "name": "IS NULL"},
-                                                    {"ID": "6", "name": "IS NOT NULL"}
-                                                ]
-                                            })
-                                        }
+
                                     ]
                                 },
                                 {
                                     xtype: 'fieldset',
-                                    flex: 1,
+                                    flex: 2,
                                     margin: '5 5 5 0',
                                     padding: 2,
                                     name: 'secondConditionMemberFieldset',
@@ -166,7 +147,6 @@
                                                     items: [
                                                         {
                                                             xtype: 'radiofield',
-                                                            width:60,
                                                             action: 'rbField',
                                                             boxLabel: 'Column',
                                                             name: 'data',
@@ -174,7 +154,6 @@
                                                         },
                                                         {
                                                             xtype: 'radiofield',
-                                                            flex: 1,
                                                             action: 'rbParameter',
                                                             boxLabel: 'Form parameter',
                                                             name: 'data',
@@ -182,7 +161,13 @@
                                                         },
                                                         {
                                                             xtype: 'radiofield',
-                                                            width:60,
+                                                            action: 'rbControl',
+                                                            boxLabel: 'Form control',
+                                                            name: 'data',
+                                                            inputValue: '4'
+                                                        },
+                                                        {
+                                                            xtype: 'radiofield',
                                                             action: 'rbValue',
                                                             boxLabel: 'Constant',
                                                             name: 'data',
@@ -209,14 +194,14 @@
                                             xtype: 'combobox',
                                             anchor: '0',
                                             margin: '5 5 5 5',
-                                            valueField: 'ID',
-                                            displayField: 'name',
+                                            valueField: 'ColumnID',
+                                            displayField: 'Name',
                                             queryMode: 'local',
                                             editable: false,
                                             fieldLabel: 'Column',
                                             labelWidth: 55,
                                             name: 'secondColumn',
-                                            store: firstColumnStore
+                                            store: secondColumnStore
                                         },
                                         {
                                             xtype: 'combobox',
@@ -230,6 +215,19 @@
                                             editable: false,
                                             labelWidth: 55,
                                             store: secondFormParameterStore
+                                        },
+                                        {
+                                            xtype: 'combobox',
+                                            name: 'secondFormControl',
+                                            fieldLabel: 'Form control',
+                                            anchor: '0',
+                                            margin: '5 5 5 5',
+                                            valueField: 'UniqueID',
+                                            displayField: 'Name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            labelWidth: 55,
+                                            store: secondFormControlStore
                                         },
                                         {
                                             xtype: 'textfield',

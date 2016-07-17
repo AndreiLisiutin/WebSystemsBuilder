@@ -7,7 +7,7 @@ Ext.define('WebSystemsBuilder.model.IDE.event.FormParameters', {
     extend: 'Ext.data.Model',
     fields: [
         'UniqueID',
-        'Value',
-        'Name'
+        'Name',
+        'Operand'
     ]
 });

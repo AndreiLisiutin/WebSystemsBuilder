@@ -1,6 +1,9 @@
 ﻿Ext.define('WebSystemsBuilder.controller.IDE.query.QueryAction', {
     extend: 'Ext.app.Controller',
 
+    requires: [
+        'WebSystemsBuilder.utils.IDE.QueryInParametersIDE'
+    ],
     views: [
         'WebSystemsBuilder.view.IDE.query.QueryAction'
     ],
@@ -36,14 +39,14 @@
             'QueryAction button[action=onAddColumn]': {
                 click: this.onAddColumn
             },
-            'QueryAction button[action=onDeleteField]': {
+            'QueryAction button[action=onDeleteColumn]': {
                 click: this.onDeleteColumn
             },
             // Data table section (FROM)
             'QueryAction button[action=onAddDataTable]': {
                 click: this.onAddDataTable
             },
-            'QueryAction button[action=onDeleteDictionary]': {
+            'QueryAction button[action=onDeleteDataTable]': {
                 click: this.onDeleteDataTable
             },
             // Conditions section (WHERE)
@@ -101,12 +104,13 @@
         var btnSave = win.down('button[action=onSave]');
         var btnRefresh = win.down('button[action=onRefreshSQL]');
         var rgSqlType = win.down('radiogroup[name=rgSqlType]');
+        var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
         // INSERT
         var insertDataTable = win.down('combobox[name=insertDataTable]');
-        var insertTableColumnsGrid = win.down('combobox[gridpanel=insertTableColumnsGrid]');
+        var insertTableColumnsGrid = win.down('gridpanel[name=insertTableColumnsGrid]');
         // DELETE
         var deleteDataTable = win.down('combobox[name=deleteDataTable]');
-        var deleteTableColumnsGrid = win.down('combobox[gridpanel=deleteTableColumnsGrid]');
+        var deleteTableColumnsGrid = win.down('gridpanel[name=deleteTableColumnsGrid]');
 
         var loadInsertDataTable = function () {
             CommonUtils.safeMask(insertDataTable);
@@ -125,12 +129,122 @@
             });
         };
 
-        rgSqlType.setValue({'data': 'SELECT'});
+        win.QueryInParametersIDE = Ext.create('WebSystemsBuilder.utils.IDE.QueryInParametersIDE');
+        win.QueryInParametersIDE.init(queryInParametersGrid);
+
+        rgSqlType.setValue({'sqlTypeRadioGroup': 'SELECT'});
 
         // INSERT
         loadInsertDataTable();
         // DELETE
         loadDeleteDataTable();
+    },
+
+    /**
+     * Change sql type
+     * @param radioGroup
+     */
+    onChangeSqlType: function (radioGroup) {
+        var win = radioGroup.up('window');
+        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
+        var sqlActionTabPanel = win.down('tabpanel[name=sqlActionTabPanel]');
+        var selectPanel = win.down('panel[name=selectSqlAction]');
+        var insertPanel = win.down('panel[name=insertSqlAction]');
+        var deletePanel = win.down('panel[name=deleteSqlAction]');
+        var updateConditionContainer = win.down('container[name=updateConditionContainer]');
+
+        if (rgSqlType.getValue()) {
+            switch (rgSqlType.getValue().sqlTypeRadioGroup) {
+                case 'SELECT':
+                    sqlActionTabPanel.setActiveTab(selectPanel);
+                    selectPanel.setDisabled(false);
+                    insertPanel.setDisabled(true);
+                    deletePanel.setDisabled(true);
+                    win.QueryInParametersIDE.setQueryType(1);
+                    break;
+                case 'INSERT':
+                    updateConditionContainer.hide();
+                    sqlActionTabPanel.setActiveTab(insertPanel);
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(false);
+                    deletePanel.setDisabled(true);
+                    win.QueryInParametersIDE.setQueryType(2);
+                    break;
+                case 'UPDATE':
+                    updateConditionContainer.show();
+                    sqlActionTabPanel.setActiveTab(insertPanel);
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(false);
+                    deletePanel.setDisabled(true);
+                    win.QueryInParametersIDE.setQueryType(2);
+                    break;
+                case 'DELETE':
+                    sqlActionTabPanel.setActiveTab(deletePanel);
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(true);
+                    deletePanel.setDisabled(false);
+                    win.QueryInParametersIDE.setQueryType(3);
+                    break;
+                default:
+                    selectPanel.setDisabled(true);
+                    insertPanel.setDisabled(true);
+                    deletePanel.setDisabled(true);
+                    win.QueryInParametersIDE.setQueryType(1);
+                    break;
+            }
+        } else {
+            selectPanel.setDisabled(true);
+            insertPanel.setDisabled(true);
+            deletePanel.setDisabled(true);
+            win.QueryInParametersIDE.setQueryType(1);
+        }
+    },
+
+    /**
+     * Receive SQL string
+     * @param win
+     * @returns {string}
+     */
+    getSqlString: function (win) {
+        var _this = this;
+        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
+
+        var sqlString = '';
+        if (rgSqlType.getValue()) {
+            switch (rgSqlType.getValue().sqlTypeRadioGroup) {
+                case 'SELECT':
+                    // Get sql string from SELECT tables
+                    sqlString = _this.onGenerateSelectQuery(win);
+                    break;
+                case 'INSERT':
+                case 'UPDATE':
+                    // Get sql string from INSERT tables
+                    sqlString = _this.onGenerateInsertQuery(win);
+                    break;
+                case 'DELETE':
+                    // Get sql string from DELETE tables
+                    sqlString = _this.onGenerateDeleteQuery(win);
+                    break;
+            }
+        }
+
+        return sqlString;
+    },
+
+    /**
+     * Generate SQL query by meta-descriptions
+     * @param btn Кнопка "Обновить"
+     */
+    onRefreshSqlString: function (btn) {
+        var win = btn.up('window');
+        var _this = this;
+        var queryString = win.down('textareafield[name=queryString]');
+        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
+
+        var sqlString = _this.getSqlString(win);
+
+        // Display sql string
+        queryString.setValue(sqlString);
     },
 
     //region INSERT
@@ -172,13 +286,21 @@
             return;
         }
 
-        var currentValue = selectedInsertColumn.get('Value');
+        var currentValue = selectedInsertColumn.get('OperandValue');
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
-        var newColumnWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer');
+        var newColumnWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer', {
+            hideConstant: false
+        });
         newColumnWin.on('OperandChosen', function (operand) {
             var setValue = function () {
-                selectedInsertColumn.set('Value', operand);
+                selectedInsertColumn.set('OperandValue', operand);
                 selectedInsertColumn.commit();
+                insertTableColumnsGrid.getView().refresh();
+
+                if (operand.IsControl || operand.IsFormParameter) {
+                    operand.Parameter.QueryTypeID = 2;
+                    win.QueryInParametersIDE.addParameter(operand.Parameter);
+                }
             };
             if (currentValue) {
                 MessageBox.question('Do you want to change insert value for column "' + selectedInsertColumn.get('Name') + '"?',
@@ -213,8 +335,15 @@
         MessageBox.question('Do you want to set default insert value for column "' + selectedInsertColumn.get('Name') + '"?',
             function (res) {
                 if (res == 'yes') {
-                    selectedInsertColumn.set('Value', null);
+                    var currentOperandValue = selectedInsertColumn.get('OperandValue');
+                    if (currentOperandValue && (currentOperandValue.IsControl || currentOperandValue.IsFormParameter)) {
+                        var uniqueID = currentOperandValue.IsControl ? currentOperandValue.Control.UniqueID : currentOperandValue.FormParameter.UniqueID;
+                        win.QueryInParametersIDE.deleteParameter(uniqueID, 2);
+                    }
+
+                    selectedInsertColumn.set('OperandValue', null);
                     selectedInsertColumn.commit();
+                    insertTableColumnsGrid.getView().refresh();
                 }
             },
             Ext.Msg.YESNO
@@ -229,52 +358,72 @@
         var win = btn.up('window');
         var insertDataTable = win.down('combobox[name=insertDataTable]');
         var insertTableColumnsGrid = win.down('gridpanel[name=insertTableColumnsGrid]');
-        var updateCondition = win.down('textfield[gridpanel=updateCondition]');
+        var updateCondition = win.down('textfield[name=updateCondition]');
 
         if (!insertDataTable.getValue()) {
             MessageBox.error('Choose data table');
             return;
         }
 
+        var physicalTable = insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable');
+        var dataTableList = [
+            {
+                Table: {
+                    TableID: insertDataTable.getValue(),
+                    Name: insertDataTable.getRawValue(),
+                    PhysicalTable: physicalTable
+                },
+                TableID: insertDataTable.getValue(),
+                Name: insertDataTable.getRawValue(),
+                PhysicalTable: physicalTable
+            }
+        ];
+
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryActionCondition');
         var updateConditionWin = WebSystemsBuilder.utils.Windows.open('QueryActionCondition', {
+            queryDataTables: dataTableList,
             FirstTableID: insertDataTable.getValue(),
             SecondTableID: insertDataTable.getValue()
         });
-        updateConditionWin.on('OperandChosen', function (condition) {
+        updateConditionWin.on('QueryActionConditionSaved', function (condition) {
+            if (condition.SecondPart.IsFormControl || condition.SecondPart.IsFormParameter) {
+                condition.Parameter.QueryTypeID = 2;
+                win.QueryInParametersIDE.addParameter(condition.Parameter);
+            }
             updateCondition.conditionObj = condition;
-            updateCondition.setValue(condition.Condition);
+            updateCondition.setValue(condition.ConditionString);
         }, this, {single: true});
     },
 
     /**
      * Generate INSERT SQL query
-     * @param btn
+     * @param win
      * @returns {string}
      */
-    onGenerateInsertQuery: function (btn) {
-        var win = btn.up('window');
+    onGenerateInsertQuery: function (win) {
         var queryString = win.down('textareafield[name=queryString]');
         var insertDataTable = win.down('combobox[name=insertDataTable]');
-        var insertTableColumnsGrid = win.down('combobox[gridpanel=insertTableColumnsGrid]');
+        var insertTableColumnsGrid = win.down('gridpanel[name=insertTableColumnsGrid]');
         var rgSqlType = win.down('radiogroup[name=rgSqlType]');
-        var isInsert = rgSqlType.getValue().data == 'INSERT';
+        var updateCondition = win.down('textfield[name=updateCondition]');
+        var isInsert = rgSqlType.getValue().sqlTypeRadioGroup == 'INSERT';
 
         if (!insertDataTable.getValue()) {
             MessageBox.error('Choose data table');
             return '';
         }
-        var dataTable = insertDataTable.getRawValue();
+        var physicalTable = deleteDataTable.findRecordByValue(deleteDataTable.getValue()).get('PhysicalTable');
+        var dataTablePlaceHolder = '{' + physicalTable + '}';
 
         // INSERT columns string
         var columnsList = [];
         var valuesList = [];
         insertTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
-            var column = currentColumn.get('Name');
-            var value = currentColumn.get('Value');
+            var column = currentColumn.get('PlaceHolder');
+            var value = currentColumn.get('OperandValue');
             if (value) {
                 columnsList.push(column);
-                valuesList.push(value);
+                valuesList.push(value.PlaceHolder);
             }
         });
         if (columnsList.length == 0) {
@@ -283,10 +432,16 @@
         }
         // Column names
         var selectString = isInsert ? 'INSERT INTO' : 'UPDATE';
-        selectString += ' ' + dataTable + ' (' + columnsList.join(', ') + ') \n';
+        selectString += ' ' + dataTablePlaceHolder + ' (' + columnsList.join(', ') + ') \n';
         // Column values
         selectString += isInsert ? 'VALUES' : '=';
         selectString += ' (' + valuesList.join(', ') + ')';
+
+        if (!isInsert) {
+            if (updateCondition.getValue()) {
+                selectString += '\n' + 'WHERE ' + updateCondition.getValue();
+            }
+        }
 
         // Full query string
         return selectString;
@@ -303,7 +458,7 @@
     onChangeDeleteDataTable: function (combo) {
         var win = combo.up('window');
         var deleteDataTable = win.down('combobox[name=deleteDataTable]');
-        var deleteTableColumnsGrid = win.down('combobox[gridpanel=deleteTableColumnsGrid]');
+        var deleteTableColumnsGrid = win.down('gridpanel[name=deleteTableColumnsGrid]');
 
         if (!deleteDataTable.getValue()) {
             deleteTableColumnsGrid.getStore().loadData([]);
@@ -325,7 +480,7 @@
     onDelete_AddColumnCondition: function (btn) {
         var win = btn.up('window');
         var deleteDataTable = win.down('combobox[name=deleteDataTable]');
-        var deleteTableColumnsGrid = win.down('combobox[gridpanel=deleteTableColumnsGrid]');
+        var deleteTableColumnsGrid = win.down('gridpanel[name=deleteTableColumnsGrid]');
 
         var selectedDeleteColumn = deleteTableColumnsGrid.getSelectionModel().getSelection()[0];
         if (!selectedDeleteColumn) {
@@ -333,16 +488,37 @@
             return;
         }
 
-        var currentValue = selectedDeleteColumn.get('Value');
+        var physicalTable = deleteDataTable.getStore().findRecord('TableID', deleteDataTable.getValue()).get('PhysicalTable');
+        var dataTableList = [
+            {
+                Table: {
+                    TableID: deleteDataTable.getValue(),
+                    Name: deleteDataTable.getRawValue(),
+                    PhysicalTable: physicalTable
+                },
+                TableID: deleteDataTable.getValue(),
+                Name: deleteDataTable.getRawValue(),
+                PhysicalTable: physicalTable
+            }
+        ];
+
+        var currentValue = selectedDeleteColumn.get('OperandValue');
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryActionCondition');
         var newColumnWin = WebSystemsBuilder.utils.Windows.open('QueryActionCondition', {
+            queryDataTables: dataTableList,
             FirstTableID: deleteDataTable.getValue(),
+            FirstColumnID: selectedDeleteColumn.get('ColumnID'),
             SecondTableID: deleteDataTable.getValue()
         });
-        newColumnWin.on('OperandChosen', function (operand) {
+        newColumnWin.on('QueryActionConditionSaved', function (condition) {
             var setValue = function () {
-                selectedDeleteColumn.set('Value', operand);
+                if (condition.SecondPart.IsFormControl || condition.SecondPart.IsFormParameter) {
+                    condition.Parameter.QueryTypeID = 3;
+                    win.QueryInParametersIDE.addParameter(condition.Parameter);
+                }
+                selectedDeleteColumn.set('OperandValue', condition);
                 selectedDeleteColumn.commit();
+                deleteTableColumnsGrid.getView().refresh();
             };
             if (currentValue) {
                 MessageBox.question('Do you want to change delete condition for column "' + selectedDeleteColumn.get('Name') + '"?',
@@ -366,7 +542,7 @@
     onDelete_DeleteColumnCondition: function (btn) {
         var win = btn.up('window');
         var deleteDataTable = win.down('combobox[name=deleteDataTable]');
-        var deleteTableColumnsGrid = win.down('combobox[gridpanel=deleteTableColumnsGrid]');
+        var deleteTableColumnsGrid = win.down('gridpanel[name=deleteTableColumnsGrid]');
 
         var selectedDeleteColumn = deleteTableColumnsGrid.getSelectionModel().getSelection()[0];
         if (!selectedDeleteColumn) {
@@ -377,8 +553,15 @@
         MessageBox.question('Do you want to replace DELETE condition "' + selectedDeleteColumn.get('Name') + '"?',
             function (res) {
                 if (res == 'yes') {
-                    selectedDeleteColumn.set('Value', null);
+                    var currentOperandValue = selectedDeleteColumn.get('OperandValue');
+                    if (currentOperandValue && (currentOperandValue.SecondPart.IsFormControl || currentOperandValue.SecondPart.IsFormParameter)) {
+                        var uniqueID = currentOperandValue.SecondPart.IsFormControl ? currentOperandValue.SecondPart.FormControl.UniqueID : currentOperandValue.SecondPart.FormParameter.UniqueID;
+                        win.QueryInParametersIDE.deleteParameter(uniqueID, 3);
+                    }
+
+                    selectedDeleteColumn.set('OperandValue', null);
                     selectedDeleteColumn.commit();
+                    deleteTableColumnsGrid.getView().refresh();
                 }
             },
             Ext.Msg.YESNO
@@ -387,34 +570,34 @@
 
     /**
      * Generate DELETE SQL query
-     * @param btn
+     * @param win
      * @returns {string}
      */
-    onGenerateDeleteQuery: function (btn) {
-        var win = btn.up('window');
+    onGenerateDeleteQuery: function (win) {
         var queryString = win.down('textareafield[name=queryString]');
         var deleteDataTable = win.down('combobox[name=deleteDataTable]');
-        var deleteTableColumnsGrid = win.down('combobox[gridpanel=deleteTableColumnsGrid]');
+        var deleteTableColumnsGrid = win.down('gridpanel[name=deleteTableColumnsGrid]');
 
         if (!deleteDataTable.getValue()) {
             MessageBox.error('Choose data table');
             return '';
         }
-        var dataTable = deleteDataTable.getRawValue();
+        var physicalTable = deleteDataTable.findRecordByValue(deleteDataTable.getValue()).get('PhysicalTable');
+        var dataTablePlaceHolder = '{' + physicalTable + '}';
 
         // INSERT columns string
         var conditionList = [];
         deleteTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
-            var condition = currentColumn.get('Value');
+            var condition = currentColumn.get('OperandValue');
             if (condition) {
-                conditionList.push(condition);
+                conditionList.push(condition.ConditionString);
             }
         });
 
         // Column names
-        var selectString = 'DELETE FROM ' + dataTable;
+        var selectString = 'DELETE FROM ' + dataTablePlaceHolder;
         if (conditionList.length > 0) {
-            selectString += ' WHERE ' + conditionList.join('\nAND ');
+            selectString += '\nWHERE ' + conditionList.join('\nAND ');
         }
 
         // Full query string
@@ -503,9 +686,7 @@
         newColumnWin.on('QuerySelectIsReadyToSave', function (column) {
             var newColumn = {
                 Table: column.Table,
-                Column: column.Column,
-                Name: column.Column.Name,
-                TableName: column.Table.Name
+                Column: column.Column
             };
             columnsGrid.getStore().add(newColumn);
         }, this, {single: true});
@@ -563,10 +744,15 @@
                 UniqueID: condition.UniqueID,
                 FirstPart: condition.FirstPart,
                 SecondPart: condition.SecondPart,
+                Parameter: condition.Parameter,
                 ConditionSign: condition.ConditionSign,
                 ConditionString: condition.ConditionString,
                 Operation: btn.operation // AND/OR
             };
+            if (condition.SecondPart.IsFormControl || condition.SecondPart.IsFormParameter) {
+                condition.Parameter.QueryTypeID = 1;
+                win.QueryInParametersIDE.addParameter(condition.Parameter);
+            }
             conditionsGrid.getStore().add(newCondition);
         });
     },
@@ -587,6 +773,12 @@
             return;
         }
 
+        var currentOperandValue = selection.get('SecondPart');
+        if (currentOperandValue && (currentOperandValue.IsFormControl || currentOperandValue.IsFormParameter)) {
+            var uniqueID = currentOperandValue.IsFormControl ? currentOperandValue.FormControl.UniqueID : currentOperandValue.FormParameter.UniqueID;
+            win.QueryInParametersIDE.deleteParameter(uniqueID, 1);
+        }
+
         var UniqueID = selection.get('UniqueID');
         var record = conditionsGrid.getStore().findRecord('UniqueID', UniqueID);
         conditionsGrid.getStore().remove(record);
@@ -596,11 +788,10 @@
 
     /**
      * Receive SELECT SQL query
-     * @param btn
+     * @param win
      * @returns {string}
      */
-    onGenerateSelectQuery: function (btn) {
-        var win = btn.up('window');
+    onGenerateSelectQuery: function (win) {
         var columnsGrid = win.down('gridpanel[name=columnsGrid]');
         var dataTablesList = win.down('gridpanel[name=dataTablesGrid]');
         var conditionsGrid = win.down('gridpanel[name=conditionsGrid]');
@@ -611,7 +802,7 @@
         columnsGrid.getStore().getRange().forEach(function (currentColumn) {
             var table = currentColumn.get('Table');
             var column = currentColumn.get('Column');
-            columnsList.push(table.Name + '.' + column.Name);
+            columnsList.push(table.PlaceHolder + '.' + column.PlaceHolder);
         });
         if (columnsList.length == 0) {
             MessageBox.error('Choose any out column');
@@ -632,9 +823,9 @@
             var condition = currentTable.get('Condition');
 
             if (!joinTable || !joinTable.TableID) {
-                fromString += 'FROM ' + table.Name + '\n';
+                fromString += 'FROM ' + table.PlaceHolder + '\n';
             } else {
-                fromString += (joinKind.Name || 'LEFT') + ' JOIN ' + table.Name + ' ON ' + condition + '\n';
+                fromString += (joinKind.Name || 'LEFT') + ' JOIN ' + table.PlaceHolder + ' ON ' + condition + '\n';
             }
         });
 
@@ -707,108 +898,229 @@
     //endregion
 
     /**
-     * Change sql type
-     * @param radioGroup
-     */
-    onChangeSqlType: function (radioGroup) {
-        var win = radioGroup.up('window');
-        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
-        var sqlActionTabPanel = win.down('tabpanel[name=sqlActionTabPanel]');
-        var selectPanel = win.down('panel[name=selectSqlAction]');
-        var insertPanel = win.down('panel[name=insertSqlAction]');
-        var deletePanel = win.down('panel[name=deleteSqlAction]');
-        var updateConditionContainer = win.down('container[name=updateConditionContainer]');
-
-        if (rgSqlType.getValue()) {
-            switch (rgSqlType.getValue().data) {
-                case 'SELECT':
-                    sqlActionTabPanel.setActiveTab(selectPanel);
-                    selectPanel.setDisabled(false);
-                    insertPanel.setDisabled(true);
-                    deletePanel.setDisabled(true);
-                    break;
-                case 'INSERT':
-                    updateConditionContainer.hide();
-                    sqlActionTabPanel.setActiveTab(insertPanel);
-                    selectPanel.setDisabled(true);
-                    insertPanel.setDisabled(false);
-                    deletePanel.setDisabled(true);
-                    break;
-                case 'UPDATE':
-                    updateConditionContainer.show();
-                    sqlActionTabPanel.setActiveTab(insertPanel);
-                    selectPanel.setDisabled(true);
-                    insertPanel.setDisabled(false);
-                    deletePanel.setDisabled(true);
-                    break;
-                case 'DELETE':
-                    sqlActionTabPanel.setActiveTab(deletePanel);
-                    selectPanel.setDisabled(true);
-                    insertPanel.setDisabled(true);
-                    deletePanel.setDisabled(false);
-                    break;
-                default:
-                    selectPanel.setDisabled(true);
-                    insertPanel.setDisabled(true);
-                    deletePanel.setDisabled(true);
-                    break;
-            }
-        } else {
-            selectPanel.setDisabled(true);
-            insertPanel.setDisabled(true);
-            deletePanel.setDisabled(true);
-        }
-    },
-
-    /**
      * Get object to save the query
      * @param win Window
      */
-    getObject: function (win) {
+    getQueryObject: function (win) {
         var _this = this;
-        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
-        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
-        var condGrid = win.down('gridpanel[name=conditionsGrid]');
+        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
+        var queryInParametersGrid = win.down('gridpanel[name=queryInParametersGrid]');
         var queryString = win.down('textareafield[name=queryString]');
-        var SQL = _this.onGenerateSelectQuery(win.down('button'));
-        var inParams = [], outParams = [];
+        // SELECT
+        var columnsGrid = win.down('gridpanel[name=columnsGrid]');
+        var dataTablesGrid = win.down('gridpanel[name=dataTablesGrid]');
+        var conditionsGrid = win.down('gridpanel[name=conditionsGrid]');
+        // INSERT
+        var insertDataTable = win.down('combobox[name=insertDataTable]');
+        var insertTableColumnsGrid = win.down('gridpanel[name=insertTableColumnsGrid]');
+        var updateCondition = win.down('textfield[name=updateCondition]');
+        // DELETE
+        var deleteDataTable = win.down('combobox[name=deleteDataTable]');
+        var deleteTableColumnsGrid = win.down('gridpanel[name=deleteTableColumnsGrid]');
 
-        fieldsGrid.getStore().data.items.forEach(function (item) {
-            var obj = item.get('obj');
-            var outParam = {
-                ID: -1,
-                queryTypeID: -1,
-                name: obj.table.field['columnName'], //obj.table['tableName'] + '.' + obj.table.field['columnName'];
-                domainValueTypeID: item.get('domainValueTypeID')
-            };
-            outParams.push(outParam);
-        });
+        var sqlString = _this.getSqlString(win);
+        if (!sqlString) {
+            MessageBox.error('Generate SQL string');
+            return;
+        }
 
-        // where
-        condGrid.getStore().data.items.forEach(function (item) {
-            var obj = item.get('obj');
-            if (!Ext.Array.contains(['IS NULL', 'IS NOT NULL'], (obj['condition'] || '').trim().toUpperCase())) {
-                if (obj['isValue']) {
-                    var inParam = {
-                        ID: -1,
-                        queryTypeID: -1,
-                        name: replaceBrucket(obj.secondField['value']),
-                        domainValueTypeID: item.get('domainValueTypeID')
-                    };
-                    inParams.push(inParam);
+        var queryInParameters = win.QueryInParametersIDE.getQueryInParameters();
+        var tablesList = [];
+        var columnsList = [];
+        var queryOutParameters = [];
+
+        var parseCondition = function (firstPart, secondPart) {
+            tablesList.push({
+                TableID: firstPart.Table.TableID,
+                Name: firstPart.Table.Name,
+                QueryTypePlaceholder: '{' + firstPart.Table.PhysicalTable + '}'
+            });
+            columnsList.push({
+                ColumnID: firstPart.Column.ColumnID,
+                Name: firstPart.Column.Name,
+                QueryTypePlaceholder: '{' + firstPart.Column.PhysicalColumn + '}'
+            });
+            if (secondPart) {
+                if (secondPart.IsColumn && secondPart.Column.ColumnID > 0) {
+                    tablesList.push({
+                        TableID: secondPart.Table.TableID,
+                        Name: secondPart.Table.Name,
+                        QueryTypePlaceholder: '{' + secondPart.Table.PhysicalTable + '}'
+                    });
+                    columnsList.push({
+                        ColumnID: secondPart.Column.ColumnID,
+                        Name: secondPart.Column.Name,
+                        QueryTypePlaceholder: '{' + secondPart.Column.PhysicalColumn + '}'
+                    });
                 }
             }
-        });
-
-        var obj = {
-            queryType: {
-                sqlText: SQL,
-                ID: -1
-            },
-            queryInParameters: inParams,
-            queryOutParameters: outParams
         };
-        return obj;
+
+        if (rgSqlType.getValue()) {
+            switch (rgSqlType.getValue().sqlTypeRadioGroup) {
+                case 'SELECT':
+                    columnsGrid.getStore().getRange().forEach(function (currentColumn) {
+                        var column = currentColumn.get('Column');
+                        columnsList.push({
+                            ColumnID: column.ColumnID,
+                            Name: column.Name,
+                            QueryTypePlaceholder: '{' + column.PhysicalColumn + '}'
+                        });
+                        queryOutParameters.push({
+                            Name: column.Name,
+                            ValueTypeID: column.ValueTypeID,
+                            QueryTypeAlias: column.PhysicalColumn,
+                            QueryTypePlaceholder: '{' + column.PhysicalColumn + '}'
+                        });
+                    });
+                    dataTablesGrid.getStore().getRange().forEach(function (currentTable) {
+                        var table = currentTable.get('Table');
+                        tablesList.push({
+                            TableID: table.TableID,
+                            Name: table.Name,
+                            QueryTypePlaceholder: '{' + table.PhysicalTable + '}'
+                        });
+                        var joinColumn = table.JoinColumn;
+                        if (joinColumn) {
+                            columnsList.push({
+                                ColumnID: joinColumn.ColumnID,
+                                Name: joinColumn.Name,
+                                QueryTypePlaceholder: '{' + joinColumn.PhysicalColumn + '}'
+                            });
+                        }
+
+                        var joinTable = currentTable.get('JoinTable');
+                        if (joinTable) {
+                            tablesList.push({
+                                TableID: joinTable.TableID,
+                                Name: joinTable.Name,
+                                QueryTypePlaceholder: '{' + joinTable.PhysicalTable + '}'
+                            });
+
+                            var joinTableColumn = joinTable.JoinColumn;
+                            if (joinColumn) {
+                                columnsList.push({
+                                    ColumnID: joinTableColumn.ColumnID,
+                                    Name: joinTableColumn.Name,
+                                    QueryTypePlaceholder: '{' + joinTableColumn.PhysicalColumn + '}'
+                                });
+                            }
+                        }
+                    });
+                    conditionsGrid.getStore().getRange().forEach(function (currentCondition) {
+                        var firstPart = currentCondition.get('FirstPart');
+                        var secondPart = currentCondition.get('SecondPart');
+                        parseCondition(firstPart, secondPart);
+                    });
+                    break;
+                case 'INSERT':
+                    tablesList.push({
+                        TableID: insertDataTable.getValue(),
+                        Name: insertDataTable.getRawValue(),
+                        QueryTypePlaceholder: '{' + insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable') + '}'
+                    });
+                    insertTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
+                        if (currentColumn.get('OperandValue')) {
+                            var queryTypeColumn = {
+                                ColumnID: currentColumn.get('ColumnID'),
+                                Name: currentColumn.get('Name'),
+                                QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                            };
+                            columnsList.push(queryTypeColumn);
+                        }
+                    });
+                    break;
+                case 'UPDATE':
+                    tablesList.push({
+                        TableID: insertDataTable.getValue(),
+                        Name: insertDataTable.getRawValue(),
+                        QueryTypePlaceholder: '{' + insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable') + '}'
+                    });
+                    insertTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
+                        if (currentColumn.get('OperandValue')) {
+                            var queryTypeColumn = {
+                                ColumnID: currentColumn.get('ColumnID'),
+                                Name: currentColumn.get('Name'),
+                                QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                            };
+                            columnsList.push(queryTypeColumn);
+                        }
+                    });
+                    if (updateCondition.conditionObj) {
+                        var firstPart = updateCondition.conditionObj.FirstPart;
+                        var secondPart = updateCondition.conditionObj.SecondPart;
+                        parseCondition(firstPart, secondPart);
+                    }
+                    break;
+                case 'DELETE':
+                    tablesList.push({
+                        TableID: deleteDataTable.getValue(),
+                        Name: deleteDataTable.getRawValue(),
+                        QueryTypePlaceholder: '{' + deleteDataTable.getStore().findRecord('TableID', deleteDataTable.getValue()).get('PhysicalTable') + '}'
+                    });
+                    deleteTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
+                        var condition = currentColumn.get('OperandValue');
+                        if (condition) {
+                            columnsList.push({
+                                ColumnID: currentColumn.get('ColumnID'),
+                                Name: currentColumn.get('Name'),
+                                QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                            });
+                            var firstPart = condition.FirstPart;
+                            var secondPart = condition.SecondPart;
+                            parseCondition(firstPart, secondPart);
+                        }
+                    });
+                    break;
+            }
+        }
+
+        // Function to get unique instances of the list using unique property (received from func)
+        var getUniqueList = function (list, func) {
+            var uniqueList = [];
+            var aleradyHasTheSame = function (listInstance) {
+                var aleradyHas = false;
+                uniqueList.forEach(function (uniqueInstance) {
+                    if (func(uniqueInstance) == func(listInstance)) {
+                        aleradyHas = true;
+                    }
+                });
+                return aleradyHas;
+            };
+            list.forEach(function (item) {
+                if (!aleradyHasTheSame(item)) {
+                    uniqueList.push(item);
+                }
+            });
+            return uniqueList;
+        };
+
+        var actionType = WebSystemsBuilder.utils.mapping.ActionTypes.Query;
+        var queryAction = {
+            UniqueID: RandomIDE.get(),
+            EventActionTypeID: actionType,
+            EventActionType: ActionTypes.getActionTypeName(actionType),
+            ChildActions: [],
+            QueryType: {
+                UniqueID: RandomIDE.get(),
+                Name: '',
+                Sql: sqlString
+            },
+            QueryTypeColumnList: getUniqueList(columnsList, function (i) {
+                return i.ColumnID
+            }),
+            QueryTypeTableList: getUniqueList(tablesList, function (i) {
+                return i.TableID
+            }),
+            QueryTypeInList: getUniqueList(queryInParameters, function (i) {
+                return i.UniqueID
+            }),
+            QueryTypeOutList: getUniqueList(queryOutParameters, function (i) {
+                return i.Name
+            })
+        };
+        console.log(queryAction);
+        return queryAction;
     },
 
     /**
@@ -818,84 +1130,13 @@
     onSave: function (btn) {
         var _this = this;
         var win = btn.up('window');
-        var fieldsGrid = win.down('gridpanel[name=columnsGrid]');
-        var dictsGrid = win.down('gridpanel[name=dataTablesGrid]');
-        var condGrid = win.down('gridpanel[name=conditionsGrid]');
 
-        // объект запроса
-        var obj = this.getObject(win);
-        if (fieldsGrid.getStore().getCount() == 0) {
-            var error = 'Задайте хотя бы одно поле, выбираемое запросом.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-            return;
-        }
-        if (dictsGrid.getStore().getCount() == 0) {
-            var error = 'Задайте хотя бы один источник данных.';
-            WebSystemsBuilder.utils.MessageBox.show(error, null, -1);
-            return;
-        }
+        // Get query object with all meta-data
+        var obj = _this.getQueryObject(win);
 
-        win.body.mask('Сохранение...');
-        // AJAX запрос на сохранение
-        Ext.Ajax.request({
-            url: 'QueryEditor/SaveQueryType',
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            jsonData: {
-                queryType: obj.queryType,
-                queryInParameters: obj.queryInParameters,
-                queryOutParameters: obj.queryOutParameters
-            },
-            success: function (objServerResponse) {
-                var jsonResp = Ext.decode(objServerResponse.responseText);
-                win.body.unmask();
-                if (jsonResp.Code == 0) {
-                    // Сгененировать событие, сообщающее основной форме о том,
-                    // что запрос сохранен
-                    win.fireEvent('QuerySaved', win, jsonResp.resultID);
-                    _this.onClose(btn);
-                } else {
-                    WebSystemsBuilder.utils.MessageBox.show(jsonResp.resultMessage, null, -1);
-                }
-            },
-            failure: function (objServerResponse) {
-                win.body.unmask();
-                WebSystemsBuilder.utils.MessageBox.show(objServerResponse.responseText, null, -1);
-            }
-        });
-    },
-
-    /**
-     * Generate SQL query by meta-descriptions
-     * @param btn Кнопка "Обновить"
-     */
-    onRefreshSqlString: function (btn) {
-        var win = btn.up('window');
-        var _this = this;
-        var queryString = win.down('textareafield[name=queryString]');
-        var rgSqlType = win.down('radiogroup[name=rgSqlType]');
-
-        var sqlString = '';
-        if (rgSqlType.getValue()) {
-            switch (rgSqlType.getValue().data) {
-                case 'SELECT':
-                    // Get sql string from SELECT tables
-                    sqlString = _this.onGenerateSelectQuery(btn);
-                    break;
-                case 'INSERT':
-                case 'UPDATE':
-                    // Get sql string from INSERT tables
-                    sqlString = _this.onGenerateInsertQuery(btn);
-                    break;
-                case 'DELETE':
-                    // Get sql string from DELETE tables
-                    sqlString = _this.onGenerateDeleteQuery(btn);
-                    break;
-            }
-        }
-
-        // Display sql string
-        queryString.setValue(sqlString);
+        // Event
+        win.fireEvent('QueryActionSaved', obj);
+        win.close();
     },
 
     /**

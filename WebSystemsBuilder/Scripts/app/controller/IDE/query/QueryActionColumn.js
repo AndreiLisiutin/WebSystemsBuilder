@@ -37,9 +37,9 @@
         var column = win.down('combobox[name=column]');
 
         var loadDataTableCombo = function () {
-            if (win.dictionaries) {
+            if (win.queryDataTables) {
                 CommonUtils.safeMask(dataTable);
-                dataTable.getStore().loadData(win.dictionaries, false);
+                dataTable.getStore().loadData(win.queryDataTables, false);
                 CommonUtils.safeUnmask(dataTable);
             }
         };
@@ -90,18 +90,28 @@
             return;
         }
 
+        var getPhysicalDataTable = function(combo, physicalColumnName) {
+            return combo.findRecordByValue(combo.getValue()).get(physicalColumnName || 'PhysicalTable');
+        };
+        var getPlaceHolder = function(combo, physicalColumnName) {
+            var physicalName = getPhysicalDataTable(combo, physicalColumnName);
+            return '{' + physicalName + '}';
+        };
+
         // Event about successfull save
         var newColumn = {
             Table: {
                 TableID: dataTable.getValue(),
                 Name: dataTable.getRawValue(),
-                PhysicalTable: dataTable.getValue() ? dataTable.findRecordByValue(dataTable.getValue()).get('PhysicalTable') : null
+                PhysicalTable: dataTable.getValue() ? getPhysicalDataTable(dataTable) : null,
+                PlaceHolder: dataTable.getValue() ? getPlaceHolder(dataTable) : null
             },
             Column: {
                 ColumnID: column.getValue(),
-                TableID: column.getValue() ? column.findRecordByValue(column.getValue()).get('TableID') : null,
+                TableID: dataTable.getValue(),
                 Name: column.getRawValue(),
-                PhysicalColumn: column.getValue() ? column.findRecordByValue(column.getValue()).get('PhysicalColumn') : null,
+                PhysicalColumn: column.getValue() ? getPhysicalDataTable(column, 'PhysicalColumn') : null,
+                PlaceHolder: column.getValue() ? getPlaceHolder(column, 'PhysicalColumn') : null,
                 ValueTypeID: column.getValue() ? column.findRecordByValue(column.getValue()).get('ValueTypeID') : null
             }
         };

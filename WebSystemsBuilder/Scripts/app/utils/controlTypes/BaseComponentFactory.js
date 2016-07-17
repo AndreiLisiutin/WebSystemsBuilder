@@ -24,6 +24,24 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.BaseComponentFactory', {
         Ext.Component.updateLayout(component);
         Ext.Component.updateLayout(parentComponent);
 
+        if (componentInfo.EventTypesList) {
+            componentInfo.EventTypesList.forEach(function(currentEventType) {
+                var event = {
+                    Event: {
+                        EventID: null,
+                        EventTypeControlTypeID: currentEventType.EventTypeControlType.EventTypeControlTypeID,
+                        ControlID: componentInfo.ControlID,
+                        EventUniqueID: RandomIDE.get(),
+                        ControlUniqueID: component.uniqueID
+                    },
+                    EventType: currentEventType.EventType,
+                    EventTypeControlType: currentEventType.EventTypeControlType,
+                    EventActions: []
+                };
+                EventsIDE.addEvent(event);
+            });
+        }
+
         win.fireEvent('ComponentAdded', win, parentComponent, component);
         return component;
     },
@@ -36,7 +54,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.BaseComponentFactory', {
 
         var component = _this.createComponent();
 
-        component.uniqueID = componentInfo.uniqueID ? componentInfo.uniqueID : Random.get();
+        component.uniqueID = componentInfo.uniqueID ? componentInfo.uniqueID : RandomIDE.get();
         componentInfo.uniqueID = component.uniqueID;
         component.ControlID = componentInfo.ControlID;
         component.OperandID = componentInfo.OperandID;

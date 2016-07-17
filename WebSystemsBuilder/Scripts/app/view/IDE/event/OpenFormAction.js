@@ -103,7 +103,12 @@
                                         {
                                             flex: 1,
                                             dataIndex: 'Value',
-                                            text: 'Value'
+                                            text: 'Value',
+                                            renderer: function(value, meta, record) {
+                                                var operand = record.get('Operand');
+                                                if (!operand) return null;
+                                                return operand.Value;
+                                            }
                                         }
                                     ]
                                 }

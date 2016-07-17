@@ -40,7 +40,7 @@
         var constantRadioField = win.down('radiofield[id=ConstantValueProvider]');
         var control = win.down('combobox[name=control]');
         var formParameter = win.down('combobox[name=formParameter]');
-        var constant = win.down('combobox[name=constant]');
+        var constant = win.down('textfield[name=constant]');
         var controlContainer = win.down('container[name=ControlContainer]');
         var parameterContainer = win.down('container[name=ParameterContainer]');
         var constantContainer = win.down('container[name=ConstantContainer]');
@@ -74,7 +74,7 @@
         var constantRadioField = win.down('radiofield[id=ConstantValueProvider]');
         var control = win.down('combobox[name=control]');
         var formParameter = win.down('combobox[name=formParameter]');
-        var constant = win.down('combobox[name=constant]');
+        var constant = win.down('textfield[name=constant]');
 
         control.setDisabled(!controlRadioField.getValue());
         formParameter.setDisabled(!formParameterRadioField.getValue());
@@ -92,7 +92,7 @@
         var constantRadioField = win.down('radiofield[id=ConstantValueProvider]');
         var control = win.down('combobox[name=control]');
         var formParameter = win.down('combobox[name=formParameter]');
-        var constant = win.down('combobox[name=constant]');
+        var constant = win.down('textfield[name=constant]');
 
         var obj = {
             IsControl: controlRadioField.getValue(),
@@ -106,11 +106,13 @@
                 UniqueID: formParameter.getValue(),
                 Name: formParameter.getRawValue(),
                 FormParameter: formParameter.getValue() ? formParameter.findRecordByValue(formParameter.getValue()).get('FormParameter') : null,
-                PropertyValueType: formParameter.getValue() ? formParameter.findRecordByValue(formParameter.getValue()).get('PropertyValueType') : null,
+                PropertyValueType: formParameter.getValue() ? formParameter.findRecordByValue(formParameter.getValue()).get('PropertyValueType') : null
             },
             Constant: constant.getValue(),
             Value: null,
-            Name: null
+            Name: null,
+            Parameter: null,
+            PlaceHolder: null
         };
 
         if (!obj.IsControl && !obj.IsFormParameter && !obj.IsConstant) {
@@ -124,6 +126,7 @@
             }
             obj.Value = control.getValue();
             obj.Name = control.getRawValue();
+            obj.PlaceHolder = '{' + obj.Name + '}';
         }
         if (obj.IsFormParameter) {
             if (!obj.FormParameter) {
@@ -132,6 +135,7 @@
             }
             obj.Value = formParameter.getValue();
             obj.Name = formParameter.getRawValue();
+            obj.PlaceHolder = '{' + obj.Name + '}';
         }
         if (obj.IsConstant) {
             if (!obj.Constant) {
@@ -140,6 +144,15 @@
             }
             obj.Value = constant.getValue();
             obj.Name = constant.getValue();
+        }
+        if (obj.IsControl || obj.IsFormParameter) {
+            var operandParameter = obj.IsControl ? obj.Control : obj.FormParameter;
+            obj.Parameter = {
+                UniqueID: operandParameter.UniqueID,
+                Name: operandParameter.Name,
+                QueryParameterTypeID: obj.IsControl ? 1 : 2,
+                QueryParameterType: obj.IsControl ? 'Control' : 'Form parameter'
+            };
         }
 
         win.fireEvent('OperandChosen', obj);

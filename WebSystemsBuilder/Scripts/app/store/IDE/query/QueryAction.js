@@ -35,3 +35,24 @@ Ext.define('WebSystemsBuilder.store.IDE.query.QueryInParameters', {
     autoLoad: false,
     data: []
 });
+
+// Data table store
+Ext.define('WebSystemsBuilder.store.IDE.query.InsertColumnList', {
+    extend: 'Ext.data.Store',
+    model: 'WebSystemsBuilder.model.IDE.query.InsertColumnList',
+    autoLoad: false,
+
+    proxy: {
+        type: 'ajax',
+
+        api: {
+            read: 'MainIDE/GetTableColumnList'
+        },
+
+        reader: {
+            type: 'json',
+            root: 'Data',
+            successProperty: 'Code'
+        }
+    }
+});

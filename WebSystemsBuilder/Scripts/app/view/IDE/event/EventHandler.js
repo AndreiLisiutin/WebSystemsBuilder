@@ -17,7 +17,7 @@
     initComponent: function () {
         var me = this;
 
-        var actionStore = Ext.create('WebSystemsBuilder.store.IDE.event.Action');
+        var eventHandlersStore = Ext.create('WebSystemsBuilder.store.IDE.event.Action');
 
         Ext.applyIf(me, {
             items: [
@@ -67,6 +67,12 @@
                                             text: 'Add query action',
                                             icon: 'Scripts/resources/icons/add_16.png',
                                             action: 'onAddQueryAction'
+                                        },
+                                        {
+                                            xtype:'menuitem',
+                                            text: 'Add predicate action',
+                                            icon: 'Scripts/resources/icons/add_16.png',
+                                            action: 'onAddPredicateAction'
                                         }
                                     ]
                                 },
@@ -93,12 +99,11 @@
                             padding: 2,
                             title: 'Event handler actions',
                             layout: 'fit',
-                            name: 'fsActions',
                             items: [
                                 {
                                     xtype: 'gridpanel',
-                                    name: 'actionGrid',
-                                    store: actionStore,
+                                    name: 'eventHandlersGrid',
+                                    store: eventHandlersStore,
                                     columns: [
                                         {
                                             xtype: 'rownumberer',
@@ -109,7 +114,7 @@
                                             xtype: 'gridcolumn',
                                             flex: 1,
                                             text: 'Action',
-                                            dataIndex: 'ClientActionType'
+                                            dataIndex: 'EventActionType'
                                         }
                                     ]
                                 }

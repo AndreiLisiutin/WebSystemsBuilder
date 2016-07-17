@@ -136,6 +136,14 @@
             }
         }
 
+        var getPhysicalDataTable = function(combo, physicalColumnName) {
+            return combo.findRecordByValue(combo.getValue()).get(physicalColumnName || 'PhysicalTable');
+        };
+        var getPlaceHolder = function(combo, physicalColumnName) {
+            var physicalName = getPhysicalDataTable(combo, physicalColumnName);
+            return '{' + physicalName + '}';
+        };
+
         // Event about new data table
         var newTable = {
             JoinKind: {
@@ -145,33 +153,37 @@
             Table: {
                 TableID: newDataTable.getValue(),
                 Name: newDataTable.getRawValue(),
-                PhysicalTable: newDataTable.findRecordByValue(newDataTable.getValue()).get('PhysicalTable'),
+                PhysicalTable: getPhysicalDataTable(newDataTable),
+                PlaceHolder: getPlaceHolder(newDataTable),
                 JoinColumn: {
                     ColumnID: newTableField.getValue(),
                     Name: newTableField.getRawValue(),
                     PhysicalColumn: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('PhysicalColumn') : null,
                     ValueTypeID: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('ValueTypeID') : null,
-                    TableID: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('TableID') : null
+                    TableID: newTableField.getValue() ? newDataTable.getValue() : null,
+                    PlaceHolder: getPlaceHolder(newTableField, 'PhysicalColumn')
                 }
             },
             JoinTable: {
                 TableID: joinTable.getValue(),
                 Name: joinTable.getRawValue(),
-                PhysicalTable: joinTable.getValue() ? joinTable.findRecordByValue(joinTable.getValue()).get('PhysicalTable') : null,
+                PhysicalTable: joinTable.getValue() ? getPhysicalDataTable(joinTable) : null,
+                PlaceHolder: joinTable.getValue() ? getPlaceHolder(joinTable) : null,
                 JoinColumn: {
                     ColumnID: joinTableField.getValue(),
                     Name: joinTableField.getRawValue(),
                     PhysicalColumn: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('PhysicalColumn') : null,
                     ValueTypeID: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('ValueTypeID') : null,
-                    JoinTableID: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('TableID') : null
+                    JoinTableID: joinTableField.getValue() ? joinTableField.findRecordByValue(joinTableField.getValue()).get('TableID') : null,
+                    PlaceHolder: joinTableField.getValue() ? getPlaceHolder(joinTableField, 'PhysicalColumn') : null
                 }
             }
         };
 
         if (!isNew) {
-            newTable.Condition = newTable.Table.Name + '.' + newTable.Table.JoinColumn.Name;
+            newTable.Condition = newTable.Table.PlaceHolder + '.' + newTable.Table.JoinColumn.PlaceHolder;
             newTable.Condition += ' = ';
-            newTable.Condition += newTable.JoinTable.Name + '.' + newTable.JoinTable.JoinColumn.Name;
+            newTable.Condition += newTable.JoinTable.PlaceHolder + '.' + newTable.JoinTable.JoinColumn.PlaceHolder;
         }
         win.fireEvent('QueryFromIsReadyToSave', newTable);
         win.close();

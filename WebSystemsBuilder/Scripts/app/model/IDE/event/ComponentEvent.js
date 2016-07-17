@@ -1,8 +1,18 @@
 ﻿Ext.define('WebSystemsBuilder.model.IDE.event.ComponentEvent', {
     extend: 'Ext.data.Model',
     fields: [
+        'Event',
         'EventType',
         'EventTypeControlType',
+        'EventActions',
+        {
+            name: 'EventUniqueID',
+            convert: function (v, record) {
+                var event = record.get('Event');
+                if (!event) return null;
+                return event.EventUniqueID;
+            }
+        },
         {
             name: 'EventTypeID',
             convert: function (v, record) {

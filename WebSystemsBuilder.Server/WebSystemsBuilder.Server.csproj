@@ -97,6 +97,7 @@
     <Compile Include="Models\Business\FormGeneration\Query\QueryActionOutInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Query\QueryActionInInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Query\QueryActionInstance.cs" />
+    <Compile Include="Models\Business\IDE\ControlEventInstance.cs" />
     <Compile Include="Models\Business\IDE\EventTypeInstance.cs" />
     <Compile Include="Models\Business\IDE\PropertyInstance.cs" />
     <Compile Include="Models\Business\IDE\ControlTypeInctance.cs" />

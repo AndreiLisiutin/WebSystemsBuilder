@@ -25,6 +25,9 @@
             'EventHandler [action=onAddQueryAction]': {
                 click: this.onAddQueryAction
             },
+            'EventHandler [action=onAddPredicateAction]': {
+                click: this.onAddPredicateAction
+            },
             'EventHandler button[action=onDeleteAction]': {
                 click: this.onDeleteAction
             },
@@ -39,10 +42,11 @@
      * @param win Window EventHandler
      */
     onLoad: function (win) {
-        var actionGrid = win.down('gridpanel[name=actionGrid]');
+        var eventHandlersGrid = win.down('gridpanel[name=eventHandlersGrid]');
 
-        if (win.actions) {
-            actionGrid.getStore().loadData(win.actions, false);
+        var event = EventsIDE.getEventByUniqueID(win.EventUniqueID);
+        if (event.EventActions) {
+            eventHandlersGrid.getStore().loadData(event.EventActions, false);
         }
     },
 
@@ -52,12 +56,14 @@
      */
     onAddClientAction: function (btn) {
         var win = btn.up('window');
-        var actionGrid = win.down('gridpanel[name=actionGrid]');
+        var eventHandlersGrid = win.down('gridpanel[name=eventHandlersGrid]');
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.ClientAction');
         var actionWin = WebSystemsBuilder.utils.Windows.open('ClientAction', { }, null, true);
-        actionWin.on('ClientActionSaved', function (obj) {
-            actionGrid.getStore().add(obj);
+        actionWin.on('ClientActionSaved', function (eventAction) {
+            eventAction.EventUniqueID = win.EventUniqueID;
+            EventsIDE.addEventAction(eventAction);
+            eventHandlersGrid.getStore().add(eventAction);
             win.fireEvent('EventChanged');
         });
     },
@@ -68,12 +74,14 @@
      */
     onAddOpenFormAction: function (btn) {
         var win = btn.up('window');
-        var actionGrid = win.down('gridpanel[name=actionGrid]');
+        var eventHandlersGrid = win.down('gridpanel[name=eventHandlersGrid]');
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OpenFormAction');
         var actionWin = WebSystemsBuilder.utils.Windows.open('OpenFormAction', { }, null, true);
-        actionWin.on('OpenFormActionSaved', function (obj) {
-            actionGrid.getStore().add(obj);
+        actionWin.on('OpenFormActionSaved', function (eventAction) {
+            eventAction.EventUniqueID = win.EventUniqueID;
+            EventsIDE.addEventAction(eventAction);
+            eventHandlersGrid.getStore().add(eventAction);
             win.fireEvent('EventChanged');
         });
     },
@@ -84,11 +92,34 @@
      */
     onAddQueryAction: function (btn) {
         var win = btn.up('window');
-        var actionGrid = win.down('gridpanel[name=actionGrid]');
+        var eventHandlersGrid = win.down('gridpanel[name=eventHandlersGrid]');
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryAction');
         var actionWin = WebSystemsBuilder.utils.Windows.open('QueryAction', { }, null, true);
+        actionWin.on('QueryActionSaved', function (eventAction) {
+            eventAction.EventUniqueID = win.EventUniqueID;
+            EventsIDE.addEventAction(eventAction);
+            eventHandlersGrid.getStore().add(eventAction);
+            win.fireEvent('EventChanged');
+        });
+    },
 
+    /**
+     * Add predicate action as new handler
+     * @param btn Menu item "Add predicate action"
+     */
+    onAddPredicateAction: function (btn) {
+        var win = btn.up('window');
+        var eventHandlersGrid = win.down('gridpanel[name=eventHandlersGrid]');
+
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.PredicateAction');
+        var actionWin = WebSystemsBuilder.utils.Windows.open('PredicateAction', { }, null, true);
+        actionWin.on('PredicateActionSaved', function (eventAction) {
+            eventAction.EventUniqueID = win.EventUniqueID;
+            EventsIDE.addEventAction(eventAction);
+            eventHandlersGrid.getStore().add(eventAction);
+            win.fireEvent('EventChanged');
+        });
     },
 
     /**
@@ -97,15 +128,17 @@
      */
     onDeleteAction: function (btn) {
         var win = btn.up('window');
-        var actionGrid = win.down('gridpanel[name=actionGrid]');
+        var eventHandlersGrid = win.down('gridpanel[name=eventHandlersGrid]');
 
-        var selected = actionGrid.getSelectionModel().getSelection()[0];
+        var selected = eventHandlersGrid.getSelectionModel().getSelection()[0];
         if (!selected) {
             WebSystemsBuilder.utils.MessageBox.show('Не выбрано действие.', null, -1);
         }
 
-        var record = actionGrid.getStore().findRecord('ID', selected.get('ID'));
-        if (record) actionGrid.getStore().remove(record);
+        var uniqueID = selected.get('UniqueID');
+        EventsIDE.deleteEventAction(uniqueID);
+        var record = eventHandlersGrid.getStore().findRecord('UniqueID', uniqueID);
+        if (record) eventHandlersGrid.getStore().remove(record);
     },
 
     /**

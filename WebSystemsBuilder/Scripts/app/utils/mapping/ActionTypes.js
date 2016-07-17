@@ -14,5 +14,21 @@
     OpenForm: null,
     Predicate: null,
     Server: null,
-    Query: null
+    Query: null,
+
+    getActionTypeName: function(actionTypeID) {
+        var _this = this;
+        switch (actionTypeID){
+            case _this.Client:
+                return 'Client action';
+            case _this.OpenForm:
+                return 'Open form action';
+            case _this.Predicate:
+                return 'Predicate action';
+            case _this.Server:
+                return 'Server action';
+            case _this.Query:
+                return 'Query action';
+        }
+    }
 });

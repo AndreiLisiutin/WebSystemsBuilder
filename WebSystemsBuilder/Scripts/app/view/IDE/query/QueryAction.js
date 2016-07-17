@@ -7,9 +7,9 @@
     title: 'Query Action',
 
     height: 700,
-    width: 800,
+    width: 900,
     minHeight: 700,
-    minWidth: 800,
+    minWidth: 900,
 
     layout: 'fit',
 
@@ -22,10 +22,10 @@
         var parametersStore = Ext.create('WebSystemsBuilder.store.IDE.query.QueryInParameters');
         // INSERT
         var insertDataTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
-        var insertColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
+        var insertColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.InsertColumnList');
         // DELETE
         var deleteTableStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
-        var deleteColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.DataTable');
+        var deleteColumnsStore = Ext.create('WebSystemsBuilder.store.IDE.query.InsertColumnList');
 
         Ext.applyIf(me, {
             items: [
@@ -74,72 +74,83 @@
                         }
                     ],
                     items: [
+
                         {
-                            xtype: 'fieldset',
-                            layout: 'fit',
-                            height: 100,
-                            margin: '5 5 5 5',
-                            padding: 2,
-                            title: 'Query',
+                            xtype: 'container',
+                            height: 200,
+                            layout: {
+                                type: 'hbox',
+                                align: 'stretch'
+                            },
                             items: [
                                 {
-                                    xtype: 'textareafield',
-                                    name: 'queryString'
-                                }
-                            ]
-                        },
-                        // Params
-                        {
-                            xtype: 'fieldset',
-                            height: 100,
-                            margin: '0 5 5 5',
-                            padding: 2,
-                            anchor: '0',
-                            title: 'In parameters',
-                            layout: 'fit',
-                            items: [
-                                {
-                                    xtype: 'gridpanel',
-                                    name: 'queryInParametersGrid',
-                                    store: parametersStore,
-                                    columns: [
+                                    xtype: 'fieldset',
+                                    layout: 'fit',
+                                    flex: 2,
+                                    margin: '5 5 5 5',
+                                    padding: 2,
+                                    title: 'Query',
+                                    items: [
                                         {
-                                            xtype: 'gridcolumn',
-                                            width: 70,
-                                            text: 'Parameter',
-                                            dataIndex: 'Name'
-                                        },
-                                        {
-                                            xtype: 'gridcolumn',
-                                            flex: 1,
-                                            text: 'Type',
-                                            dataIndex: 'ValueType'
+                                            xtype: 'textareafield',
+                                            name: 'queryString'
                                         }
-                                    ],
-                                    dockedItems: [
+                                    ]
+                                },
+                                // Params
+                                {
+                                    xtype: 'fieldset',
+                                    margin: '5 5 5 5',
+                                    padding: 2,
+                                    flex: 1,
+                                    title: 'In parameters',
+                                    layout: 'fit',
+                                    items: [
                                         {
-                                            xtype: 'toolbar',
-                                            dock: 'right',
-                                            items: [
+                                            xtype: 'gridpanel',
+                                            name: 'queryInParametersGrid',
+                                            store: parametersStore,
+                                            columns: [
                                                 {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/add.png',
-                                                    iconAlign: 'top',
-                                                    tooltip: 'Add parameter',
-                                                    action: 'onAddQueryInParameter'
+                                                    xtype: 'gridcolumn',
+                                                    flex: 1,
+                                                    text: 'Parameter',
+                                                    dataIndex: 'Name'
                                                 },
                                                 {
-                                                    xtype: 'tbseparator'
-                                                },
+                                                    xtype: 'gridcolumn',
+                                                    width: 80,
+                                                    text: 'Type',
+                                                    dataIndex: 'QueryParameterType'
+                                                }
+                                            ],
+                                            dockedItems: [
                                                 {
-                                                    xtype: 'button',
-                                                    scale: 'medium',
-                                                    border: true,
-                                                    icon: 'Scripts/resources/icons/delete.png',
-                                                    tooltip: 'Delete parameter',
-                                                    action: 'onDeleteQueryInParameter'
+                                                    xtype: 'toolbar',
+                                                    dock: 'right',
+                                                    hidden: true,
+                                                    items: [
+                                                        {
+                                                            xtype: 'button',
+                                                            scale: 'medium',
+                                                            border: true,
+                                                            icon: 'Scripts/resources/icons/add.png',
+                                                            iconAlign: 'top',
+                                                            tooltip: 'Add parameter',
+                                                            action: 'onAddQueryInParameter'
+                                                        },
+                                                        {
+                                                            xtype: 'tbseparator'
+                                                        },
+                                                        {
+                                                            xtype: 'button',
+                                                            scale: 'medium',
+                                                            border: true,
+                                                            icon: 'Scripts/resources/icons/delete.png',
+                                                            tooltip: 'Delete parameter',
+                                                            action: 'onDeleteQueryInParameter'
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -147,6 +158,7 @@
                                 }
                             ]
                         },
+
 
                         {
                             xtype: 'container',
@@ -166,28 +178,28 @@
                                             xtype: 'radiofield',
                                             action: 'rbSelect',
                                             boxLabel: 'SELECT',
-                                            name: 'data',
+                                            name: 'sqlTypeRadioGroup',
                                             inputValue: 'SELECT'
                                         },
                                         {
                                             xtype: 'radiofield',
                                             action: 'rbInsert',
                                             boxLabel: 'INSERT',
-                                            name: 'data',
+                                            name: 'sqlTypeRadioGroup',
                                             inputValue: 'INSERT'
                                         },
                                         {
                                             xtype: 'radiofield',
                                             action: 'rbUpdate',
                                             boxLabel: 'UPDATE',
-                                            name: 'data',
+                                            name: 'sqlTypeRadioGroup',
                                             inputValue: 'UPDATE'
                                         },
                                         {
                                             xtype: 'radiofield',
                                             action: 'rbDelete',
                                             boxLabel: 'DELETE',
-                                            name: 'data',
+                                            name: 'sqlTypeRadioGroup',
                                             inputValue: 'DELETE'
                                         }
                                     ]
@@ -196,7 +208,7 @@
                         },
                         {
                             xtype: 'tabpanel',
-                            anchor: '0 -240',
+                            anchor: '0 -225',
                             name: 'sqlActionTabPanel',
                             items: [
                                 {
@@ -233,15 +245,15 @@
                                                             columns: [
                                                                 {
                                                                     xtype: 'gridcolumn',
-                                                                    width: 150,
+                                                                    width: 100,
                                                                     text: 'Data table',
-                                                                    dataIndex: 'dictionary'
+                                                                    dataIndex: 'TableName'
                                                                 },
                                                                 {
                                                                     xtype: 'gridcolumn',
                                                                     flex: 1,
                                                                     text: 'Column',
-                                                                    dataIndex: 'field'
+                                                                    dataIndex: 'ColumnName'
                                                                 }
                                                             ],
                                                             dockedItems: [
@@ -279,7 +291,7 @@
                                                     xtype: 'fieldset',
                                                     margin: 5,
                                                     padding: 2,
-                                                    flex: 1,
+                                                    flex: 2,
                                                     title: 'Data tables (FROM)',
                                                     layout: 'fit',
                                                     items: [
@@ -290,7 +302,7 @@
                                                             columns: [
                                                                 {
                                                                     xtype: 'gridcolumn',
-                                                                    width: 150,
+                                                                    width: 100,
                                                                     text: 'Table',
                                                                     dataIndex: 'Name'
                                                                 },
@@ -371,7 +383,7 @@
                                                                     xtype: 'gridcolumn',
                                                                     flex: 1,
                                                                     text: 'Condition',
-                                                                    dataIndex: 'Condition'
+                                                                    dataIndex: 'ConditionString'
                                                                 }
                                                             ],
                                                             dockedItems: [
@@ -470,7 +482,12 @@
                                                             xtype: 'gridcolumn',
                                                             flex: 1,
                                                             text: 'Value',
-                                                            dataIndex: 'Value'
+                                                            dataIndex: 'OperandValue',
+                                                            renderer: function (v, meta, record) {
+                                                                var value = record.get('OperandValue');
+                                                                if (!value) return '';
+                                                                return value.Name;
+                                                            }
                                                         }
                                                     ],
                                                     dockedItems: [
@@ -515,7 +532,7 @@
                                                     xtype: 'textfield',
                                                     name: 'updateCondition',
                                                     readOnly: true,
-                                                    fieldLabel: 'WHERE',
+                                                    fieldLabel: 'Condition',
                                                     margin: '0 5 5 5',
                                                     flex: 1,
                                                     labelWidth: 55
@@ -578,7 +595,12 @@
                                                             xtype: 'gridcolumn',
                                                             flex: 1,
                                                             text: 'Condition',
-                                                            dataIndex: 'Condition'
+                                                            dataIndex: 'OperandValue',
+                                                            renderer: function (v, meta, record) {
+                                                                var value = record.get('OperandValue');
+                                                                if (!value) return '';
+                                                                return value.ConditionString;
+                                                            }
                                                         }
                                                     ],
                                                     dockedItems: [

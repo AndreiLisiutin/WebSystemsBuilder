@@ -103,7 +103,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.FormParametersIDE', {
             if (parameter.FormParameter.OperandID > 0) {
                 parameter.FormParameter.UniqueID = parameter.FormParameter.OperandID;
             } else {
-                parameter.FormParameter.UniqueID = Random.get();
+                parameter.FormParameter.UniqueID = RandomIDE.get();
             }
         }
         this.Parameters.push(parameter);

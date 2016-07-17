@@ -62,39 +62,24 @@
             return;
         }
 
-        var obj = {
-            EventInstance: {
-                Event: {
-                    EventID: null,
-                    EventTypeControlTypeID: null,
-                    ControlID: control.getValue()
-                },
-                EventType: {
-                    EventTypeID: null,
-                    Name: null
-                },
-                EventTypeControlType: {
-                    EventTypeControlTypeID: null,
-                    EventTypeID: null,
-                    ControlTypeID: null
-                }
+        var actionType = WebSystemsBuilder.utils.mapping.ActionTypes.Client;
+        var clientAction = {
+            UniqueID: RandomIDE.get(),
+            EventActionTypeID: actionType,
+            EventActionType: ActionTypes.getActionTypeName(actionType),
+            Control: {
+                UniqueID: control.getValue(),
+                Name: control.getRawValue(),
+                componentInfo: control.getStore().findRecord('UniqueID', control.getValue()).get('componentInfo')
             },
-            EventActions: [
-                {
-                    UniqueID: Random.get(),
-                    ControlUniqueID: control.getValue(),
-                    ActionTypeID: clientActionType.getValue(),
-                    EventAction: {
-                        ActionID: null,
-                        ActionIDParent: null,
-                        EventID: null
-                    },
-                    ChildActions: []
-                }
-            ]
+            ActionType: {
+                ActionTypeID: clientActionType.getValue(),
+                Name: clientActionType.getRawValue()
+            },
+            ChildActions: []
         };
 
-        win.fireEvent('ClientActionSaved', obj);
+        win.fireEvent('ClientActionSaved', clientAction);
         win.close();
     },
 

@@ -6,10 +6,12 @@
     ],
     models: [
         'WebSystemsBuilder.model.IDE.query.QueryActionDataTable',
+        'WebSystemsBuilder.model.IDE.event.ActionHandler',
         'WebSystemsBuilder.model.IDE.MainIDE'
     ],
     stores: [
         'WebSystemsBuilder.store.IDE.query.QueryActionDataTable',
+        'WebSystemsBuilder.store.IDE.event.ActionHandler',
         'WebSystemsBuilder.store.IDE.MainIDE'
     ],
 
@@ -18,8 +20,11 @@
             'QueryActionCondition': {
                 afterrender: this.onLoad
             },
-            'QueryActionCondition combobox[name=firstDataTable], combobox[name=secondDataTable]': {
-                change: this.onChangeDataTable
+            'QueryActionCondition combobox[name=firstDataTable]': {
+                change: this.onChangeFirstDataTable
+            },
+            'QueryActionCondition combobox[name=secondDataTable]': {
+                change: this.onChangeSecondDataTable
             },
             'QueryActionCondition combobox[name=conditionSign]': {
                 change: this.onChangeCondition
@@ -49,6 +54,7 @@
         var secondConstant = win.down('textfield[name=secondConstant]');
         var conditionSign = win.down('combobox[name=conditionSign]');
         var secondFormParameter = win.down('combobox[name=secondFormParameter]');
+        var secondFormControl = win.down('combobox[name=secondFormControl]');
 
         radio.setValue({'data': 1});
         if (win.queryDataTables && win.queryDataTables.length > 0) {
@@ -66,16 +72,49 @@
 
         var formParameters = FormParametersIDE.getFormParameters();
         secondFormParameter.getStore().loadData(formParameters, false);
+
+        var formControls = FormControlsIDE.getControlList();
+        secondFormControl.getStore().loadData(formControls, false);
     },
 
     /**
      * Load column store after data table selection
      * @param combo Combobox "Data table"
      */
-    onChangeDataTable: function (combo) {
+    onChangeFirstDataTable: function (combo) {
         var win = combo.up('window');
         var fieldset = combo.up('fieldset');
-        var comboColumn = fieldset.down('combobox')[1];
+        var comboColumn = fieldset.down('combobox[name=firstColumn]');
+
+        comboColumn.setValue(null);
+        if (!combo.getValue()) {
+            comboColumn.getStore().loadData([], false);
+            return;
+        }
+
+        CommonUtils.safeMask(comboColumn);
+        comboColumn.getStore().load({
+            params: {
+                tableID: combo.getValue()
+            },
+            callback: function () {
+                CommonUtils.safeUnmask(comboColumn);
+                if (win.FirstColumnID) {
+                    comboColumn.setValue(win.FirstColumnID);
+                    comboColumn.setReadOnly(true);
+                }
+            }
+        });
+    },
+
+    /**
+     * Load column store after data table selection
+     * @param combo Combobox "Data table"
+     */
+    onChangeSecondDataTable: function (combo) {
+        var win = combo.up('window');
+        var fieldset = combo.up('fieldset');
+        var comboColumn = fieldset.down('combobox[name=secondColumn]');
 
         comboColumn.setValue(null);
         if (!combo.getValue()) {
@@ -104,6 +143,7 @@
         var secondColumn = win.down('combobox[name=secondColumn]');
         var secondConstant = win.down('textfield[name=secondConstant]');
         var secondFormParameter = win.down('combobox[name=secondFormParameter]');
+        var secondFormControl = win.down('combobox[name=secondFormControl]');
         var radio = win.down('radiogroup[name=rbData]');
         var rbField = win.down('radiofield[action=rbField]');
         var rbValue = win.down('radiofield[action=rbValue]');
@@ -116,24 +156,35 @@
                     secondColumn.setDisabled(false);
                     secondConstant.setDisabled(true);
                     secondFormParameter.setDisabled(true);
+                    secondFormControl.setDisabled(true);
                     break;
                 case '2':
                     secondDataTable.setDisabled(true);
                     secondColumn.setDisabled(true);
                     secondConstant.setDisabled(true);
                     secondFormParameter.setDisabled(false);
+                    secondFormControl.setDisabled(true);
                     break;
                 case '3':
                     secondDataTable.setDisabled(true);
                     secondColumn.setDisabled(true);
                     secondFormParameter.setDisabled(true);
                     secondConstant.setDisabled(false);
+                    secondFormControl.setDisabled(true);
+                    break;
+                case '4':
+                    secondDataTable.setDisabled(true);
+                    secondColumn.setDisabled(true);
+                    secondFormParameter.setDisabled(true);
+                    secondConstant.setDisabled(true);
+                    secondFormControl.setDisabled(false);
                     break;
                 default:
                     secondDataTable.setDisabled(true);
                     secondColumn.setDisabled(true);
                     secondConstant.setDisabled(true);
                     secondFormParameter.setDisabled(true);
+                    secondFormControl.setDisabled(true);
                     break;
             }
         } else {
@@ -141,6 +192,7 @@
             secondColumn.setDisabled(true);
             secondConstant.setDisabled(true);
             secondFormParameter.setDisabled(true);
+            secondFormControl.setDisabled(true);
         }
     },
 
@@ -171,10 +223,12 @@
         var firstColumn = win.down('combobox[name=firstColumn]');
         var secondColumn = win.down('combobox[name=secondColumn]');
         var secondFormParameter = win.down('combobox[name=secondFormParameter]');
+        var secondFormControl = win.down('combobox[name=secondFormControl]');
         var conditionSign = win.down('combobox[name=conditionSign]');
         var radio = win.down('radiogroup[name=rbData]');
         var rbField = win.down('radiofield[action=rbField]');
         var rbValue = win.down('radiofield[action=rbValue]');
+        var rbControl = win.down('radiofield[action=rbControl]');
         var rbParameter = win.down('radiofield[action=rbParameter]');
         var secondConstant = win.down('textfield[name=secondConstant]');
 
@@ -183,31 +237,75 @@
             return;
         }
 
-        var conditionString = firstDataTable.getRawValue() + '.' + firstColumn.getRawValue();
-        conditionString += ' ' + conditionSign.getValue();
+        var getPhysicalDataTable = function (combo, physicalColumnName) {
+            return combo.findRecordByValue(combo.getValue()).get(physicalColumnName || 'PhysicalTable');
+        };
+        var getPlaceHolder = function (combo, physicalColumnName) {
+            var physicalName = getPhysicalDataTable(combo, physicalColumnName);
+            return '{' + physicalName + '}';
+        };
 
-        if (!Ext.Array.contains(['IS NULL', 'IS NOT NULL'], (conditionSign.getValue() || '').trim().toUpperCase())) {
+        var firstPhysicalDataTable = getPhysicalDataTable(firstDataTable);
+        var firstDataTablePlaceHolder = getPlaceHolder(firstDataTable);
+        var firstPhysicalColumn = getPhysicalDataTable(firstColumn, 'PhysicalColumn');
+        var firstColumnPlaceHolder = getPlaceHolder(firstColumn, 'PhysicalColumn');
+
+        var secondPhysicalDataTable = secondDataTable.getValue() ? getPhysicalDataTable(secondDataTable) : null;
+        var secondDataTablePlaceHolder = secondDataTable.getValue() ? getPlaceHolder(secondDataTable) : null;
+        var secondPhysicalColumn = secondColumn.getValue() ? getPhysicalDataTable(secondColumn, 'PhysicalColumn') : null;
+        var secondColumnPlaceHolder = secondColumn.getValue() ? getPlaceHolder(secondColumn, 'PhysicalColumn') : null;
+
+        var secondFormParameterPlaceHolder = '{' + secondFormParameter.getRawValue() + '}';
+        var secondFormControlPlaceHolder = '{' + secondFormControl.getRawValue() + '}';
+
+        // First part of condition
+        var conditionString = firstDataTablePlaceHolder + '.' + firstColumnPlaceHolder;
+        conditionString += ' ' + conditionSign.getValue() + ' ';
+
+        var withoutSecondPart = Ext.Array.contains(['IS NULL', 'IS NOT NULL'], (conditionSign.getValue() || '').trim().toUpperCase());
+
+        var parameter = null;
+        if (!withoutSecondPart) {
             switch (radio.getValue().data) {
                 case '1':
                     if (!secondColumn.getValue()) {
                         MessageBox.error('Create correct condition');
                         return;
                     }
-                    conditionString += ' ' + secondDataTable.getRawValue() + '.' + secondColumn.getRawValue();
+                    conditionString += secondDataTablePlaceHolder + '.' + secondColumnPlaceHolder;
                     break;
                 case '2':
                     if (!secondFormParameter.getValue()) {
                         MessageBox.error('Create correct condition');
                         return;
                     }
-                    conditionString += ' {Param_' + secondFormParameter.getRawValue() + '}';
+                    parameter = {
+                        UniqueID: secondFormParameter.getValue(),
+                        Name: secondFormParameter.getRawValue(),
+                        QueryParameterTypeID: 2,
+                        QueryParameterType: 'Form parameter'
+                    };
+                    conditionString += secondFormParameterPlaceHolder;
                     break;
                 case '3':
                     if (!secondConstant.getValue()) {
                         MessageBox.error('Create correct condition');
                         return;
                     }
-                    conditionString += ' ' + secondConstant.getValue();
+                    conditionString += secondConstant.getValue();
+                    break;
+                case '4':
+                    if (!secondFormControl.getValue()) {
+                        MessageBox.error('Create correct condition');
+                        return;
+                    }
+                    parameter = {
+                        UniqueID: secondFormControl.getValue(),
+                        Name: secondFormControl.getRawValue(),
+                        QueryParameterTypeID: 1,
+                        QueryParameterType: 'Control'
+                    };
+                    conditionString += secondFormControlPlaceHolder;
                     break;
                 default:
                     MessageBox.error('Create correct condition');
@@ -217,45 +315,58 @@
 
         // Event about new generated condition
         var generatedCondition = {
-            UniqueID: Random.get(),
+            UniqueID: WebSystemsBuilder.utils.IDE.Random.get(),
             FirstPart: {
                 Table: {
                     TableID: firstDataTable.getValue(),
                     Name: firstDataTable.getRawValue(),
-                    PhysicalTable: firstDataTable.findRecordByValue(firstDataTable.getValue()).get('PhysicalTable')
+                    PhysicalTable: firstPhysicalDataTable,
+                    PlaceHolder: firstDataTablePlaceHolder
                 },
                 Column: {
                     ColumnID: firstColumn.getValue(),
-                    TableID: firstColumn.getValue() ? firstColumn.findRecordByValue(firstColumn.getValue()).get('TableID') : null,
+                    TableID: firstDataTable.getValue(),
                     Name: firstColumn.getRawValue(),
-                    PhysicalColumn: firstColumn.getValue() ? firstColumn.findRecordByValue(firstColumn.getValue()).get('PhysicalColumn') : null,
-                    ValueTypeID: firstColumn.getValue() ? firstColumn.findRecordByValue(firstColumn.getValue()).get('ValueTypeID') : null
+                    PhysicalColumn: firstPhysicalColumn,
+                    ValueTypeID: firstColumn.findRecordByValue(firstColumn.getValue()).get('ValueTypeID'),
+                    PlaceHolder: firstColumnPlaceHolder
                 }
             },
             SecondPart: {
                 Table: {
                     TableID: secondDataTable.getValue(),
                     Name: secondDataTable.getRawValue(),
-                    PhysicalTable: secondDataTable.getValue() ? secondDataTable.findRecordByValue(secondDataTable.getValue()).get('PhysicalTable') : null
+                    PhysicalTable: secondDataTable.getValue() ? secondPhysicalDataTable : null,
+                    PlaceHolder: secondDataTable.getValue() ? secondDataTablePlaceHolder : null
                 },
                 Column: {
                     ColumnID: secondColumn.getValue(),
                     TableID: secondColumn.getValue() ? secondColumn.findRecordByValue(secondColumn.getValue()).get('TableID') : null,
                     Name: secondColumn.getRawValue(),
-                    PhysicalColumn: secondColumn.getValue() ? secondColumn.findRecordByValue(secondColumn.getValue()).get('PhysicalColumn') : null,
-                    ValueTypeID: secondColumn.getValue() ? secondColumn.findRecordByValue(secondColumn.getValue()).get('ValueTypeID') : null
+                    PhysicalColumn: secondColumn.getValue() ? secondPhysicalColumn : null,
+                    ValueTypeID: secondColumn.getValue() ? secondColumn.findRecordByValue(secondColumn.getValue()).get('ValueTypeID') : null,
+                    PlaceHolder: secondColumn.getValue() ? secondColumnPlaceHolder : null
                 },
                 FormParameter: {
                     Name: secondFormParameter.getRawValue(),
                     UniqueID: secondFormParameter.getValue(),
                     FormParameter: secondFormParameter.getValue() ? secondFormParameter.findRecordByValue(secondFormParameter.getValue()).get('FormParameter') : null,
-                    PropertyValueType: secondFormParameter.getValue() ? secondFormParameter.findRecordByValue(secondFormParameter.getValue()).get('PropertyValueType') : null
+                    PropertyValueType: secondFormParameter.getValue() ? secondFormParameter.findRecordByValue(secondFormParameter.getValue()).get('PropertyValueType') : null,
+                    PlaceHolder: secondFormParameter.getValue() ? secondFormParameterPlaceHolder : null
+                },
+                FormControl: {
+                    Name: secondFormControl.getRawValue(),
+                    UniqueID: secondFormControl.getValue(),
+                    componentInfo: secondFormControl.getValue() ? secondFormControl.findRecordByValue(secondFormControl.getValue()).get('componentInfo') : null,
+                    PlaceHolder: secondFormControl.getValue() ? secondFormControlPlaceHolder : null
                 },
                 Constant: secondConstant.getValue(),
-                IsConstant: rbValue.checked,
-                IsFormParameter: rbParameter.checked,
-                IsColumn: rbField.checked
+                IsConstant: !withoutSecondPart && rbValue.checked,
+                IsFormParameter: !withoutSecondPart && rbParameter.checked,
+                IsFormControl: !withoutSecondPart && rbControl.checked,
+                IsColumn: !withoutSecondPart && rbField.checked
             },
+            Parameter: parameter,
             ConditionSign: conditionSign.getValue(),
             ConditionString: conditionString
         };
