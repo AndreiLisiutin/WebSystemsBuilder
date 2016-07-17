@@ -24,5 +24,13 @@ namespace WebSystemsBuilder.Server.Models
         public int? ActionIDFalse { get; set; }
         [Column("predicate_operation_id")]
         public int PredicateOperationID { get; set; }
+        [NotMapped]
+        public int FirstOperandUniqueID { get; set; }
+        [NotMapped]
+        public int SecondOperandUniqueID { get; set; }
+        [NotMapped]
+        public SomeAction TrueAction { get; set; }
+        [NotMapped]
+        public SomeAction FalseAction { get; set; }
     }
 }

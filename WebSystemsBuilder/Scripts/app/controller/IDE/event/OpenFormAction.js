@@ -43,7 +43,7 @@
 
         form.getEl().mask();
         form.getStore().load({
-            callback: function() {
+            callback: function () {
                 form.getEl().unmask();
             }
         });
@@ -53,7 +53,7 @@
      * Change form - show all parameters of chosen form
      * @param combo
      */
-    onFormChange: function(combo) {
+    onFormChange: function (combo) {
         var win = combo.up('window');
         var form = win.down('combobox[name=Form]');
         var formParametersGrid = win.down('gridpanel[name=FormParametersGrid]');
@@ -74,7 +74,7 @@
      * Set chosen form parameter
      * @param btn
      */
-    onSetFormParameter: function(btn) {
+    onSetFormParameter: function (btn) {
         var win = btn.up('window');
         var form = win.down('combobox[name=Form]');
         var formParametersGrid = win.down('gridpanel[name=FormParametersGrid]');
@@ -87,7 +87,10 @@
 
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.OperandExplorer');
         var operandWin = WebSystemsBuilder.utils.Windows.open('OperandExplorer');
-        operandWin.on('OperandChosen', function(operand) {
+        operandWin.on('OperandChosen', function (operand) {
+            if (operand.Parameter) {
+
+            }
             selectedFormParameter.set('Operand', operand);
         }, this, { single: true })
     },
@@ -107,15 +110,22 @@
         }
         var formParameterError = '';
         var formParametersList = [];
-        formParametersGrid.getStore().getRange().forEach(function(currentParameter) {
-            if (!currentParameter.get('Value')) {
+        formParametersGrid.getStore().getRange().forEach(function (currentParameter) {
+            var operand = currentParameter.get('Operand');
+            if (!operand) {
                 formParameterError = 'Form parameter "' + currentParameter.get('Name') + '" has not chosen';
+            } else {
+                var parameter = operand.Parameter;
+                formParametersList.push({
+                    OpenFormActionParameterID: null,
+                    FormParameterID: currentParameter.get('FormParameterID'),
+                    OperandIDValue: null,
+                    OpenFormActionID: null,
+                    OperandUniqueID: parameter ? parameter.UniqueID : null,
+                    Name: currentParameter.get('Name'),
+                    Value: currentParameter.get('Operand')
+                });
             }
-            formParametersList.push({
-                UniqueID: currentParameter.get('UniqueID'),
-                Name: currentParameter.get('Name'),
-                Value: currentParameter.get('Operand')
-            });
         });
         if (formParameterError) {
             MessageBox.error(formParameterError);
@@ -125,14 +135,25 @@
         var actionType = ActionTypes.OpenForm;
         var obj = {
             UniqueID: RandomIDE.get(),
-            EventActionTypeID: actionType,
-            EventActionType: ActionTypes.getActionTypeName(actionType),
-            Form: {
-                FormID: form.getValue(),
-                Name: form.getRawValue()
+            ActionTypeID: actionType,
+            EventAction: {
+                ActionID: null,
+                ActionIDParent: null,
+                EventID: null
             },
-            FormParameters: formParametersList,
-            ChildActions: []
+            EventActionType: ActionTypes.getActionTypeName(actionType),
+            ChildActions: [],
+            OpenFormAction: {
+                OpenFormAction: {
+                    ActionID: null,
+                    FormID: form.getValue(),
+                    Form: {
+                        FormID: form.getValue(),
+                        Name: form.getRawValue()
+                    }
+                },
+                OpenFormActionParameters: formParametersList
+            }
         };
 
         win.fireEvent('OpenFormActionSaved', obj);

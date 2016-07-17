@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    class OpenFormActionInstance : BaseActionInstance
+    public class OpenFormActionInstance : BaseActionInstance
     {
         public OpenFormActionInstance()
             : base()

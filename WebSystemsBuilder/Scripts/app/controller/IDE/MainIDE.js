@@ -332,6 +332,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         var GetControlMetaDescriptions = function (item, parent) {
             var currentControl = {
                 Control: {
+                    UniqueID: item.componentInfo.uniqueID,
                     ControlID: item.componentInfo.ControlID,
                     ControlTypeID: item.componentInfo.ControlTypeID,
                     ControlIDParent: parent ? parent.componentInfo.ControlID : null,
@@ -376,6 +377,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         // Collect all meta descriptions in objects
         var rootControl = GetControlMetaDescriptions(obj, null);
         formMetaDescriptions.RootControl = rootControl;
+
+        console.log(formMetaDescriptions);
 
         win.body.mask('Saving...');
         Ext.Ajax.request({

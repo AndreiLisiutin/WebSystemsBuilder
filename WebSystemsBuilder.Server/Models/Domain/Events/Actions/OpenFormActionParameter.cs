@@ -20,5 +20,7 @@ namespace WebSystemsBuilder.Server.Models
         public int OperandIDValue { get; set; }
         [Column("open_form_action_id")]
         public int OpenFormActionID { get; set; }
+        [NotMapped]
+        public int OperandUniqueID { get; set; }
     }
 }

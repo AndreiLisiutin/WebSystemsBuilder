@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
-{ 
+{
     [Table("wb_query_type_out", Schema = "public")]
     public class QueryTypeOut
     {
@@ -24,5 +24,7 @@ namespace WebSystemsBuilder.Server.Models
         public string QueryTypeAlias { get; set; }
         [Column("query_type_placeholder")]
         public string QueryTypePlaceholder { get; set; }
+        [NotMapped]
+        public int UniqueID { get; set; }
     }
 }

@@ -22,5 +22,7 @@ namespace WebSystemsBuilder.Server.Models
         public int? ControlIDParent { get; set; }
         [Column("operand_id")]
         public int? OperandID { get; set; }
+        [NotMapped]
+        public int UniqueID { get; set; }
     }
 }

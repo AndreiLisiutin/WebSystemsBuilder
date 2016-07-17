@@ -22,5 +22,6 @@ namespace WebSystemsBuilder.Server.Models
         public ControlType ControlType { get; set; }
         public List<PropertyInstance> Properties { get; set; }
         public List<ControlInstance> ChildControls { get; set; }
+        public List<ControlEventInstance> Events { get; set; }
     }
 }

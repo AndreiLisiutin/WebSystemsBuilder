@@ -12,6 +12,7 @@ namespace WebSystemsBuilder.Server.Models
     public class OpenFormAction
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("action_id")]
         public int ActionID { get; set; }
         [Column("form_id")]

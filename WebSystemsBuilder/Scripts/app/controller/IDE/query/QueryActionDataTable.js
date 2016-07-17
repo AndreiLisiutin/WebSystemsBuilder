@@ -161,7 +161,7 @@
                     PhysicalColumn: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('PhysicalColumn') : null,
                     ValueTypeID: newTableField.getValue() ? newTableField.findRecordByValue(newTableField.getValue()).get('ValueTypeID') : null,
                     TableID: newTableField.getValue() ? newDataTable.getValue() : null,
-                    PlaceHolder: getPlaceHolder(newTableField, 'PhysicalColumn')
+                    PlaceHolder: newTableField.getValue() ? getPlaceHolder(newTableField, 'PhysicalColumn'): null
                 }
             },
             JoinTable: {

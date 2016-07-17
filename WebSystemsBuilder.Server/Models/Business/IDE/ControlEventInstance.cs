@@ -28,7 +28,18 @@ namespace WebSystemsBuilder.Server.Models
     {
         public int ActionTypeID { get; set; }
         public EventAction EventAction { get; set; }
-        public List<BaseActionInstance> ChildActions { get; set; }
+        public List<ControlEventActionInstance> ChildActions { get; set; }
         public ClientAction ClientAction { get; set; }
+        public OpenFormActionInstance OpenFormAction { get; set; }
+        public PredicateActionInstance PredicateAction { get; set; }
+        public QueryTypeInstance QueryType { get; set; }
+    }
+
+    public class SomeAction
+    {
+        public ClientAction ClientAction { get; set; }
+        public OpenFormActionInstance OpenFormAction { get; set; }
+        public PredicateActionInstance PredicateAction { get; set; }
+        public QueryTypeInstance QueryType { get; set; }
     }
 }

@@ -18,7 +18,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.EventsIDE', {
 //        ControlTypeID
 //    EventActions List[EventActions]
 //       'UniqueID',
-//       'EventActionTypeID',
+//       'ActionTypeID',
 //       'EventActionType',
 //       'ChildActions',
 //       // ClientAction

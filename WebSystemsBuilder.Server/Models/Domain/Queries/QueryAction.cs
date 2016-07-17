@@ -12,6 +12,7 @@ namespace WebSystemsBuilder.Server.Models
     public class QueryAction
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("action_id")]
         public int ActionID { get; set; }
         [Column("query_type_id")]

@@ -65,18 +65,29 @@
         var actionType = WebSystemsBuilder.utils.mapping.ActionTypes.Client;
         var clientAction = {
             UniqueID: RandomIDE.get(),
-            EventActionTypeID: actionType,
+            ActionTypeID: actionType,
             EventActionType: ActionTypes.getActionTypeName(actionType),
-            Control: {
-                UniqueID: control.getValue(),
-                Name: control.getRawValue(),
-                componentInfo: control.getStore().findRecord('UniqueID', control.getValue()).get('componentInfo')
+            EventAction: {
+                ActionID: null,
+                ActionIDParent: null,
+                EventID: null
             },
-            ActionType: {
-                ActionTypeID: clientActionType.getValue(),
-                Name: clientActionType.getRawValue()
-            },
-            ChildActions: []
+            ChildActions: [],
+            ClientAction: {
+                ActionID: null,
+                ControlID: null,
+                ClientActionTypeControlTypeID: clientActionType.getValue(),
+                ControlUniqueID: control.getValue(),
+                Control: {
+                    UniqueID: control.getValue(),
+                    Name: control.getRawValue(),
+                    componentInfo: control.getStore().findRecord('UniqueID', control.getValue()).get('componentInfo')
+                },
+                ActionType: {
+                    ActionTypeID: clientActionType.getValue(),
+                    Name: clientActionType.getRawValue()
+                }
+            }
         };
 
         win.fireEvent('ClientActionSaved', clientAction);

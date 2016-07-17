@@ -27,6 +27,7 @@ Ext.define('WebSystemsBuilder.model.IDE.query.Column', {
     extend: 'Ext.data.Model',
     fields: [
         'Table',
+        'Control',
         'Column',
         {
             name: 'ColumnID',

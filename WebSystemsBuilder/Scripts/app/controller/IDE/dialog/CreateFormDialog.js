@@ -27,10 +27,12 @@
         if (!formName.getValue()) {
             var error = 'Type form name';
             WebSystemsBuilder.utils.MessageBox.error(error);
+            return;
         }
         if (!description.getValue()) {
             var error = 'Type form description';
             WebSystemsBuilder.utils.MessageBox.error(error);
+            return;
         }
         
         // Fire event to main IDE form

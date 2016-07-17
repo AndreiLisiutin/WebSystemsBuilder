@@ -684,11 +684,7 @@
             queryDataTables: currentDataTables
         }, null, true);
         newColumnWin.on('QuerySelectIsReadyToSave', function (column) {
-            var newColumn = {
-                Table: column.Table,
-                Column: column.Column
-            };
-            columnsGrid.getStore().add(newColumn);
+            columnsGrid.getStore().add(column);
         }, this, {single: true});
     },
 
@@ -925,32 +921,48 @@
         }
 
         var queryInParameters = win.QueryInParametersIDE.getQueryInParameters();
+        queryInParameters.forEach(function(queryInParameter) {
+            queryInParameter.QueryTypeIn = {
+                ValueTypeID: 1,
+                Name: queryInParameter.Name,
+                QueryTypePlaceholder:  '{' + queryInParameter.Name + '}',
+                UniqueID: queryInParameter.UniqueID
+            };
+        });
         var tablesList = [];
         var columnsList = [];
         var queryOutParameters = [];
 
         var parseCondition = function (firstPart, secondPart) {
             tablesList.push({
-                TableID: firstPart.Table.TableID,
-                Name: firstPart.Table.Name,
-                QueryTypePlaceholder: '{' + firstPart.Table.PhysicalTable + '}'
+                QueryTypeTable: {
+                    TableID: firstPart.Table.TableID,
+                    Name: firstPart.Table.Name,
+                    QueryTypePlaceholder: '{' + firstPart.Table.PhysicalTable + '}'
+                }
             });
             columnsList.push({
-                ColumnID: firstPart.Column.ColumnID,
-                Name: firstPart.Column.Name,
-                QueryTypePlaceholder: '{' + firstPart.Column.PhysicalColumn + '}'
+                QueryTypeColumn: {
+                    ColumnID: firstPart.Column.ColumnID,
+                    Name: firstPart.Column.Name,
+                    QueryTypePlaceholder: '{' + firstPart.Column.PhysicalColumn + '}'
+                }
             });
             if (secondPart) {
                 if (secondPart.IsColumn && secondPart.Column.ColumnID > 0) {
                     tablesList.push({
-                        TableID: secondPart.Table.TableID,
-                        Name: secondPart.Table.Name,
-                        QueryTypePlaceholder: '{' + secondPart.Table.PhysicalTable + '}'
+                        QueryTypeTable: {
+                            TableID: secondPart.Table.TableID,
+                            Name: secondPart.Table.Name,
+                            QueryTypePlaceholder: '{' + secondPart.Table.PhysicalTable + '}'
+                        }
                     });
                     columnsList.push({
-                        ColumnID: secondPart.Column.ColumnID,
-                        Name: secondPart.Column.Name,
-                        QueryTypePlaceholder: '{' + secondPart.Column.PhysicalColumn + '}'
+                        QueryTypeColumn: {
+                            ColumnID: secondPart.Column.ColumnID,
+                            Name: secondPart.Column.Name,
+                            QueryTypePlaceholder: '{' + secondPart.Column.PhysicalColumn + '}'
+                        }
                     });
                 }
             }
@@ -961,48 +973,62 @@
                 case 'SELECT':
                     columnsGrid.getStore().getRange().forEach(function (currentColumn) {
                         var column = currentColumn.get('Column');
+                        var control = currentColumn.get('Control');
                         columnsList.push({
-                            ColumnID: column.ColumnID,
-                            Name: column.Name,
-                            QueryTypePlaceholder: '{' + column.PhysicalColumn + '}'
+                            QueryTypeColumn: {
+                                ColumnID: column.ColumnID,
+                                Name: column.Name,
+                                QueryTypePlaceholder: '{' + column.PhysicalColumn + '}'
+                            }
                         });
                         queryOutParameters.push({
-                            Name: column.Name,
-                            ValueTypeID: column.ValueTypeID,
-                            QueryTypeAlias: column.PhysicalColumn,
-                            QueryTypePlaceholder: '{' + column.PhysicalColumn + '}'
+                            QueryTypeOut: {
+                                Name: column.Name,
+                                ValueTypeID: column.ValueTypeID,
+                                UniqueID: control.UniqueID,
+                                QueryTypeAlias: column.PhysicalColumn,
+                                QueryTypePlaceholder: '{' + column.PhysicalColumn + '}'
+                            }
                         });
                     });
                     dataTablesGrid.getStore().getRange().forEach(function (currentTable) {
                         var table = currentTable.get('Table');
                         tablesList.push({
-                            TableID: table.TableID,
-                            Name: table.Name,
-                            QueryTypePlaceholder: '{' + table.PhysicalTable + '}'
+                            QueryTypeTable: {
+                                TableID: table.TableID,
+                                Name: table.Name,
+                                QueryTypePlaceholder: '{' + table.PhysicalTable + '}'
+                            }
                         });
                         var joinColumn = table.JoinColumn;
-                        if (joinColumn) {
+                        if (joinColumn && joinColumn.ColumnID > 0) {
                             columnsList.push({
-                                ColumnID: joinColumn.ColumnID,
-                                Name: joinColumn.Name,
-                                QueryTypePlaceholder: '{' + joinColumn.PhysicalColumn + '}'
+                                QueryTypeColumn: {
+                                    ColumnID: joinColumn.ColumnID,
+                                    Name: joinColumn.Name,
+                                    QueryTypePlaceholder: '{' + joinColumn.PhysicalColumn + '}'
+                                }
                             });
                         }
 
                         var joinTable = currentTable.get('JoinTable');
-                        if (joinTable) {
+                        if (joinTable && joinTable.TableID > 0) {
                             tablesList.push({
-                                TableID: joinTable.TableID,
-                                Name: joinTable.Name,
-                                QueryTypePlaceholder: '{' + joinTable.PhysicalTable + '}'
+                                QueryTypeTable: {
+                                    TableID: joinTable.TableID,
+                                    Name: joinTable.Name,
+                                    QueryTypePlaceholder: '{' + joinTable.PhysicalTable + '}'
+                                }
                             });
 
                             var joinTableColumn = joinTable.JoinColumn;
-                            if (joinColumn) {
+                            if (joinTableColumn && joinTableColumn.ColumnID > 0) {
                                 columnsList.push({
-                                    ColumnID: joinTableColumn.ColumnID,
-                                    Name: joinTableColumn.Name,
-                                    QueryTypePlaceholder: '{' + joinTableColumn.PhysicalColumn + '}'
+                                    QueryTypeColumn: {
+                                        ColumnID: joinTableColumn.ColumnID,
+                                        Name: joinTableColumn.Name,
+                                        QueryTypePlaceholder: '{' + joinTableColumn.PhysicalColumn + '}'
+                                    }
                                 });
                             }
                         }
@@ -1015,35 +1041,41 @@
                     break;
                 case 'INSERT':
                     tablesList.push({
-                        TableID: insertDataTable.getValue(),
-                        Name: insertDataTable.getRawValue(),
-                        QueryTypePlaceholder: '{' + insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable') + '}'
+                        QueryTypeTable: {
+                            TableID: insertDataTable.getValue(),
+                            Name: insertDataTable.getRawValue(),
+                            QueryTypePlaceholder: '{' + insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable') + '}'
+                        }
                     });
                     insertTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
                         if (currentColumn.get('OperandValue')) {
-                            var queryTypeColumn = {
-                                ColumnID: currentColumn.get('ColumnID'),
-                                Name: currentColumn.get('Name'),
-                                QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
-                            };
-                            columnsList.push(queryTypeColumn);
+                            columnsList.push({
+                                QueryTypeColumn: {
+                                    ColumnID: currentColumn.get('ColumnID'),
+                                    Name: currentColumn.get('Name'),
+                                    QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                                }
+                            });
                         }
                     });
                     break;
                 case 'UPDATE':
                     tablesList.push({
-                        TableID: insertDataTable.getValue(),
-                        Name: insertDataTable.getRawValue(),
-                        QueryTypePlaceholder: '{' + insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable') + '}'
+                        QueryTypeTable: {
+                            TableID: insertDataTable.getValue(),
+                            Name: insertDataTable.getRawValue(),
+                            QueryTypePlaceholder: '{' + insertDataTable.getStore().findRecord('TableID', insertDataTable.getValue()).get('PhysicalTable') + '}'
+                        }
                     });
                     insertTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
                         if (currentColumn.get('OperandValue')) {
-                            var queryTypeColumn = {
-                                ColumnID: currentColumn.get('ColumnID'),
-                                Name: currentColumn.get('Name'),
-                                QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
-                            };
-                            columnsList.push(queryTypeColumn);
+                            columnsList.push({
+                                QueryTypeColumn: {
+                                    ColumnID: currentColumn.get('ColumnID'),
+                                    Name: currentColumn.get('Name'),
+                                    QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                                }
+                            });
                         }
                     });
                     if (updateCondition.conditionObj) {
@@ -1054,17 +1086,21 @@
                     break;
                 case 'DELETE':
                     tablesList.push({
-                        TableID: deleteDataTable.getValue(),
-                        Name: deleteDataTable.getRawValue(),
-                        QueryTypePlaceholder: '{' + deleteDataTable.getStore().findRecord('TableID', deleteDataTable.getValue()).get('PhysicalTable') + '}'
+                        QueryTypeTable: {
+                            TableID: deleteDataTable.getValue(),
+                            Name: deleteDataTable.getRawValue(),
+                            QueryTypePlaceholder: '{' + deleteDataTable.getStore().findRecord('TableID', deleteDataTable.getValue()).get('PhysicalTable') + '}'
+                        }
                     });
                     deleteTableColumnsGrid.getStore().getRange().forEach(function (currentColumn) {
                         var condition = currentColumn.get('OperandValue');
                         if (condition) {
                             columnsList.push({
-                                ColumnID: currentColumn.get('ColumnID'),
-                                Name: currentColumn.get('Name'),
-                                QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                                QueryTypeColumn: {
+                                    ColumnID: currentColumn.get('ColumnID'),
+                                    Name: currentColumn.get('Name'),
+                                    QueryTypePlaceholder: '{' + currentColumn.get('PhysicalColumn') + '}'
+                                }
                             });
                             var firstPart = condition.FirstPart;
                             var secondPart = condition.SecondPart;
@@ -1098,26 +1134,33 @@
         var actionType = WebSystemsBuilder.utils.mapping.ActionTypes.Query;
         var queryAction = {
             UniqueID: RandomIDE.get(),
-            EventActionTypeID: actionType,
+            ActionTypeID: actionType,
             EventActionType: ActionTypes.getActionTypeName(actionType),
-            ChildActions: [],
-            QueryType: {
-                UniqueID: RandomIDE.get(),
-                Name: '',
-                Sql: sqlString
+            EventAction: {
+                ActionID: null,
+                ActionIDParent: null,
+                EventID: null
             },
-            QueryTypeColumnList: getUniqueList(columnsList, function (i) {
-                return i.ColumnID
-            }),
-            QueryTypeTableList: getUniqueList(tablesList, function (i) {
-                return i.TableID
-            }),
-            QueryTypeInList: getUniqueList(queryInParameters, function (i) {
-                return i.UniqueID
-            }),
-            QueryTypeOutList: getUniqueList(queryOutParameters, function (i) {
-                return i.Name
-            })
+            ChildActions: [],
+            QueryType:{
+                QueryType: {
+                    UniqueID: RandomIDE.get(),
+                    Name: sqlString.substring(0, 20),
+                    Sql: sqlString
+                },
+                QueryTypeColumns: getUniqueList(columnsList, function (i) {
+                    return i.QueryTypeColumn.ColumnID
+                }),
+                QueryTypeTables: getUniqueList(tablesList, function (i) {
+                    return i.QueryTypeTable.TableID
+                }),
+                QueryTypeIns: getUniqueList(queryInParameters, function (i) {
+                    return i.QueryTypeIn.UniqueID
+                }),
+                QueryTypeOuts: getUniqueList(queryOutParameters, function (i) {
+                    return i.QueryTypeOut.Name
+                })
+            }
         };
         console.log(queryAction);
         return queryAction;

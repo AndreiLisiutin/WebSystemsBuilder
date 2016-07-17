@@ -8,11 +8,11 @@
     title: 'Query condition',
 
     height: 225,
-    width: 850,
+    width: 800,
     minHeight: 255,
-    minWidth: 850,
-    maxWidth: 850,
-    maxHeight: 255,
+    minWidth: 800,
+//    maxWidth: 800,
+//    maxHeight: 255,
 
     layout: {
         type: 'anchor'
@@ -117,7 +117,27 @@
                                         type: 'vbox'
                                     },
                                     items: [
-
+                                        {
+                                            xtype: 'combobox',
+                                            width: 80,
+                                            margin: '60 5 0 0',
+                                            valueField: 'name',
+                                            displayField: 'name',
+                                            queryMode: 'local',
+                                            editable: false,
+                                            name: 'conditionSign',
+                                            store: Ext.create('Ext.data.Store', {
+                                                fields: ['ID', 'name'],
+                                                data: [
+                                                    {"ID": "1", "name": ">"},
+                                                    {"ID": "2", "name": "<"},
+                                                    {"ID": "3", "name": "="},
+                                                    {"ID": "4", "name": "!="},
+                                                    {"ID": "5", "name": "IS NULL"},
+                                                    {"ID": "6", "name": "IS NOT NULL"}
+                                                ]
+                                            })
+                                        }
                                     ]
                                 },
                                 {

@@ -12,11 +12,14 @@ namespace WebSystemsBuilder.Server.Models
     public class ClientAction
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("action_id")]
         public int ActionID { get; set; }
         [Column("control_id")]
         public int ControlID { get; set; }
         [Column("client_action_type_control_type_id")]
         public int ClientActionTypeControlTypeID { get; set; }
+        [NotMapped]
+        public int ControlUniqueID { get; set; }
     }
 }

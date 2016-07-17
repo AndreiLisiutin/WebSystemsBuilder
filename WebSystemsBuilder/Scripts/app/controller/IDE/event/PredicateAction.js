@@ -163,13 +163,35 @@
         var actionType = WebSystemsBuilder.utils.mapping.ActionTypes.Predicate;
         var PredicateAction = {
             UniqueID: RandomIDE.get(),
-            EventActionTypeID: actionType,
+            ActionTypeID: actionType,
             EventActionType: ActionTypes.getActionTypeName(actionType),
+            EventAction: {
+                ActionID: null,
+                ActionIDParent: null,
+                EventID: null
+            },
             ChildActions: [],
-            TrueActionUniqueID: trueAction.Action.UniqueID,
-            FalseActionUniqueID: falseAction.getValue() ? falseAction.Action.UniqueID : null,
-            TrueAction: trueAction.Action,
-            FalseAction: falseAction.Action
+            PredicateAction: {
+                PredicateAction: {
+                    ActionID: null,
+                    OperandIDFirst: null,
+                    OperandIDSecond: null,
+                    FirstOperandUniqueID: firstPart.getValue(),
+                    SecondOperandUniqueID: secondPart.getValue(),
+                    ActionIDTrue: null,
+                    ActionIDFalse: null,
+                    TrueActionUniqueID: trueAction.Action.UniqueID,
+                    FalseActionUniqueID: falseAction.getValue() ? falseAction.Action.UniqueID : null,
+                    TrueAction: trueAction.Action,
+                    FalseAction: falseAction.Action,
+                    PredicateOperationID: conditionSign.getValue()
+                },
+                PredicateOperation: {
+                    PredicateOperationID: conditionSign.getValue(),
+                    Name: conditionSign.getRawValue()
+                }
+            }
+
         };
 
         win.fireEvent('PredicateActionSaved', PredicateAction);

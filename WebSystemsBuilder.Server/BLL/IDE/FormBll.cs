@@ -41,6 +41,9 @@ namespace WebSystemsBuilder.Server
         /// <returns></returns>
         public FormInstance AddFormMetaDescriptions(FormInstance formInstance)
         {
+            // Dictionary<UniqueID, ControlID>
+            Dictionary<int, OperandInstance> uniqueIDDictionary = new Dictionary<int, OperandInstance>(); 
+
             using (var db = this.CreateContext())
             {
                 using (var transaction = db.Database.BeginTransaction())
@@ -64,12 +67,27 @@ namespace WebSystemsBuilder.Server
 
                                 db.FormParameters.Add(formParameter.FormParameter);
                                 db.SaveChanges();
+
+                                OperandInstance currentOperand = new OperandInstance()
+                                {
+                                    ObjectID = formParameter.FormParameter.FormParameterID,
+                                    UniqueID = formParameter.FormParameter.UniqueID,
+                                    OperandID = formParameter.FormParameter.OperandID
+                                };
+                                uniqueIDDictionary.Add(formParameter.FormParameter.UniqueID, currentOperand);
                             }
                         }
 
                         // Recursive save all the controls of the form
                         formInstance.RootControl.Control.FormID = formInstance.Form.FormID;
                         this.SaveControl(formInstance.RootControl, db, transaction);
+
+                        // Dictionary<UniqueID, ControlID>
+                        Dictionary<int, OperandInstance> controlIDuniqueIDDictionary = GetUniqueIDControlIDDictionary(formInstance.RootControl, db, transaction);
+                        controlIDuniqueIDDictionary.ToList().ForEach(x => uniqueIDDictionary.Add(x.Key, x.Value));
+                        
+                        // Recursive save all events
+                        this.SaveControlEvents(controlIDuniqueIDDictionary, formInstance.RootControl, db, transaction);
 
                         // Commit transaction
                         db.SaveChanges();
@@ -169,6 +187,8 @@ namespace WebSystemsBuilder.Server
                         // Recursive save all the controls of the form
                         formInstance.RootControl.Control.FormID = formInstance.Form.FormID;
                         this.SaveControl(formInstance.RootControl, db, transaction);
+
+                        //this.SaveControlEvents(formInstance.RootControl, db, transaction);
 
                         // Commit transaction
                         db.SaveChanges();
@@ -320,6 +340,212 @@ namespace WebSystemsBuilder.Server
             }
 
             return currentControl;
+        }
+
+        /// <summary>
+        /// Get Dictionary<UniqueID, ControlID>
+        /// </summary>
+        /// <param name="currentControl"></param>
+        /// <param name="db"></param>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        public Dictionary<int, OperandInstance> GetUniqueIDControlIDDictionary(ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
+        {
+             Dictionary<int, OperandInstance> dictionary = new Dictionary<int, OperandInstance>();
+
+            if (currentControl.Control.UniqueID > 0)
+            {
+                OperandInstance currentOperand = new OperandInstance()
+                {
+                    ObjectID = currentControl.Control.ControlID,
+                    UniqueID = currentControl.Control.UniqueID,
+                    OperandID = currentControl.Control.OperandID.GetValueOrDefault()
+                };
+                dictionary.Add(currentControl.Control.UniqueID, currentOperand);
+            }
+            if (currentControl.ChildControls != null)
+            {
+                foreach (ControlInstance childControl in currentControl.ChildControls)
+                {
+                    {
+                        Dictionary<int, OperandInstance> subDictionary = GetUniqueIDControlIDDictionary(childControl, db, transaction);
+                        subDictionary.ToList().ForEach(x => dictionary.Add(x.Key, x.Value));
+                    }
+                }
+            }
+            
+            return dictionary;
+        }
+        
+        /// <summary>
+        /// Recursive function - save control events
+        /// </summary>
+        /// <param name="currentControl"></param>
+        /// <param name="db"></param>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        public void SaveControlEvents(Dictionary<int, OperandInstance> controlIDuniqueIDDictionary, ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
+        {
+            if (currentControl == null)
+            {
+                return;
+            }           
+
+            // Save all the control properties
+            if (currentControl.Events != null)
+            {
+                foreach (ControlEventInstance currentEvent in currentControl.Events)
+                {
+                    currentEvent.Event.ControlID = currentControl.Control.ControlID;
+
+                    // Event actions
+                    if (currentEvent.EventActions != null && currentEvent.EventActions.Count > 0)
+                    {
+                        db.Events.Add(currentEvent.Event);
+                        db.SaveChanges();
+
+                        foreach (ControlEventActionInstance currentEventAction in currentEvent.EventActions)
+                        {
+                            currentEventAction.EventAction.EventID = currentEvent.Event.EventID;
+                            db.EventActions.Add(currentEventAction.EventAction);
+                            db.SaveChanges();
+
+                            int actionID = currentEventAction.EventAction.ActionID;
+                            switch (currentEventAction.ActionTypeID)
+                            {
+                                // Client action
+                                case 1:
+                                    if (currentEventAction.ClientAction != null)
+                                    {
+                                        currentEventAction.ClientAction.ActionID = actionID;
+                                        currentEventAction.ClientAction.ControlID = controlIDuniqueIDDictionary[currentEventAction.ClientAction.ControlUniqueID].ObjectID;
+                                        db.ClientActions.Add(currentEventAction.ClientAction);
+                                        db.SaveChanges();
+                                    }
+                                    break;
+                                case 2:
+                                    if (currentEventAction.OpenFormAction != null)
+                                    {
+                                        currentEventAction.OpenFormAction.OpenFormAction.ActionID = actionID;
+                                        db.OpenFormActions.Add(currentEventAction.OpenFormAction.OpenFormAction);
+                                        db.SaveChanges();
+
+                                        if (currentEventAction.OpenFormAction.OpenFormActionParameters != null)
+                                        {
+                                            foreach(OpenFormActionParameter parameter in currentEventAction.OpenFormAction.OpenFormActionParameters)
+                                            {
+                                                parameter.OpenFormActionID = actionID;
+                                                parameter.OperandIDValue = controlIDuniqueIDDictionary[parameter.OperandUniqueID].OperandID;
+                                                db.OpenFormActionParameters.Add(parameter);
+                                                db.SaveChanges();
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case 3:
+                                    if (currentEventAction.PredicateAction != null)
+                                    {
+                                        PredicateAction predicateAction = currentEventAction.PredicateAction.PredicateAction;
+                                        predicateAction.ActionID = actionID;
+                                        predicateAction.OperandIDFirst = controlIDuniqueIDDictionary[predicateAction.FirstOperandUniqueID].OperandID;
+                                        predicateAction.OperandIDSecond = controlIDuniqueIDDictionary[predicateAction.SecondOperandUniqueID].OperandID;
+                                        db.PredicateActions.Add(predicateAction);
+                                        db.SaveChanges();
+                                    }
+                                    break;
+                                case 5:
+                                    if (currentEventAction.QueryType != null)
+                                    {
+                                        // Query Type
+                                        db.QueryTypes.Add(currentEventAction.QueryType.QueryType);
+                                        db.SaveChanges();
+
+                                        // Query Action
+                                        QueryAction queryAction = new QueryAction()
+                                        {
+                                            QueryTypeID = currentEventAction.QueryType.QueryType.QueryTypeID,
+                                            ActionID = actionID
+                                        };
+                                        db.QueryActions.Add(queryAction);
+                                        db.SaveChanges();
+
+                                        // Query Type Tables
+                                        if (currentEventAction.QueryType.QueryTypeTables != null)
+                                        {
+                                            foreach(QueryTypeTableInstance queryTypeTable in currentEventAction.QueryType.QueryTypeTables)
+                                            {
+                                                queryTypeTable.QueryTypeTable.QueryTypeID = currentEventAction.QueryType.QueryType.QueryTypeID;
+                                                db.QueryTypeTables.Add(queryTypeTable.QueryTypeTable);
+                                                db.SaveChanges();
+                                            }
+                                        }
+
+                                        // Query Type Column
+                                        if (currentEventAction.QueryType.QueryTypeColumns != null)
+                                        {
+                                            foreach (QueryTypeColumnInstance queryTypeColumn in currentEventAction.QueryType.QueryTypeColumns)
+                                            {
+                                                queryTypeColumn.QueryTypeColumn.QueryTypeID = currentEventAction.QueryType.QueryType.QueryTypeID;
+                                                db.QueryTypeColumns.Add(queryTypeColumn.QueryTypeColumn);
+                                                db.SaveChanges();
+                                            }
+                                        }
+
+                                        // QueryTypeIn
+                                        if (currentEventAction.QueryType.QueryTypeIns != null)
+                                        {
+                                            foreach (QueryTypeInInstance queryTypeIn in currentEventAction.QueryType.QueryTypeIns)
+                                            {
+                                                queryTypeIn.QueryTypeIn.QueryTypeID = currentEventAction.QueryType.QueryType.QueryTypeID;
+                                                db.QueryTypeIns.Add(queryTypeIn.QueryTypeIn);
+                                                db.SaveChanges();
+
+                                                QueryActionIn queryActionIn = new QueryActionIn()
+                                                {
+                                                    QueryActionID = actionID,
+                                                    QueryTypeInID = queryTypeIn.QueryTypeIn.QueryTypeInID,
+                                                    OperandIDValue = controlIDuniqueIDDictionary[queryTypeIn.QueryTypeIn.UniqueID].OperandID
+                                                };
+                                                db.QueryActionIns.Add(queryActionIn);
+                                                db.SaveChanges();
+                                            }
+                                        }
+
+                                        // Query Type Out
+                                        if (currentEventAction.QueryType.QueryTypeOuts!= null)
+                                        {
+                                            foreach (QueryTypeOutInstance queryTypeOut in currentEventAction.QueryType.QueryTypeOuts)
+                                            {
+                                                queryTypeOut.QueryTypeOut.QueryTypeID = currentEventAction.QueryType.QueryType.QueryTypeID;
+                                                db.QueryTypeOuts.Add(queryTypeOut.QueryTypeOut);
+                                                db.SaveChanges();
+
+                                                QueryActionOut queryActionOut = new QueryActionOut()
+                                                {
+                                                    QueryActionID = actionID,
+                                                    QueryTypeOutID = queryTypeOut.QueryTypeOut.QueryTypeOutID,
+                                                    OperandIDValue = controlIDuniqueIDDictionary[queryTypeOut.QueryTypeOut.UniqueID].OperandID
+                                                };
+                                                db.QueryActionOuts.Add(queryActionOut);
+                                                db.SaveChanges();
+                                            }
+                                        }
+                                                                                
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (currentControl.ChildControls != null)
+            {
+                foreach (ControlInstance childControl in currentControl.ChildControls)
+                {
+                    SaveControlEvents(controlIDuniqueIDDictionary, childControl, db, transaction);
+                }
+            }            
         }
     }
 }

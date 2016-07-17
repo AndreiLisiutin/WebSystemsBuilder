@@ -7,12 +7,12 @@
     constrain: true,
     title: 'Columns',
 
-    height: 150,
+    height: 170,
     width: 400,
-    minHeight: 150,
+    minHeight: 170,
     minWidth: 400,
     maxWidth: 400,
-    maxHeight: 150,
+    maxHeight: 170,
 
     layout: 'fit',
 
@@ -21,6 +21,7 @@
 
         var dictionaryStore = Ext.create('WebSystemsBuilder.store.IDE.query.Dictionary');
         var fieldStore = Ext.create('WebSystemsBuilder.store.IDE.query.Field');
+        var controlStore = Ext.create('WebSystemsBuilder.store.IDE.event.Control');
 
         Ext.applyIf(me, {
             items: [
@@ -92,6 +93,21 @@
                                     editable: false,
                                     labelWidth: 55,
                                     store: fieldStore
+                                },
+                                {
+                                    xtype: 'combobox',
+                                    name: 'control',
+                                    disabled: false,
+                                    margin: '5 5 5 5',
+                                    anchor: '0',
+                                    labelSeparator: '',
+                                    fieldLabel: 'Control',
+                                    labelWidth: 55,
+                                    valueField: 'UniqueID',
+                                    displayField: 'Name',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    store: controlStore
                                 }
                             ]
                         }

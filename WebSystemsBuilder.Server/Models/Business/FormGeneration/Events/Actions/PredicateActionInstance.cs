@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    class PredicateActionInstance : BaseActionInstance
+    public class PredicateActionInstance : BaseActionInstance
     {
         public PredicateActionInstance()
             : base()

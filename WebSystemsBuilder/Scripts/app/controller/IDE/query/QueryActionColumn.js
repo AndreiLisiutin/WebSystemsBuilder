@@ -5,10 +5,12 @@
         'WebSystemsBuilder.view.IDE.query.QueryActionColumn'
     ],
     models: [
-        'WebSystemsBuilder.model.IDE.query.QueryActionDataTable'
+        'WebSystemsBuilder.model.IDE.query.QueryActionDataTable',
+        'WebSystemsBuilder.model.IDE.event.ActionHandler'
     ],
     stores: [
-        'WebSystemsBuilder.store.IDE.query.QueryActionDataTable'
+        'WebSystemsBuilder.store.IDE.query.QueryActionDataTable',
+        'WebSystemsBuilder.store.IDE.event.ActionHandler'
     ],
 
     init: function () {
@@ -35,6 +37,7 @@
     onLoad: function (win) {
         var dataTable = win.down('combobox[name=dataTable]');
         var column = win.down('combobox[name=column]');
+        var control = win.down('combobox[name=control]');
 
         var loadDataTableCombo = function () {
             if (win.queryDataTables) {
@@ -43,6 +46,9 @@
                 CommonUtils.safeUnmask(dataTable);
             }
         };
+
+        var controlList = FormControlsIDE.getControlList();
+        control.getStore().loadData(controlList, false);
 
         loadDataTableCombo();
     },
@@ -55,6 +61,7 @@
         var win = combo.up('window');
         var dataTable = win.down('combobox[name=dataTable]');
         var column = win.down('combobox[name=column]');
+        var control = win.down('combobox[name=control]');
 
         column.setValue(null);
         if (!dataTable.getValue()) {
@@ -80,6 +87,7 @@
         var win = btn.up('window');
         var dataTable = win.down('combobox[name=dataTable]');
         var column = win.down('combobox[name=column]');
+        var control = win.down('combobox[name=control]');
 
         if (!dataTable.getValue()) {
             MessageBox.error('Choose data table');
@@ -87,6 +95,10 @@
         }
         if (!column.getValue()) {
             MessageBox.error('Choose column of data table');
+            return;
+        }
+        if (!control.getValue()) {
+            MessageBox.error('Choose control to set value into');
             return;
         }
 
@@ -113,6 +125,10 @@
                 PhysicalColumn: column.getValue() ? getPhysicalDataTable(column, 'PhysicalColumn') : null,
                 PlaceHolder: column.getValue() ? getPlaceHolder(column, 'PhysicalColumn') : null,
                 ValueTypeID: column.getValue() ? column.findRecordByValue(column.getValue()).get('ValueTypeID') : null
+            },
+            Control: {
+                UniqueID: control.getValue(),
+                Name: control.getRawValue()
             }
         };
         win.fireEvent('QuerySelectIsReadyToSave', newColumn);

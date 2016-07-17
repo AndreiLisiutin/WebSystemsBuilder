@@ -22,5 +22,7 @@ namespace WebSystemsBuilder.Server.Models
         public string Name { get; set; }
         [Column("query_type_placeholder")]
         public string QueryTypePlaceholder { get; set; }
+        [NotMapped]
+        public int UniqueID { get; set; }
     }
 }
