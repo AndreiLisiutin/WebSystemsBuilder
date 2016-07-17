@@ -6,7 +6,6 @@ Ext.define('WebSystemsBuilder.utils.events.ClientAction', {
     ],
     _eventAction: null,
     _form: null,
-
     constructor: function (eventAction, form) {
         this._eventAction = eventAction;
         this._form = form;
@@ -52,9 +51,16 @@ Ext.define('WebSystemsBuilder.utils.events.ClientAction', {
                 + ',ActionID = ' + actionID + ', ClientActionTypeID = ' + clientActionTypeID + ' )';
         }
 
-        $.each(_this._eventAction.ChildActions, function(index, item) {
-            var action =  WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
-            action.executeAction();
+        if (!_this._eventAction.ChildActions || !_this._eventAction.ChildActions.length) {
+            _this._callCallback()
+        }
+
+        $.each(_this._eventAction.ChildActions, function (index, item) {
+            if (!_this._isChildActionExecuted(item.EventAction.ActionID)) {
+                var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
+                action.executeAction(_this._markAsExecutedAndCallCallback(item.EventAction.ActionID));
+            }
         });
     }
+
 });

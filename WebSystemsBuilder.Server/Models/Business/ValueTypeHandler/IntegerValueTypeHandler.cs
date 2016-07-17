@@ -64,5 +64,41 @@ namespace WebSystemsBuilder.Server.Models
             }
             return value.ToString();
         }
+
+        public new bool Equals(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToUInt32(x) == Convert.ToUInt32(y);
+        }
+
+        public bool NotEquals(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToUInt32(x) != Convert.ToUInt32(y);
+        }
+
+        public bool GreaterThan(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToUInt32(x) > Convert.ToUInt32(y);
+        }
+
+        public bool LowerThan(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToUInt32(x) < Convert.ToUInt32(y);
+        }
     }
 }

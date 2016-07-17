@@ -11,5 +11,12 @@ namespace WebSystemsBuilder.Server.Models
         ValueTypeEnum ValueType { get; }
         object Deserialize(string serializedValue, string format);
         string Serialize(object value, string format);
+
+        bool Equals(object x, object y);
+        bool NotEquals(object x, object y);
+        bool GreaterThan(object x, object y);
+        bool LowerThan(object x, object y);
     }
+
+
 }

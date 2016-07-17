@@ -7,7 +7,7 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
     ],
     _eventAction: null,
     _form: null,
-    _eventActionIDExecuted:[],
+    _eventActionIDExecuted: [],
 
     constructor: function (config) {
         var eventAction = config.eventAction;
@@ -50,7 +50,7 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
         return WebSystemsBuilder.utils.mapping.ValueTypes.executePredicate(operand_1.getValue(), operand_2.getValue(), operationID, valueType_1);
     },
 
-    executeAction: function (callback) {
+    executeAction: function () {
         var _this = this;
         var predicateResult = _this.executePredicate();
         var actionIDTrue = _this._eventAction.PredicateAction.ActionIDTrue;
@@ -59,31 +59,34 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
         var actionIDNext = null;
         if (predicateResult) {
             actionIDNext = actionIDTrue;
-
-        } else {
-            actionIDNext = _this._eventAction.PredicateAction.ActionIDFalse;
-        }
-
-        if (callback && _this.subtreeIsExecuted()) {
-            callback();
-        }
-    },
-
-    markAsExecuted: function(actionID) {
-        var _this = this;
-        if (_this._eventActionIDExecuted.indexOf(item.EventAction.ActionID) < 0) {
-            return false;
-        }
-    },
-
-    subtreeIsExecuted:function() {
-        var _this = this;
-
-        $.each(_this._eventAction.ChildActions, function(index, item) {
-            if (_this._eventActionIDExecuted.indexOf(item.EventAction.ActionID) < 0) {
-                return false;
+            if (actionIDFalse) {
+                _this._markActionAsExecuted(actionIDFalse);
             }
+        } else {
+            actionIDNext = actionIDFalse;
+            if (actionIDTrue) {
+                _this._markActionAsExecuted(actionIDTrue);
+            }
+        }
+        var actionNext = _this._eventAction.ChildActions.filter(function (item) {
+            return item.EventAction.ActionID == actionIDNext;
+        })[0];
+
+        var actionNext = WebSystemsBuilder.utils.events.BaseAction.createEvent(actionNext, _this._form);
+        actionNext.executeAction(function () {
+            _this._markAsExecutedAndCallCallback(actionIDNext);
+
+            if (!_this._eventAction.ChildActions || !_this._eventAction.ChildActions.length) {
+                _this._callCallback()
+            }
+
+            $.each(_this._eventAction.ChildActions, function (index, item) {
+                if (!_this._isChildActionExecuted(item.EventAction.ActionID)) {
+                    var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
+                    action.executeAction(_this._markAsExecutedAndCallCallback(item.EventAction.ActionID));
+                }
+            });
         });
-        return true;
-    }
+    },
+
 });

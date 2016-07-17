@@ -16,21 +16,23 @@ namespace WebSystemsBuilder.Server
             {
                 using (var db = base.CreateContext(connection))
                 {
-                    QueryType type = this._GetQueryType(db, queryTypeID);
-                    List<QueryTypeInInstance> ins = this._GetQueryTypeIns(db, queryTypeID);
-                    List<QueryTypeOutInstance> outs = this._GetQueryTypeOuts(db, queryTypeID);
-                    List<QueryTypeTableInstance> tables = this._GetQueryTypeTables(db, queryTypeID);
-                    List<QueryTypeColumnInstance> columns = this._GetQueryTypeColumns(db, queryTypeID);
-                    List<QueryTypePart> parts = this._GetQueryTypeParts(db, queryTypeID);
-
-                    QueryTypeInstance queryType = new QueryTypeInstance(type, ins, outs, parts, tables, columns);
-
-                    //_Test(queryType, connection);
-
-                    return queryType;
+                    return this._GetQueryTypeByID(db, queryTypeID);
                 }
             }
         }
+        public QueryTypeInstance _GetQueryTypeByID(WebBuilderEFContext db, int queryTypeID)
+        {
+            QueryType type = this._GetQueryType(db, queryTypeID);
+            List<QueryTypeInInstance> ins = this._GetQueryTypeIns(db, queryTypeID);
+            List<QueryTypeOutInstance> outs = this._GetQueryTypeOuts(db, queryTypeID);
+            List<QueryTypeTableInstance> tables = this._GetQueryTypeTables(db, queryTypeID);
+            List<QueryTypeColumnInstance> columns = this._GetQueryTypeColumns(db, queryTypeID);
+            List<QueryTypePart> parts = this._GetQueryTypeParts(db, queryTypeID);
+
+            QueryTypeInstance queryType = new QueryTypeInstance(type, ins, outs, parts, tables, columns);
+            return queryType;
+        }
+
         private void _Test(QueryTypeInstance queryType, IDbConnection connection)
         {
             var _ins = new Dictionary<int, string>();

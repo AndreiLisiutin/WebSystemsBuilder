@@ -42,7 +42,7 @@ Ext.define('WebSystemsBuilder.utils.events.OpenFormAction', {
         return formParameters;
     },
 
-    executeAction: function () {
+    executeAction: function (callback) {
         var _this = this;
         var formID = _this.getFormID();
         var actionID = _this.getActionID();
@@ -52,9 +52,16 @@ Ext.define('WebSystemsBuilder.utils.events.OpenFormAction', {
             formID: formID,
             formParameters: formParameters,
             callback: function () {
+
+                if (!_this._eventAction.ChildActions || !_this._eventAction.ChildActions.length) {
+                    _this._callCallback()
+                }
+
                 $.each(_this._eventAction.ChildActions, function (index, item) {
-                    var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
-                    action.executeAction();
+                    if (!_this._isChildActionExecuted(item.EventAction.ActionID)) {
+                        var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
+                        action.executeAction(_this._markAsExecutedAndCallCallback(item.EventAction.ActionID));
+                    }
                 });
             }
         });

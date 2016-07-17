@@ -74,5 +74,41 @@ namespace WebSystemsBuilder.Server.Models
                 throw new ValueTypeCastException("Convert.ToDecimal exception", ex);
             }
         }
+
+        public new bool Equals(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToDecimal(x) == Convert.ToDecimal(y);
+        }
+
+        public bool NotEquals(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToDecimal(x) != Convert.ToDecimal(y);
+        }
+
+        public bool GreaterThan(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToDecimal(x) > Convert.ToDecimal(y);
+        }
+
+        public bool LowerThan(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return Convert.ToDecimal(x) < Convert.ToDecimal(y);
+        }
     }
 }

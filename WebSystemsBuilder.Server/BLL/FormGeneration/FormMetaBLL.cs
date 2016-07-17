@@ -65,6 +65,9 @@ namespace WebSystemsBuilder.Server
                         equals new { ControlID = property.ControlID, ControlTypePropertyTypeID = property.ControlTypePropertyTypeID }
                     into leftJoinProperty
                     from property in leftJoinProperty.DefaultIfEmpty()
+                    join controlValueType in db.PropertyValueTypes on controlType.ValueTypeID equals controlValueType.ValueTypeID
+                    into leftJoinValueType
+                    from controlValueType in leftJoinValueType.DefaultIfEmpty()
                     select new
                     {
                         control = control,
@@ -72,11 +75,12 @@ namespace WebSystemsBuilder.Server
                         controlTypePropertyType = ctpt,
                         property = property,
                         propertyType = propertyType,
-                        valueType = valueType
+                        valueType = valueType,
+                        controlValueType = controlValueType
                     }
                 ).ToList()
                 .GroupBy(e => e.control)
-                .Select(e => new ControlInstance(e.First().control, e.First().controlType, 
+                .Select(e => new ControlInstance(e.First().control, e.First().controlType, e.First().controlValueType,
                     e.Select(prop => new PropertyInstance(prop.property, prop.controlTypePropertyType, prop.valueType, prop.propertyType)).ToList()))
                 .ToList();
             

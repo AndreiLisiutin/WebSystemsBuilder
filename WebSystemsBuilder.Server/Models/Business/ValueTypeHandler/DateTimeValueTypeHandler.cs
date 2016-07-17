@@ -52,5 +52,41 @@ namespace WebSystemsBuilder.Server.Models
                 throw new ValueTypeCastException("DateTime conversion exception", ex);
             }
         }
+
+        public new bool Equals(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return ((DateTime)x).ToLongDateString() == ((DateTime)y).ToLongDateString();
+        }
+
+        public bool NotEquals(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return ((DateTime)x).ToLongDateString() != ((DateTime)y).ToLongDateString();
+        }
+
+        public bool GreaterThan(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return (DateTime)x > (DateTime)y;
+        }
+
+        public bool LowerThan(object x, object y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return (DateTime)x  < (DateTime)y;
+        }
     }
 }
