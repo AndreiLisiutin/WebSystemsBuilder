@@ -167,12 +167,12 @@
             ', EventID = ' + eventID + ')';
         }
 
-        var eventActions = [];
-        $.each(eventInstance.EventActions, function (index, item) {
-            var eventAction = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this);
-            eventActions.push(eventAction);
-        });
         var eventHandler = function () {
+            var eventActions = [];
+            $.each(eventInstance.EventActions, function (index, item) {
+                var eventAction = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this);
+                eventActions.push(eventAction);
+            });
             $.each(eventActions, function (index, item) {
                 item.executeAction();
             });

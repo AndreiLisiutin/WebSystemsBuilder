@@ -31,5 +31,10 @@ namespace WebSystemsBuilder.Server.Models
                 return (int)ActionTypeEnum.Client;
             }
         }
+        
+        public override bool Execute(ActionScope scope)
+        {
+            return false;
+        }
     }
 }

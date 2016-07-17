@@ -39,10 +39,10 @@ namespace WebSystemsBuilder.Server
                             .Where(e => e.EventAction.ActionIDParent == action.EventAction.ActionID)
                             .ToList();
                     }
-                    
+
                     List<EventWithActionsInstance> eventInstances = events
                         .Select(
-                            e => 
+                            e =>
                             {
                                 var eventRootActions = actions
                                     .Where(a => a.EventAction.EventID == e.Event.EventID
@@ -139,7 +139,7 @@ namespace WebSystemsBuilder.Server
             .ToList();
         }
         
-        public QueryActionInstance _GetQueryInstanceByQuery(WebBuilderEFContext db, EventAction action, QueryAction query)
+        private QueryActionInstance _GetQueryInstanceByQuery(WebBuilderEFContext db, EventAction action, QueryAction query)
         {
             List<QueryActionInInstance> ins = this._GetQueryIns(db, query.ActionID);
             List<QueryActionOutInstance> outs = this._GetQueryOuts(db, query.ActionID);
@@ -149,16 +149,24 @@ namespace WebSystemsBuilder.Server
             return queryInstance;
         }
 
-        private QueryAction _GetQueryByID(WebBuilderEFContext db, int queryActionID)
+        public QueryActionInstance _GetQueryActionByID(WebBuilderEFContext db, int queryActionID)
         {
-            QueryAction query = db.QueryActions.SingleOrDefault(e => e.ActionID == queryActionID);
+            var query = (
+                from queryAction in db.QueryActions
+                join action in db.EventActions on queryAction.ActionID equals action.ActionID
+                where queryAction.ActionID == queryActionID
+                select new { queryAction = queryAction, action = action }
+            )
+            .SingleOrDefault();
             if (query == null)
             {
                 throw new Exception(string.Format(
                     "Query not found(queryActionID = {0})", queryActionID
                 ));
             }
-            return query;
+
+            QueryActionInstance instance = this._GetQueryInstanceByQuery(db, query.action, query.queryAction);
+            return instance;
         }
         private List<QueryActionInInstance> _GetQueryIns(WebBuilderEFContext db, int queryActionID)
         {

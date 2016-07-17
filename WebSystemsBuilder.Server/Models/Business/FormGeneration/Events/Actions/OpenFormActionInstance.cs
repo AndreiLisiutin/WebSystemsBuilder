@@ -30,5 +30,10 @@ namespace WebSystemsBuilder.Server.Models
                 return (int)ActionTypeEnum.OpenForm;
             }
         }
+        
+        public override bool Execute(ActionScope scope)
+        {
+            return false;
+        }
     }
 }
