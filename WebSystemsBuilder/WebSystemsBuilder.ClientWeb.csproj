@@ -151,7 +151,12 @@
     <Compile Include="Controllers\FormGeneration\QueryController.cs" />
     <Compile Include="Controllers\FormGeneration\ValueTypesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IDE\ControlTypeController.cs" />
+    <Compile Include="Controllers\IDE\ControlTypeGroupController.cs" />
+    <Compile Include="Controllers\IDE\EventTypeController.cs" />
+    <Compile Include="Controllers\IDE\FormController.cs" />
     <Compile Include="Controllers\IDE\MainIDEController.cs" />
+    <Compile Include="Controllers\IDE\TableController.cs" />
     <Compile Include="Controllers\_Base\BaseController.cs" />
     <Compile Include="Controllers\_Test\_TestController.cs" />
     <Compile Include="Global.asax.cs">

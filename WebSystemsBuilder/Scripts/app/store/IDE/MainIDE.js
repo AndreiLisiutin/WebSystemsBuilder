@@ -12,7 +12,7 @@ Ext.define('WebSystemsBuilder.store.IDE.ControlTypeGroup', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetControlTypeGroupList'
+            read: 'ControlTypeGroup/GetControlTypeGroupList'
         },
 
         reader: {
@@ -33,7 +33,7 @@ Ext.define('WebSystemsBuilder.store.IDE.ControlType', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetControlTypeList'
+            read: 'ControlType/GetControlTypeList'
         },
 
         reader: {

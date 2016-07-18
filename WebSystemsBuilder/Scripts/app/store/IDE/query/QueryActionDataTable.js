@@ -19,7 +19,7 @@ Ext.define('WebSystemsBuilder.store.IDE.query.Dictionary', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetTableList'
+            read: 'Table/GetTableList'
         },
 
         reader: {
@@ -39,7 +39,7 @@ Ext.define('WebSystemsBuilder.store.IDE.query.Field', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetTableColumnList'
+            read: 'Table/GetTableColumnList'
         },
 
         reader: {

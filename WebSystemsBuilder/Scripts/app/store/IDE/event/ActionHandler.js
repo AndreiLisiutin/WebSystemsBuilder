@@ -66,7 +66,7 @@ Ext.define('WebSystemsBuilder.store.IDE.event.ClientActionType', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetClientActionTypeList'
+            read: 'EventType/GetClientActionTypeList'
         },
 
         reader: {

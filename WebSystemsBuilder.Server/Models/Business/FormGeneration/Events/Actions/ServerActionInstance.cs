@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebSystemsBuilder.Server.Models
 {
-    class ServerActionInstance : BaseActionInstance
+    public class ServerActionInstance : BaseActionInstance
     {
         public ServerActionInstance()
             : base()
@@ -25,6 +25,11 @@ namespace WebSystemsBuilder.Server.Models
             {
                 return (int)ActionTypeEnum.Server;
             }
+        }
+
+        public override bool Execute(ActionScope scope)
+        {
+            throw new NotImplementedException();
         }
     }
 }

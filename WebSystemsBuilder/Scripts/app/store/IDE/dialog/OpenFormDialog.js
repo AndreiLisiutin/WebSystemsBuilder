@@ -12,7 +12,7 @@ Ext.define('WebSystemsBuilder.store.IDE.dialog.Form', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetFormList'
+            read: 'Form/GetFormList'
         },
 
         reader: {

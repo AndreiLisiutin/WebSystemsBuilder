@@ -12,7 +12,7 @@ Ext.define('WebSystemsBuilder.store.IDE.event.FormParameters', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetFormParametersList'
+            read: 'Form/GetFormParametersList'
         },
 
         reader: {

@@ -13,7 +13,7 @@ Ext.define('WebSystemsBuilder.utils.IDE.ControlTypeDependencies', {
         _this.ControlTypeDependencies = [];
 
         Ext.Ajax.request({
-            url: 'MainIDE/GetControlTypeDependencies',
+            url: 'ControlType/GetControlTypeDependencies',
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             success: function (objServerResponse) {
