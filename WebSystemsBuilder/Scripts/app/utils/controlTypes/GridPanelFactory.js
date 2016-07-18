@@ -24,14 +24,39 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.GridPanelFactory', {
             },
             store: store
         });
-        component.on('afterrender', function(c) {
+        component.on('afterrender', function (c) {
             c.tools['collapse-top'].hide();
         });
         return component;
     },
 
     //----------------------------------FORM GENERATOR------------------------------------------------------------------
+    _generateSimpleStore: function (columns) {
+        var fields = [];
+        $.each(columns, function (index, item) {
+            fields.push(item.dataIndex);
+        });
+        var store = new Ext.data.Store({
+            fields: fields,
+            data: [],
+            proxy: {
+                type: 'memory',
+                reader: {
+                    type: 'json',
+                    root: 'users'
+                }
+            }
+        });
+        return store;
+    },
 
+    generateVisualComponent: function (properties) {
+        var _this = this;
+        var store = _this._generateSimpleStore(properties.columns);
+        properties.store = store;
+        var visualComponent = Ext.create(properties);
+        return visualComponent;
+    },
     //----------------------------------EVENTS--------------------------------------------------------------------------
     bindLoad: function (handler) {
         this._visualComponent.on('afterrender', handler);

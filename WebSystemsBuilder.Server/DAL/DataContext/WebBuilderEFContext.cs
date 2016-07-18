@@ -65,6 +65,5 @@ namespace WebSystemsBuilder.Server
         public DbSet<OpenFormActionParameter> OpenFormActionParameters { get; set; }
         public DbSet<PredicateAction> PredicateActions { get; set; }
         public DbSet<PredicateOperation> PredicateOperations { get; set; }
-        public DbSet<ServerAction> ServerActions { get; set; }
     }
 }

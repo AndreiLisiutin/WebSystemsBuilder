@@ -32,7 +32,7 @@ namespace WebSystemsBuilder.Server.Models
             }
         }
         
-        public override bool Execute(ActionScope scope)
+        protected override bool Execute(ActionScope scope)
         {
             return false;
         }

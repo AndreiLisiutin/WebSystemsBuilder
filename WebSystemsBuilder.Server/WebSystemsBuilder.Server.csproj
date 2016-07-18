@@ -82,7 +82,6 @@
     <Compile Include="DAL\DataContext\WebBuilderEFContext.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\ActionTypeEnum.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\BaseActionInstance.cs" />
-    <Compile Include="Models\Business\FormGeneration\Events\Actions\ServerActionInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\PredicateActionInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\OpenFormActionInstance.cs" />
     <Compile Include="Models\Business\FormGeneration\Events\Actions\ClientActionInstance.cs" />
@@ -124,7 +123,6 @@
     <Compile Include="Models\Domain\Controls\ControlTypeDependency.cs" />
     <Compile Include="Models\Domain\Controls\ControlType.cs" />
     <Compile Include="Models\Domain\Controls\Control.cs" />
-    <Compile Include="Models\Domain\Events\Actions\ServerAction.cs" />
     <Compile Include="Models\Domain\Events\Actions\EventAction.cs" />
     <Compile Include="Models\Domain\Events\Actions\ClientAction.cs" />
     <Compile Include="Models\Domain\Events\Actions\ClientActionType.cs" />

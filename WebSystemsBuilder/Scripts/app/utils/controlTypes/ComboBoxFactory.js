@@ -30,6 +30,9 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.ComboBoxFactory', {
     //----------------------------------FORM GENERATOR------------------------------------------------------------------
     
     //----------------------------------OPERAND-------------------------------------------------------------------------
+    isOperand: function() {
+        return true;
+    },
     getValue: function () {
         return this._visualComponent.getValue();
     },

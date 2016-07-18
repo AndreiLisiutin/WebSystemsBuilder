@@ -5,33 +5,24 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
         'WebSystemsBuilder.utils.formGeneration.Form',
         'WebSystemsBuilder.utils.mapping.ValueTypes'
     ],
-    _eventAction: null,
-    _form: null,
-    _eventActionIDExecuted: [],
 
     constructor: function (config) {
-        var eventAction = config.eventAction;
-        var form = config.form;
-
-        this._eventActionIDExecuted = [];
-        this._eventAction = eventAction;
-        this._form = form;
         this.callParent(arguments);
     },
 
     getFormID: function () {
-        return this._eventAction.OpenFormAction.FormID;
+        return this.getEventAction().OpenFormAction.FormID;
     },
     getActionID: function () {
-        return this._eventAction.OpenFormAction.ActionID;
+        return this.getEventAction().OpenFormAction.ActionID;
     },
     executePredicate: function () {
         var _this = this;
-        var operationID = _this._eventAction.PredicateAction.PredicateOperationID;
-        var operandID_1 = _this._eventAction.PredicateAction.OperandIDFirst;
-        var operandID_2 = _this._eventAction.PredicateAction.OperandIDSecond;
-        var operand_1 = _this._form.getOperandByID(operandID_1);
-        var operand_2 = _this._form.getOperandByID(operandID_2);
+        var operationID = _this.getEventAction().PredicateAction.PredicateOperationID;
+        var operandID_1 = _this.getEventAction().PredicateAction.OperandIDFirst;
+        var operandID_2 = _this.getEventAction().PredicateAction.OperandIDSecond;
+        var operand_1 = _this.getForm().getOperandByID(operandID_1);
+        var operand_2 = _this.getForm().getOperandByID(operandID_2);
 
         if (operand_1 == null) {
             throw 'Operand for predicate action not found(OperandID = ' + operandID_1 + ')';
@@ -50,43 +41,41 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
         return WebSystemsBuilder.utils.mapping.ValueTypes.executePredicate(operand_1.getValue(), operand_2.getValue(), operationID, valueType_1);
     },
 
-    executeAction: function () {
+    executeAction: function (callback) {
         var _this = this;
         var predicateResult = _this.executePredicate();
-        var actionIDTrue = _this._eventAction.PredicateAction.ActionIDTrue;
-        var actionIDFalse = _this._eventAction.PredicateAction.ActionIDFalse;
+        var actionIDTrue = _this.getEventAction().PredicateAction.ActionIDTrue;
+        var actionIDFalse = _this.getEventAction().PredicateAction.ActionIDFalse;
 
         var actionIDNext = null;
         if (predicateResult) {
             actionIDNext = actionIDTrue;
             if (actionIDFalse) {
-                _this._markActionAsExecuted(actionIDFalse);
+                _this._markActionsSubtreeAsExecuted(actionIDFalse);
             }
         } else {
             actionIDNext = actionIDFalse;
             if (actionIDTrue) {
-                _this._markActionAsExecuted(actionIDTrue);
+                _this._markActionsSubtreeAsExecuted(actionIDTrue);
             }
         }
-        var actionNext = _this._eventAction.ChildActions.filter(function (item) {
+        var actionNext = _this.getEventAction().ChildActions.filter(function (item) {
             return item.EventAction.ActionID == actionIDNext;
         })[0];
-
-        var actionNext = WebSystemsBuilder.utils.events.BaseAction.createEvent(actionNext, _this._form);
-        actionNext.executeAction(function () {
-            _this._markAsExecutedAndCallCallback(actionIDNext);
-
-            if (!_this._eventAction.ChildActions || !_this._eventAction.ChildActions.length) {
-                _this._callCallback()
+        if (!actionNext) {
+            if (callback) {
+                callback()
             }
+            return;
+        }
 
-            $.each(_this._eventAction.ChildActions, function (index, item) {
-                if (!_this._isChildActionExecuted(item.EventAction.ActionID)) {
-                    var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
-                    action.executeAction(_this._markAsExecutedAndCallCallback(item.EventAction.ActionID));
-                }
-            });
+        var newAction = WebSystemsBuilder.utils.events.BaseAction.createEvent({
+            eventAction: actionNext,
+            form: _this.getForm(),
+            executedActions: _this.getExecutedActions(),
+            parentAction: _this,
+            actionSubtreeExecutedCallback: callback
         });
-    },
-
+        newAction.execute();
+    }
 });

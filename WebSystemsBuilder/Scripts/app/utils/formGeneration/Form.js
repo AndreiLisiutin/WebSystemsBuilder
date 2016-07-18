@@ -38,7 +38,7 @@
             _this._buildForm(formMeta, formParameters);
 
             if (_this._callback) {
-                _this._form.getVisualComponent().on('afterrender', function() {
+                _this._form.getVisualComponent().on('afterrender', function () {
                     _this._callback();
                 });
             }
@@ -62,15 +62,28 @@
 
     getOperandByID: function (controlID) {
         var _this = this;
-        var operands = _this._controlHandlers.concat(_this._paramHandlers)
-            .filter(function (handler) {
-                return handler.getOperandID && handler.getOperandID() == controlID;
-            });
+        var operands = _this.getOperands().filter(function (handler) {
+            return handler.getOperandID && handler.getOperandID() == controlID;
+        });
 
         if (operands.length != 1) {
             return null;
         }
         return operands[0];
+    },
+
+    getOperands: function () {
+        var _this = this;
+        var operands = _this._controlHandlers.concat(_this._paramHandlers)
+            .filter(function (handler) {
+                return handler.isOperand && handler.isOperand();
+            });
+        return operands;
+    },
+
+    getFormID: function () {
+        var _this = this;
+        return _this._formID;
     },
 
     _getFormMeta: function (formID, callback) {
@@ -110,7 +123,7 @@
         var paramHandlers = [];
         $.each(formParameters, function (i, item) {
             var value = parameterValues[item.FormParameter.FormParameterID] || null;
-            paramHandlers.push(_this._createParameter(item));
+            paramHandlers.push(_this._createParameter(item, value));
         });
         return paramHandlers;
     },
@@ -159,18 +172,27 @@
         var controlID = eventInstance.EventInstance.Event.ControlID;
         var eventID = eventInstance.EventInstance.Event.EventID;
         var eventTypeID = eventInstance.EventInstance.EventType.EventTypeID;
+        var eventTypeName = eventInstance.EventInstance.EventType.Name;
 
-        _this._consoleLog('Generating form #' + _this._formID + ' event #' + eventID);
+        _this._consoleLog('Generating form #' + _this._formID + ' event #' + eventID + '. ');
         var control = _this.getControlByID(controlID);
         if (control == null) {
             throw 'Control for event not found (ControlID = ' + controlID +
             ', EventID = ' + eventID + ')';
         }
+        var extJsControlID = control.getVisualComponent().getId();
+        _this._consoleLog('---Control ' + extJsControlID + ' event ' + eventTypeName);
 
         var eventHandler = function () {
             var eventActions = [];
             $.each(eventInstance.EventActions, function (index, item) {
-                var eventAction = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this);
+                var eventAction = WebSystemsBuilder.utils.events.BaseAction.createEvent({
+                    eventAction: item,
+                    form: _this,
+                    executedActions: [],
+                    parentAction: null,
+                    actionSubtreeExecutedCallback: null
+                });
                 eventActions.push(eventAction);
             });
             $.each(eventActions, function (index, item) {

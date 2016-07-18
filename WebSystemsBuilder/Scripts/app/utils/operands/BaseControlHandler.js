@@ -6,14 +6,8 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
     _visualComponent: null,
     _controlInstance: null,
 
-    getControlID: function() {
+    getControlID: function () {
         return this._controlInstance.Control.ControlID;
-    },
-    getOperandID: function() {
-        return this._controlInstance.Control.OperandID;
-    },
-    getValueTypeID: function () {
-        return this._controlInstance.ControlType.ValueTypeID;
     },
 
     generateComponent: function (controlInstance, innerHandlers) {
@@ -55,11 +49,29 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
         return 'items';
     },
     //----------------------------------OPERAND-------------------------------------------------------------------------
+    isOperand: function () {
+        return false;
+    },
+    getOperandID: function () {
+        return this._controlInstance.Control.OperandID;
+    },
+    getValueTypeID: function () {
+        return this._controlInstance.ControlType.ValueTypeID;
+    },
     getValue: function () {
         throw 'Component ' + this._getComponentClass() + ' has no value.';
     },
     setValue: function (value) {
         throw 'Component ' + this._getComponentClass() + ' has no value.';
+    },
+    setValueArray: function (arrayValue) {
+        if (!arrayValue || arrayValue.length == 0) {
+            arrayValue = [null];
+        }
+
+        if (this.getValue() !== arrayValue[0]) {
+            this.setValue(arrayValue[0]);
+        }
     },
     //----------------------------------EVENTS--------------------------------------------------------------------------
     bindLoad: function (handler) {

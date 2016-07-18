@@ -85,12 +85,12 @@ namespace WebSystemsBuilder.Server.Models
             }
             if (execute != null)
             {
-                return execute.Execute(scope);
+                return execute.ExecuteAction(scope);
             }
             return true;
         }
 
-        public override bool Execute(ActionScope scope)
+        protected override bool Execute(ActionScope scope)
         {
             bool result = this.PerformPredicate(scope);
             var trueAction = this.ChildActions
@@ -104,24 +104,7 @@ namespace WebSystemsBuilder.Server.Models
             BaseActionInstance execute = result ? trueAction : falseAction;
             BaseActionInstance notToExecute = result ? falseAction : trueAction;
             bool fullyExecuted = this.PerformTrueAction(scope, execute, notToExecute);
-            if (!fullyExecuted)
-            {
-                return false;
-            }
-
-            foreach (var action in this.ChildActions)
-            {
-                if (scope.ExecutedActionIDS.Contains(action.EventAction.ActionID))
-                {
-                    continue;
-                }
-                fullyExecuted = action.Execute(scope);
-                if (!fullyExecuted)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return fullyExecuted;
         }
 
 

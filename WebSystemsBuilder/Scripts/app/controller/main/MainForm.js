@@ -39,13 +39,12 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
         WebSystemsBuilder.utils.Windows.open('MainIDE');
     },
 
-    onOpenQueryBuilder: function() {
+    onOpenQueryBuilder: function () {
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryAction');
         WebSystemsBuilder.utils.Windows.open('QueryAction');
     },
 
     test: function () {
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.PredicateAction');
-        WebSystemsBuilder.utils.Windows.open('PredicateAction');
+        WebSystemsBuilder.utils.formGeneration.FormGenerationBase.createForm(1);
     }
 });

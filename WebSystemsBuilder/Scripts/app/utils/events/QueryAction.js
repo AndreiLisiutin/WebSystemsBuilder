@@ -4,27 +4,23 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
     requires: [
         'WebSystemsBuilder.utils.mapping.ValueTypes'
     ],
-    _eventAction: null,
-    _form: null,
-    constructor: function (eventAction, form) {
-        this._eventAction = eventAction;
-        this._form = form;
+    constructor: function (config) {
         this.callParent(arguments);
     },
 
-    getActionID: function () {
-        return this._eventAction.EventAction.ActionID;
+    getFormID: function () {
+        return this.getForm().getFormID();
     },
 
     getInParameters: function () {
         var _this = this;
         var inValues = {};
-        $.each(_this._eventAction.QueryActionIns, function (index, item) {
-            var queryActionInID = item.QueryActionIn.QueryActionIn.QueryActionInID;
-            var operandID = item.QueryActionIn.QueryActionIn.OperandIDValue;
-            var valueTypeID = item.QueryActionIn.QueryTypeIn.ValueType.ValueTypeID;
+        $.each(_this.getEventAction().QueryActionIns, function (index, item) {
+            var queryActionInID = item.QueryActionIn.QueryActionInID;
+            var operandID = item.QueryActionIn.OperandIDValue;
+            var valueTypeID = item.QueryTypeIn.ValueType.ValueTypeID;
 
-            var operand = _this._form.getOperandByID(operandID);
+            var operand = _this.getForm().getOperandByID(operandID);
             if (!operand) {
                 throw 'Operand for query action in not found (OperandID = ' + operandID +
                 ', QueryActionIn = ' + queryActionInID + ')';
@@ -44,12 +40,12 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
     getParts: function () {
         var _this = this;
         var partValues = {};
-        $.each(_this._eventAction.QueryActionParts, function (index, item) {
+        $.each(_this.getEventAction().QueryActionParts, function (index, item) {
             var queryActionPartID = item.QueryActionPart.QueryActionPartID;
-            var operandID = item.QueryActionPartID.OperandIDValue;
+            var operandID = item.QueryActionPart.OperandIDValue;
             var valueTypeID = ValueTypes.Bool;
 
-            var operand = _this._form.getOperandByID(operandID);
+            var operand = _this.getForm().getOperandByID(operandID);
             if (!operand) {
                 throw 'Operand for query action part not found (OperandID = ' + operandID +
                 ', QueryActionIn = ' + queryActionPartID + ')';
@@ -66,40 +62,79 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
         return partValues;
     },
 
-    executeAction: function () {
+    setOperandValues: function (operandValues) {
+        var _this = this;
+        if (!operandValues) {
+            return;
+        }
+        $.each(operandValues, function (index, item) {
+            var serializedArray = item.Value;
+            var valueTypeID = item.ValueType.ValueTypeID;
+            var deserializedArray = [];
+            var operand = _this.getForm().getOperandByID(item.OperandID);
+            if (!operand) {
+                throw 'Operand for query action part not found (OperandID = ' + item.OperandID + ')';
+            }
+
+            $.each(serializedArray, function (serializedIndex, serializedItem) {
+                var deserializedValue = WebSystemsBuilder.utils.mapping.ValueTypes
+                    .getValueFromString(serializedItem, valueTypeID);
+                deserializedArray.push(deserializedValue);
+            });
+
+            operand.setValueArray(deserializedArray);
+        });
+    },
+
+    getOperandsScope: function () {
+        var _this = this;
+        var operandValues = {};
+        $.each(_this.getForm().getOperands(), function (index, item) {
+            var operandID = item.getOperandID();
+            var valueTypeID = item.getValueTypeID();
+            var value = item.getValue();
+
+            operandValues[operandID] = WebSystemsBuilder.utils.mapping.ValueTypes
+                .getStringFromValue(value, valueTypeID);
+        });
+        return operandValues;
+    },
+
+    executeAction: function (callback) {
         var _this = this;
         var actionID = _this.getActionID();
-        var actionInParameters = _this.getInParameters();
-        var actionParts = _this.getParts();
+        var formID = _this.getFormID();
+        var operandsScope = _this.getOperandsScope();
 
         var postData = {
+            formID: formID,
             actionID: actionID,
-            actionInParameters: [],
-            actionParts: []
+            operandID_Value: []
         };
-        for (var key in actionInParameters) {
-            postData.actionInParameters.push({
-                Key: key,
-                Value: actionInParameters[key]
-            });
-        }
-        for (var key in actionParts) {
-            postData.actionParts.push({
-                Key: key,
-                Value: actionParts[key]
+
+        for (var operandID in operandsScope) {
+            postData.operandID_Value.push({
+                Key: operandID,
+                Value: operandsScope[operandID]
             });
         }
 
         Ext.Ajax.request({
             url: 'Query/ExecuteQueryAction',
-            async: false,
-            method: 'GET',
+            method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            params: postData,
+            jsonData: postData,
             success: function (objServerResponse) {
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 if (jsonResp.Code == 0) {
+                    var data = jsonResp.Data;
+                    if (data.OperandValues) {
+                        _this.setOperandValues(data.OperandValues);
+                    }
 
+                    if (callback) {
+                        callback();
+                    }
                 } else {
                     WebSystemsBuilder.utils.MessageBox.error(jsonResp.resultMessage);
                 }

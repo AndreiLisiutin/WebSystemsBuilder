@@ -69,7 +69,7 @@ namespace WebSystemsBuilder.Server.Models
                 if (!parameters.ContainsKey(paramIn.QueryTypeIn.QueryTypeInID))
                 {
                     throw new FormGenerationException(string.Format(
-                        "Query parameter is not set to a value.(QueryTypeID = {0}, QueryTypeInID = {1})",
+                        "Query parameter not set to a value.(QueryTypeID = {0}, QueryTypeInID = {1})",
                             paramIn.QueryTypeIn.QueryTypeID,
                             paramIn.QueryTypeIn.QueryTypeInID
                     ));
@@ -83,15 +83,11 @@ namespace WebSystemsBuilder.Server.Models
 
             foreach (var paramOut in this.QueryTypeOuts)
             {
-                if (!baseSql.Contains(paramOut.QueryTypeOut.QueryTypeAlias))
+                if (string.IsNullOrEmpty(paramOut.QueryTypeOut.QueryTypePlaceholder))
                 {
-                    throw new FormGenerationException(string.Format(
-                        "Query out parameter is not found.(QueryTypeID = {0}, QueryTypeOutID = {1})",
-                            paramOut.QueryTypeOut.QueryTypeID,
-                            paramOut.QueryTypeOut.QueryTypeOutID
-                    ));
+                    //there is no placeholder for new alias (select column AS alias...). Alias must be equal to column name
+                    continue;
                 }
-
                 baseSql = baseSql.Replace(paramOut.QueryTypeOut.QueryTypePlaceholder, paramOut.QueryTypeOut.QueryTypeAlias);
             }
 

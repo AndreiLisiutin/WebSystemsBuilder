@@ -112,7 +112,52 @@ namespace WebSystemsBuilder.Server.Models
             return queryTypePartID_value;
         }
 
-        public override bool Execute(ActionScope scope)
+        private void SetOperatorValues(ActionScope scope, DataTable resultData)
+        {
+            foreach (var queryActionOut in this.QueryActionOuts)
+            {
+                int operandID = queryActionOut.QueryActionOut.OperandIDValue;
+                int queryActionOutID = queryActionOut.QueryActionOut.QueryActionOutID;
+                var queryTypeOut = queryActionOut.QueryTypeOut.QueryTypeOut;
+                var valueType = queryActionOut.QueryTypeOut.ValueType;
+
+                var operand = scope.OperandValues.FirstOrDefault(e => e.OperandID == operandID);
+                if (operand == null)
+                {
+                    throw new FormGenerationException(string.Format(
+                        "Operand for query action out not found (QueryActionOutID = {0}, OperandID = {1})",
+                            queryActionOutID,
+                            operandID
+                    ));
+                }
+
+                if (operand.ValueType.ValueTypeID != valueType.ValueTypeID)
+                {
+                    throw new FormGenerationException(string.Format(
+                        "Operand for query action has incorrect value type (QueryActionOutID = {0}, OperandID = {1})",
+                            queryActionOutID,
+                            operandID
+                    ));
+                }
+
+                string columnName = queryTypeOut.QueryTypeAlias;
+                if (!resultData.Columns.Contains(columnName))
+                {
+                     throw new FormGenerationException(string.Format(
+                        "Query out parameter alias incorrect (QueryActionOutID = {0})",
+                            queryActionOutID
+                    ));
+                }
+
+                List<object> dataForOperand = resultData.AsEnumerable()
+                    .Select(e => e[columnName])
+                    .ToList();
+
+                operand.SetDeserializedValues(dataForOperand);
+            }
+        }
+
+        protected override bool Execute(ActionScope scope)
         {
             int queryTypeID = this.QueryAction.QueryTypeID;
             QueryTypeInstance queryType = new QueryTypeBLL().GetQueryTypeByID(queryTypeID);
@@ -120,7 +165,10 @@ namespace WebSystemsBuilder.Server.Models
             Dictionary<int, bool> queryTypePartID_value = this.GetQueryParts(scope, queryType);
             
             var sql = queryType.ConstructSql(queryTypeInID_value, queryTypePartID_value);
-            DataTable result = new QueryBLL().ExecuteSql(sql.Item1, sql.Item2);
+            DataTable resultData = new QueryBLL().ExecuteSql(sql.Item1, sql.Item2);
+            this.SetOperatorValues(scope, resultData);
+            //query executed
+            scope.ExecutedActionIDS.Add(this.EventAction.ActionID);
 
             return true;
         }

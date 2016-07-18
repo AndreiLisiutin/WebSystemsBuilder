@@ -9,18 +9,35 @@ namespace WebSystemsBuilder.Server.Models
 {
     public class OperandValue
     {
+        private const string _columnName = "SerializedValue";
+        private DataTable _value;
         public OperandValue(int operandID, PropertyValueType valueType, string serializedValue)
         {
             this.OperandID = operandID;
             this.ValueType = valueType;
 
-            this.Value = new DataTable();
-            this.Value.Columns.Add("SerializedValue");
+            this._value = new DataTable();
+            this._value.Columns.Add(_columnName);
             this.SetSerializedValue(serializedValue);
         }
         public PropertyValueType ValueType { get; set; }
         public int OperandID { get; set; }
-        public DataTable Value { get; set; }
+
+        public List<string> Value
+        {
+            get
+            {
+                if (this._value == null)
+                {
+                    return null;
+                }
+
+                return this._value
+                    .AsEnumerable()
+                    .Select(e => e.Field<string>(_columnName))
+                    .ToList();
+            }
+        }
 
         public void SetSerializedValue(string serializedValue)
         {
@@ -38,16 +55,38 @@ namespace WebSystemsBuilder.Server.Models
                 ));
             }
 
-            this.Value.Rows.Clear();
-            this.Value.Rows.Add(serializedValue);
+            this._value.Rows.Clear();
+            this._value.Rows.Add(serializedValue);
         }
+
+        public void SetDeserializedValues(List<object> deserializedArray)
+        {
+            int valueTypeID = this.ValueType.ValueTypeID;
+            string format = this.ValueType.Format;
+            try
+            {
+                var serializedArray = deserializedArray
+                    .Select(e => ValueTypeConverter.Serialize(e, valueTypeID, format))
+                    .ToArray();
+                this._value.Rows.Clear();
+                this._value.Rows.Add(serializedArray);
+            }
+            catch (Exception ex)
+            {
+                throw new FormGenerationException(string.Format(
+                    "Could not convert data set to value type (valueTypeID = {0})",
+                        valueTypeID
+                ), ex);
+            }
+        }
+
         public string GetSerializedValue()
         {
-            if (this.Value.Rows.Count == 0)
+            if (this.Value.Count == 0)
             {
                 return null;
             }
-            return this.Value.Rows[0].Field<string>("SerializedValue");
+            return this.Value[0];
         }
         public object GetDeserializedValue()
         {

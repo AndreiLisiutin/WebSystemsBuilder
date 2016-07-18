@@ -5,9 +5,10 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.NumberColumnFactory', {
     focusEvent: 'headerclick',
     isColumn: true,
 
-    onRender: function (component) { },
+    onRender: function (component) {
+    },
 
-    onRemoveComponent: function(parentComponent, component) {
+    onRemoveComponent: function (parentComponent, component) {
         parentComponent.headerCt.remove(component, true);
         parentComponent.getView().refresh();
     },
@@ -25,9 +26,52 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.NumberColumnFactory', {
     },
 
     //----------------------------------FORM GENERATOR------------------------------------------------------------------
-
-    getSelfArrayName:function(properties) {
+    generateVisualComponent: function (properties) {
+        properties.dataIndex = properties.dataIndex || ('_column_' + (Math.random() * 100000).toString());
+        var visualComponent = Ext.create(properties);
+        return visualComponent;
+    },
+    getSelfArrayName: function (properties) {
         return 'columns';
+    },
+    //----------------------------------OPERAND-------------------------------------------------------------------------
+    isOperand: function () {
+        return true;
+    },
+    getValue: function () {
+        var gridpanel = this._visualComponent.up('gridpanel');
+        if (!gridpanel) {
+            throw 'Gridpanel for gridcolumn not found';
+        }
+        var selection = gridpanel.getSelectionModel().getSelection()[0];
+        if (!selection) {
+            return null;
+        }
+        return selection.get(this._visualComponent.dataIndex);
+    },
+    setValue: function (value) {
+        throw 'Can not set value to gridcolumn';
+    },
+    setValueArray: function (arrayValue) {
+        var gridpanel = this._visualComponent.up('gridpanel');
+        if (!gridpanel) {
+            throw 'Gridpanel for gridcolumn not found';
+        }
+        var storeRange = gridpanel.getStore().getRange();
+        var dataIndex = this._visualComponent.dataIndex;
+        $.each(arrayValue, function (index, item) {
+            if (index < storeRange.length) {
+                var oldRow = storeRange[index];
+                oldRow.set(dataIndex, item);
+                oldRow.commit();
+            } else {
+                var newRow = {};
+                newRow[dataIndex] = item;
+                storeRange.push(newRow);
+            }
+        });
+        storeRange = storeRange.slice(0, arrayValue.length);
+        gridpanel.getStore().loadData(storeRange, false);
     },
     //----------------------------------EVENTS--------------------------------------------------------------------------
     bindLoad: function (handler) {

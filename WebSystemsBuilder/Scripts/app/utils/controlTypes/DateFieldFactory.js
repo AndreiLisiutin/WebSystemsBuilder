@@ -26,6 +26,9 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.DateFieldFactory', {
 
     //----------------------------------FORM GENERATOR------------------------------------------------------------------
     //----------------------------------OPERAND-------------------------------------------------------------------------
+    isOperand: function() {
+        return true;
+    },
     getValue: function () {
         return this._visualComponent.getValue();
     },

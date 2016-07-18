@@ -15,8 +15,9 @@ namespace WebSystemsBuilder.ClientWeb
         public ActionResult ExecuteQueryAction(int formID, int actionID, Dictionary<int, string> operandID_Value)
         {
             ActionScope scope = this.InitializeScope(formID, actionID, operandID_Value);
-            scope.Action.Execute(scope);
-            return Json(scope, JsonRequestBehavior.AllowGet);
+            scope.Action.ExecuteAction(scope);
+            IResponsePackage<ActionResultScope> response = this.CreateResponsePackage(scope._ResultScope);
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
 
         private ActionScope InitializeScope(int formID, int actionID, Dictionary<int, string> operandID_Value)

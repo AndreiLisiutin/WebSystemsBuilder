@@ -4,32 +4,23 @@ Ext.define('WebSystemsBuilder.utils.events.OpenFormAction', {
     requires: [
         'WebSystemsBuilder.utils.formGeneration.Form'
     ],
-    _eventAction: null,
-    _form: null,
 
     constructor: function (config) {
-        var eventAction = config.eventAction;
-        var form = config.form;
-
-        this._eventAction = eventAction;
-        this._form = form;
         this.callParent(arguments);
     },
 
     getFormID: function () {
-        return this._eventAction.OpenFormAction.FormID;
-    },
-    getActionID: function () {
-        return this._eventAction.OpenFormAction.ActionID;
+        var _this = this;
+        return _this.getEventAction().OpenFormAction.FormID;
     },
     getFormParameterValues: function () {
         var _this = this;
         var formParameters = {};
-        $.each(this._eventAction.OpenFormActionParameters, function (index, item) {
+        $.each(_this.getEventAction().OpenFormActionParameters, function (index, item) {
             var actionID = _this.getActionID();
             var formParameterID = item.FormParameterID;
             var operandID = item.OperandIDValue;
-            var operand = _this._form.getOperandByID(operandID);
+            var operand = _this.getForm().getOperandByID(operandID);
 
             if (operand == null) {
                 throw 'Operand for Open form action parameter not found(OperandID = ' + operandID +
@@ -52,17 +43,9 @@ Ext.define('WebSystemsBuilder.utils.events.OpenFormAction', {
             formID: formID,
             formParameters: formParameters,
             callback: function () {
-
-                if (!_this._eventAction.ChildActions || !_this._eventAction.ChildActions.length) {
-                    _this._callCallback()
+                if (callback) {
+                    callback();
                 }
-
-                $.each(_this._eventAction.ChildActions, function (index, item) {
-                    if (!_this._isChildActionExecuted(item.EventAction.ActionID)) {
-                        var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
-                        action.executeAction(_this._markAsExecutedAndCallCallback(item.EventAction.ActionID));
-                    }
-                });
             }
         });
     }

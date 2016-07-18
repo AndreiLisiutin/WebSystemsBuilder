@@ -24,13 +24,11 @@ namespace WebSystemsBuilder.Server
                     List<ClientActionInstance> clientActions = this._GetClientActions(db, eventIDs);
                     List<PredicateActionInstance> predicateActions = this._GetPredicateActions(db, eventIDs);
                     List<OpenFormActionInstance> formActions = this._GetOpenFormActions(db, eventIDs);
-                    List<ServerActionInstance> serverActions = this._GetServerActions(db, eventIDs);
                     List<QueryActionInstance> queryActions = this._GetQueryActions(db, eventIDs);
 
                     actions.AddRange(clientActions.Select(e => (BaseActionInstance)e));
                     actions.AddRange(predicateActions.Select(e => (BaseActionInstance)e));
                     actions.AddRange(formActions.Select(e => (BaseActionInstance)e));
-                    actions.AddRange(serverActions.Select(e => (BaseActionInstance)e));
                     actions.AddRange(queryActions.Select(e => (BaseActionInstance)e));
 
                     foreach (var action in actions)
@@ -111,18 +109,6 @@ namespace WebSystemsBuilder.Server
             .ToList()
             .GroupBy(e => new { e.action, e.openFormAction })
             .Select(e => new OpenFormActionInstance(e.Key.action, e.Key.openFormAction, e.Select(x => x.openFormActionParameter).ToList()))
-            .ToList();
-        }
-        private List<ServerActionInstance> _GetServerActions(WebBuilderEFContext db, List<int> eventID)
-        {
-            return (
-                from serverAction in db.ServerActions
-                join action in db.EventActions on serverAction.ActionID equals action.ActionID
-                where eventID.Contains(action.EventID)
-                select new { serverAction = serverAction, action = action }
-            )
-            .ToList()
-            .Select(e => new ServerActionInstance(e.action, e.serverAction))
             .ToList();
         }
 

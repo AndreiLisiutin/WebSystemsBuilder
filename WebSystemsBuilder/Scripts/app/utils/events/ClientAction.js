@@ -4,30 +4,23 @@ Ext.define('WebSystemsBuilder.utils.events.ClientAction', {
     requires: [
         'WebSystemsBuilder.utils.mapping.ClientActionTypes'
     ],
-    _eventAction: null,
-    _form: null,
-    constructor: function (eventAction, form) {
-        this._eventAction = eventAction;
-        this._form = form;
+    constructor: function (config) {
         this.callParent(arguments);
     },
 
     getControlID: function () {
-        return this._eventAction.ClientAction.ControlID;
-    },
-    getActionID: function () {
-        return this._eventAction.ClientAction.ActionID;
+        return this.getEventAction().ClientAction.ControlID;
     },
     getClientActionTypeID: function () {
-        return this._eventAction.ClientActionType.ClientActionTypeID;
+        return this.getEventAction().ClientActionType.ClientActionTypeID;
     },
 
-    executeAction: function () {
+    executeAction: function (callback) {
         var _this = this;
         var controlID = _this.getControlID();
         var actionID = _this.getActionID();
         var clientActionTypeID = _this.getClientActionTypeID();
-        var control = _this._form.getControlByID(controlID);
+        var control = _this.getForm().getControlByID(controlID);
         if (!control) {
             throw 'Control for client event action not found (ControlID = ' + controlID
             + ', ActionID = ' + actionID + ' )';
@@ -51,16 +44,8 @@ Ext.define('WebSystemsBuilder.utils.events.ClientAction', {
                 + ',ActionID = ' + actionID + ', ClientActionTypeID = ' + clientActionTypeID + ' )';
         }
 
-        if (!_this._eventAction.ChildActions || !_this._eventAction.ChildActions.length) {
-            _this._callCallback()
+        if (callback) {
+            callback();
         }
-
-        $.each(_this._eventAction.ChildActions, function (index, item) {
-            if (!_this._isChildActionExecuted(item.EventAction.ActionID)) {
-                var action = WebSystemsBuilder.utils.events.BaseAction.createEvent(item, _this._form);
-                action.executeAction(_this._markAsExecutedAndCallCallback(item.EventAction.ActionID));
-            }
-        });
     }
-
 });

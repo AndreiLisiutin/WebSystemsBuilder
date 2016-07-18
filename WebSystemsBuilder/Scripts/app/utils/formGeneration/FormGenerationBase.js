@@ -9,9 +9,10 @@
     createForm: function (formID) {
         var _this = this;
         Ext.create('WebSystemsBuilder.utils.formGeneration.Form', {
-            formID: 1,
+            formID: formID,
             formParameters: {
-                1: 1
+                1: 1,
+                2: true
             }
         });
     }

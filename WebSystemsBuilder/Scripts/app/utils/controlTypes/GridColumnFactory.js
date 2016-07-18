@@ -24,10 +24,18 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.GridColumnFactory', {
 
     //----------------------------------FORM GENERATOR------------------------------------------------------------------
 
+    generateVisualComponent: function (properties) {
+        properties.dataIndex = properties.dataIndex || ('_column_' + (Math.random() * 100000).toString());
+        var visualComponent = Ext.create(properties);
+        return visualComponent;
+    },
     getSelfArrayName:function(properties) {
         return 'columns';
     },
     //----------------------------------OPERAND-------------------------------------------------------------------------
+    isOperand: function() {
+        return true;
+    },
     getValue: function () {
         var gridpanel = this._visualComponent.up('gridpanel');
         if (!gridpanel) {
@@ -41,6 +49,27 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.GridColumnFactory', {
     },
     setValue: function (value) {
         throw 'Can not set value to gridcolumn';
+    },
+    setValueArray: function (arrayValue) {
+        var gridpanel = this._visualComponent.up('gridpanel');
+        if (!gridpanel) {
+            throw 'Gridpanel for gridcolumn not found';
+        }
+        var storeRange = gridpanel.getStore().getRange();
+        var dataIndex = this._visualComponent.dataIndex;
+        $.each(arrayValue, function(index, item) {
+            if (index < storeRange.length) {
+                var oldRow = storeRange[index];
+                oldRow.set(dataIndex, item);
+                oldRow.commit();
+            } else {
+                var newRow = {};
+                newRow[dataIndex] = item;
+                storeRange.push(newRow);
+            }
+        });
+        storeRange = storeRange.slice(0, arrayValue.length);
+        gridpanel.getStore().loadData(storeRange, false);
     },
     //----------------------------------EVENTS--------------------------------------------------------------------------
     bindLoad: function (handler) {
