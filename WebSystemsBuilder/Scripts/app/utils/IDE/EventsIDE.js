@@ -77,6 +77,17 @@ Ext.define('WebSystemsBuilder.utils.IDE.EventsIDE', {
         return foundEvent;
     },
     addEvent: function (event) {
+        if (event) {
+            if (event.Event.EventID > 0) {
+                event.Event.EventUniqueID = event.EventID;
+            } else {
+                event.Event.EventUniqueID = RandomIDE.get();
+            }
+            if (event.Event.ControlID > 0) {
+                event.Event.ControlUniqueID = event.Event.ControlID;
+            }
+        }
+        
         this.Events.push(event);
     },
     deleteEvent: function (uniqueID) {

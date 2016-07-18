@@ -522,6 +522,7 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
             var ControlType = currentControlDescriptions.ControlType;
             var Properties = currentControlDescriptions.Properties;
             var ChildControls = currentControlDescriptions.ChildControls;
+            var Events = currentControlDescriptions.Events;
 
             // Info about current component
             var controlTypeStore = CommonUtils.deepCloneStore(components.getStore());
@@ -555,6 +556,14 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 }
             });
             Focused.clearFocusedCmp();
+
+            // Put all the events into EventsIDE structure
+            if (Events && Events.length > 0){
+                Events.forEach(function(currentEvent) {
+                    currentEvent.Event.ControlUniqueID = component.uniqueID;
+                    EventsIDE.addEvent(currentEvent);
+                });
+            }
 
             // Recursion
             if (ChildControls && ChildControls instanceof Array && ChildControls.length > 0) {

@@ -23,7 +23,7 @@
         _this.EventTypeControlTypeList = [];
 
         Ext.Ajax.request({
-            url: 'MainIDE/GetEventTypeControlTypeList',
+            url: 'EventType/GetEventTypeControlTypeList',
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             success: function (objServerResponse) {
