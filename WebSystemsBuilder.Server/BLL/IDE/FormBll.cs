@@ -111,12 +111,18 @@ namespace WebSystemsBuilder.Server
         /// <returns></returns>
         public FormInstance EditFormMetaDescriptions(FormInstance formInstance)
         {
+            // Dictionary<UniqueID, ControlID>
+            Dictionary<int, OperandInstance> uniqueIDDictionary = new Dictionary<int, OperandInstance>(); 
+
             using (var db = this.CreateContext())
             {
                 using (var transaction = db.Database.BeginTransaction())
                 {
                     try
                     {
+                        // Delete old events
+                        this.DeleteOldEvents(formInstance.Form.FormID, db, transaction);
+
                         // Save Form
                         var originalForm = db.Forms.Find(formInstance.Form.FormID);
                         if (originalForm != null)
@@ -188,7 +194,12 @@ namespace WebSystemsBuilder.Server
                         formInstance.RootControl.Control.FormID = formInstance.Form.FormID;
                         this.SaveControl(formInstance.RootControl, db, transaction);
 
-                        //this.SaveControlEvents(formInstance.RootControl, db, transaction);
+                        // Dictionary<UniqueID, ControlID>
+                        Dictionary<int, OperandInstance> controlIDuniqueIDDictionary = GetUniqueIDControlIDDictionary(formInstance.RootControl, db, transaction);
+                        controlIDuniqueIDDictionary.ToList().ForEach(x => uniqueIDDictionary.Add(x.Key, x.Value));
+
+                        // Recursive save all events
+                        this.SaveControlEvents(controlIDuniqueIDDictionary, formInstance.RootControl, db, transaction);
 
                         // Commit transaction
                         db.SaveChanges();
@@ -212,7 +223,7 @@ namespace WebSystemsBuilder.Server
         /// <param name="db"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public ControlInstance SaveControl(ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
+        private ControlInstance SaveControl(ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
         {
             if (currentControl == null)
             {
@@ -349,7 +360,7 @@ namespace WebSystemsBuilder.Server
         /// <param name="db"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public Dictionary<int, OperandInstance> GetUniqueIDControlIDDictionary(ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
+        private Dictionary<int, OperandInstance> GetUniqueIDControlIDDictionary(ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
         {
              Dictionary<int, OperandInstance> dictionary = new Dictionary<int, OperandInstance>();
 
@@ -384,7 +395,7 @@ namespace WebSystemsBuilder.Server
         /// <param name="db"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public void SaveControlEvents(Dictionary<int, OperandInstance> controlIDuniqueIDDictionary, ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
+        private void SaveControlEvents(Dictionary<int, OperandInstance> controlIDuniqueIDDictionary, ControlInstance currentControl, WebBuilderEFContext db, DbContextTransaction transaction)
         {
             if (currentControl == null)
             {
@@ -546,6 +557,99 @@ namespace WebSystemsBuilder.Server
                     SaveControlEvents(controlIDuniqueIDDictionary, childControl, db, transaction);
                 }
             }            
+        }
+
+        /// <summary>
+        /// Delete all the events of the form
+        /// </summary>
+        /// <param name="formID"></param>
+        /// <param name="db"></param>
+        /// <param name="transaction"></param>
+        private void DeleteOldEvents(int formID, WebBuilderEFContext db, DbContextTransaction transaction)
+        {
+            List<Event> controlEventsAll = new List<Event>();
+            List<EventAction> eventActionsAll = new List<EventAction>();
+            List<ClientAction> clientActionsAll = new List<ClientAction>();
+            List<OpenFormAction> openFormActionsAll = new List<OpenFormAction>();
+            List<OpenFormActionParameter> openFormActionParametersAll = new List<OpenFormActionParameter>();
+            List<PredicateAction> predicateActionsAll = new List<PredicateAction>();
+            List<QueryAction> queryActionsAll = new List<QueryAction>();
+            List<QueryActionIn> queryActionInsAll = new List<QueryActionIn>();
+            List<QueryActionOut> queryActionOutsAll = new List<QueryActionOut>();
+            List<QueryType> queryTypesAll = new List<QueryType>();
+            List<QueryTypeTable> queryTablesAll = new List<QueryTypeTable>();
+            List<QueryTypeColumn> queryColumnsAll = new List<QueryTypeColumn>();
+            List<QueryTypeIn> queryInsAll = new List<QueryTypeIn>();
+            List<QueryTypeOut> queryOutsAll = new List<QueryTypeOut>();
+            
+            List<Control> formControls = db.Controls.Where(x => x.FormID == formID).ToList();
+            foreach (Control currentControl in formControls)
+            {
+                List<Event> controlEvents = db.Events.Where(x => x.ControlID == currentControl.ControlID).ToList();
+                controlEventsAll.AddRange(controlEvents);
+                foreach (Event currentEvent in controlEvents)
+                {
+                    List<EventAction> eventActions = db.EventActions.Where(x => x.EventID == currentEvent.EventID).ToList();
+                    eventActionsAll.AddRange(eventActions);
+                    foreach (EventAction currentEventAction in eventActions)
+                    {
+                        List<ClientAction> clientActions = db.ClientActions.Where(x => x.ActionID == currentEventAction.ActionID).ToList();
+                        clientActionsAll.AddRange(clientActions);
+                        List<OpenFormAction> openFormActions = db.OpenFormActions.Where(x => x.ActionID == currentEventAction.ActionID).ToList();
+                        openFormActionsAll.AddRange(openFormActions);
+                        foreach (OpenFormAction openFormAction in openFormActions)
+                        {
+                            List<OpenFormActionParameter> openFormActionParameters = db.OpenFormActionParameters.Where(x => x.OpenFormActionID == openFormAction.ActionID).ToList();
+                            openFormActionParametersAll.AddRange(openFormActionParameters);
+                        }
+                        List<PredicateAction> predicateActions = db.PredicateActions.Where(x => x.ActionID == currentEventAction.ActionID).ToList();
+                        predicateActionsAll.AddRange(predicateActions);
+
+                        List<QueryAction> queryActions = db.QueryActions.Where(x => x.ActionID == currentEventAction.ActionID).ToList();
+                        queryActionsAll.AddRange(queryActions);
+                        List<QueryActionIn> queryActionIns = db.QueryActionIns.Where(x => x.QueryActionID == currentEventAction.ActionID).ToList();
+                        queryActionInsAll.AddRange(queryActionIns);
+                        List<QueryActionOut> queryActionOuts = db.QueryActionOuts.Where(x => x.QueryActionID == currentEventAction.ActionID).ToList();
+                        queryActionOutsAll.AddRange(queryActionOuts);
+                        foreach (QueryAction queryAction in queryActions)
+                        {
+                            List<QueryType> queryTypes = db.QueryTypes.Where(x => x.QueryTypeID == queryAction.QueryTypeID).ToList();
+                            queryTypesAll.AddRange(queryTypes);
+                            List<QueryTypeTable> queryTables = db.QueryTypeTables.Where(x => x.QueryTypeID == queryAction.QueryTypeID).ToList();
+                            queryTablesAll.AddRange(queryTables);
+                            List<QueryTypeColumn> queryColumns = db.QueryTypeColumns.Where(x => x.QueryTypeID == queryAction.QueryTypeID).ToList();
+                            queryColumnsAll.AddRange(queryColumns);
+                            List<QueryTypeIn> queryIns = db.QueryTypeIns.Where(x => x.QueryTypeID == queryAction.QueryTypeID).ToList();
+                            queryInsAll.AddRange(queryIns);
+                            List<QueryTypeOut> queryOuts = db.QueryTypeOuts.Where(x => x.QueryTypeID == queryAction.QueryTypeID).ToList();
+                            queryOutsAll.AddRange(queryOuts);
+                        }
+                    }
+                }
+            }
+
+
+            // Client actions
+            db.ClientActions.RemoveRange(clientActionsAll);
+            // Open Form Actions
+            db.OpenFormActionParameters.RemoveRange(openFormActionParametersAll);
+            db.OpenFormActions.RemoveRange(openFormActionsAll);
+            // Predicate Actions
+            db.PredicateActions.RemoveRange(predicateActionsAll);
+            // Query Actions
+            db.QueryActionIns.RemoveRange(queryActionInsAll);
+            db.QueryActionOuts.RemoveRange(queryActionOutsAll);
+            db.QueryActions.RemoveRange(queryActionsAll);
+            // Query Types
+            db.QueryTypeIns.RemoveRange(queryInsAll);
+            db.QueryTypeOuts.RemoveRange(queryOutsAll);
+            db.QueryTypeTables.RemoveRange(queryTablesAll);
+            db.QueryTypeColumns.RemoveRange(queryColumnsAll);
+            db.QueryTypes.RemoveRange(queryTypesAll);
+            // Event Actions
+            db.EventActions.RemoveRange(eventActionsAll);
+            // Events
+            db.Events.RemoveRange(controlEventsAll);
         }
     }
 }

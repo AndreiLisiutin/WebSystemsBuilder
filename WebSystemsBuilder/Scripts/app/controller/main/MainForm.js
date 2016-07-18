@@ -21,8 +21,8 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
             'MainForm button[action=onOpenQueryBuilder]': {
                 click: this.onOpenQueryBuilder
             },
-            'MainForm button[name=test]': {
-                click: this.test
+            'MainForm button[action=onTestSample]': {
+                click: this.onTestSample
             }
         });
 
@@ -34,7 +34,7 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
         WebSystemsBuilder.utils.mapping.PredicateOperations.init();
     },
 
-    onOpenIDE: function (button) {
+    onOpenIDE: function () {
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.MainIDE');
         WebSystemsBuilder.utils.Windows.open('MainIDE');
     },
@@ -44,7 +44,7 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
         WebSystemsBuilder.utils.Windows.open('QueryAction');
     },
 
-    test: function () {
+    onTestSample: function () {
         WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.event.PredicateAction');
         WebSystemsBuilder.utils.Windows.open('PredicateAction');
     }
