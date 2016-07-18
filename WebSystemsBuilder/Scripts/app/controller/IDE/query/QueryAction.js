@@ -412,7 +412,7 @@
             MessageBox.error('Choose data table');
             return '';
         }
-        var physicalTable = deleteDataTable.findRecordByValue(deleteDataTable.getValue()).get('PhysicalTable');
+        var physicalTable = insertDataTable.findRecordByValue(insertDataTable.getValue()).get('PhysicalTable');
         var dataTablePlaceHolder = '{' + physicalTable + '}';
 
         // INSERT columns string
@@ -422,8 +422,9 @@
             var column = currentColumn.get('PlaceHolder');
             var value = currentColumn.get('OperandValue');
             if (value) {
+                var placeHolder = value.IsControl || value.IsFormParameter ? value.PlaceHolder : value.Name;
                 columnsList.push(column);
-                valuesList.push(value.PlaceHolder);
+                valuesList.push(placeHolder);
             }
         });
         if (columnsList.length == 0) {

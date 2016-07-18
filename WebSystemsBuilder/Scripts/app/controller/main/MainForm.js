@@ -21,11 +21,11 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
             'MainForm button[action=onOpenQueryBuilder]': {
                 click: this.onOpenQueryBuilder
             },
+            'MainForm button[action=onOpenFormList]': {
+                click: this.onOpenFormList
+            },
             'MainForm button[action=onTestSample]': {
                 click: this.onTestSample
-            },
-            'MainForm button[name=test]': {
-                click: this.test
             }
         });
 
@@ -42,12 +42,18 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
         WebSystemsBuilder.utils.Windows.open('MainIDE');
     },
 
-    onOpenQueryBuilder: function () {
-        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryAction');
-        WebSystemsBuilder.utils.Windows.open('QueryAction');
+    onOpenFormList: function () {
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.main.FormList');
+        WebSystemsBuilder.utils.Windows.open('FormList');
     },
 
-    test: function () {
+    onOpenQueryBuilder: function () {
+        WebSystemsBuilder.utils.ControllerLoader.load('WebSystemsBuilder.controller.IDE.query.QueryAction');
+        var queryWin = WebSystemsBuilder.utils.Windows.open('QueryAction');
+        queryWin.down('button[action=onSave]').hide();
+    },
+
+    onTestSample: function () {
         WebSystemsBuilder.utils.formGeneration.FormGenerationBase.createForm(1);
     }
 });

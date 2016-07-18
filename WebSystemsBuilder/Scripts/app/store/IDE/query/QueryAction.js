@@ -46,7 +46,7 @@ Ext.define('WebSystemsBuilder.store.IDE.query.InsertColumnList', {
         type: 'ajax',
 
         api: {
-            read: 'MainIDE/GetTableColumnList'
+            read: 'Table/GetTableColumnList'
         },
 
         reader: {

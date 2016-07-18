@@ -42,6 +42,17 @@ Ext.define('WebSystemsBuilder.view.main.MainForm', {
                         },
                         {
                             xtype: 'button',
+                            text: 'Forms',
+                            iconAlign: 'top',
+                            iconCls:'icon-image main_buttons_icons',
+                            cls:['icons', 'main_buttons', 'reset_buttons_z_index'],
+                            border: true,
+                            action: 'onOpenFormList',
+                            margin: '20 10 10 10',
+                            icon: 'Scripts/resources/icons/table_64.png'
+                        },
+                        {
+                            xtype: 'button',
                             text: 'SQL Query<br>Builder',
                             iconAlign: 'top',
                             iconCls:'icon-image main_buttons_icons',

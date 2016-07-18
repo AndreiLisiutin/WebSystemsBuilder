@@ -140,6 +140,11 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
         FormParametersIDE.init(FormParametersGrid);
         MousedComponentsIDE.clear();
 
+        // Events about adding and removing components from designed form
+        // Handlers shows it by adding/removing components on Project Inspector
+        win.on('ComponentAdded', _this.onAddComponent);
+        win.on('ComponentRemoved', _this.onRemoveComponent);
+
         // Delegate for all components loading
         var loadControlTypeGrid = function () {
             componentsGrid.getStore().load({
@@ -148,6 +153,10 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                     if (jsonResp.Code == 0) {
                         // Select "All" group
                         componentGroupGrid.getSelectionModel().select(componentGroupGrid.getStore().findRecord('ControlTypeGroupID', -1));
+
+                        if (win.formID) {
+                            _this.openForm(win, win.formID);
+                        }
 
                     } else {
                         WebSystemsBuilder.utils.MessageBox.error(jsonResp.Message);
@@ -174,22 +183,6 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 WebSystemsBuilder.utils.MessageBox.error(objServerResponse.responseText);
             }
         });
-
-//        eventPanel.on('RecordChanged', function (grid) {
-//            var focused = WebSystemsBuilder.utils.IDE.Focused.getFocusedCmp();
-//            if (focused) {
-//                var newEvents = [];
-//                eventPanel.getStore().data.items.forEach(function (item) {
-//                    newEvents.push(item.data);
-//                });
-//                focused.record.set('events', newEvents);
-//            }
-//        });
-
-        // Events about adding and removing components from designed form
-        // Handlers shows it by adding/removing components on Project Inspector
-        win.on('ComponentAdded', _this.onAddComponent);
-        win.on('ComponentRemoved', _this.onRemoveComponent);
     },
 
     /**
@@ -392,6 +385,8 @@ Ext.define('WebSystemsBuilder.controller.IDE.MainIDE', {
                 win.body.unmask();
                 var jsonResp = Ext.decode(objServerResponse.responseText);
                 if (jsonResp.Code == 0) {
+                    win.fireEvent('FormSaved');
+                    
                     if (closeAfterSave) {
                         win.close();
                         return;
