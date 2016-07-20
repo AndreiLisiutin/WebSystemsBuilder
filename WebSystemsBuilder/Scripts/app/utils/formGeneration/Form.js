@@ -26,17 +26,27 @@
         this.callParent(arguments);
     },
 
+    /**
+     * Generate web-form.
+     * @param formID form identifyer in metadescriptions DB
+     * @param formParameters object with parameters values.
+     * Format: { formParameterID: value }.
+     * Example { 1:'value 1', 2:new Date() }
+     */
     createForm: function (formID, formParameters) {
         var _this = this;
-        formID = formID || 1;
-        formParameters = formParameters
-            || {
-                1: 1
-            };
+        if (!formID) {
+            throw 'Incorrect form ID to create from meta-descriptions';
+        }
+        formParameters = formParameters || {};
+
         _this._consoleLog('Generating form #' + _this._formID);
+
         _this._getFormMeta(formID, function (formMeta) {
+            //callback for this._getFormMeta() - part 2. Building web-form by metadata. Called after metadata request successfully finished
             _this._buildForm(formMeta, formParameters);
 
+            //callback for form generation. For ope form action
             if (_this._callback) {
                 _this._form.getVisualComponent().on('afterrender', function () {
                     _this._callback();
@@ -44,7 +54,6 @@
             }
 
             _this._form.getVisualComponent().show();
-
         });
     },
 
@@ -110,49 +119,79 @@
         });
     },
 
+    /**
+     * Build form by meta-descriptions
+     * @param formMeta meta-descriptions of form. Structure: WebSystemsBuilder.Server.Models.FormInstance.
+     * See server code for more details
+     * @param formParameters formParameters object with parameters values.
+     * Format: { formParameterID: value }.
+     * Example { 1:'value 1', 2:new Date() }
+     * @returns {null}
+     * @private
+     */
     _buildForm: function (formMeta, formParameters) {
         var _this = this;
-        _this._form = _this._сreateControl(formMeta.RootControl);
+        //createing recursively form main component with children
+        _this._form = _this._createControl(formMeta.RootControl);
+        //initializing form parameters with values from @param formParameters
         _this._createParameters(formMeta.FormParameters, formParameters);
+        //binding events to controlscreated in previous steps
         _this._bindEvents(formMeta.Events);
         return _this._form;
     },
 
+    /**
+     * Create form parameters and return list of their handlers
+     * @param formParameters form parameters metadata.
+     * Structre: Array<WebSystemsBuilder.Server.Models.FormParameterInstance>. For more info see server code.
+     * @param parameterValues formParameters object with parameters values.
+     * Format: { formParameterID: value }.
+     * Example { 1:'value 1', 2:new Date() }
+     * @returns {Array[WebSystemsBuilder.utils.operands.FormParameterHandler]} parameter handlers array
+     * @private
+     */
     _createParameters: function (formParameters, parameterValues) {
         var _this = this;
-        var paramHandlers = [];
         $.each(formParameters, function (i, item) {
+            //create parameter handler
             var value = parameterValues[item.FormParameter.FormParameterID] || null;
-            paramHandlers.push(_this._createParameter(item, value));
+            var paramHandler = Ext.create('WebSystemsBuilder.utils.operands.FormParameterHandler')
+                .generateParameter(item, value);
+            //collect parameters handler
+            _this._paramHandlers.push(paramHandler);
         });
-        return paramHandlers;
+        return _this._paramHandlers;
     },
 
-    _createParameter: function (parameterInstance, value) {
-        var _this = this;
-        var paramHandler = Ext.create('WebSystemsBuilder.utils.operands.FormParameterHandler')
-            .generateParameter(parameterInstance, value);
-        _this._paramHandlers.push(paramHandler);
-        return paramHandler;
-    },
-
-    _сreateControl: function (controlInstance) {
+    /**
+     * Creating form control and recursively its child controls.
+     * @param controlInstance control meta-descriptions. Subtree of web-form controls tree structure.
+     * Struncture: WebSystemsBuilder.Server.Models.ControlInstance. See server code for more details
+     * @returns control handler - objects that stores control metadata and performs control's actions.
+     * Structure: WebSystemsBuilder.utils.operands.BaseControlHandler.
+     * @private
+     */
+    _createControl: function (controlInstance) {
         var _this = this;
 
         _this._consoleLog('Generating form #' + _this._formID +
             ' control #' + controlInstance.Control.ControlID);
 
+        //creating control handler by control type ID.
         var controlHandler = WebSystemsBuilder.utils.controlTypes.ComponentFactoryUtils
             .getFactory(controlInstance.Control.ControlTypeID);
 
         var innerHandlers = [];
+        //recursively create child controls from control metadata subtree
         if (controlInstance.ChildControls && controlInstance.ChildControls.length) {
             $.each(controlInstance.ChildControls, function (i, item) {
-                var innerHandler = _this._сreateControl(item);
+                var innerHandler = _this._createControl(item);
                 innerHandlers.push(innerHandler);
             });
         }
+        //creating control visual component - ExtJS class that represents this control type with nested controls
         controlHandler.generateComponent(controlInstance, innerHandlers);
+        //collecting control handlers for form management at runtime
         _this._controlHandlers.push(controlHandler);
         return controlHandler;
     },
