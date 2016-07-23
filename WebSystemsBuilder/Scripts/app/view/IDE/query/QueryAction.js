@@ -4,7 +4,7 @@
     name: 'QueryAction',
 
     modal: true,
-    title: 'Query Action',
+    title: 'Query Builder',
 
     height: 700,
     width: 900,
