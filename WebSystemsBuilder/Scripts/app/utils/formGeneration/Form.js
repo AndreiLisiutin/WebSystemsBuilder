@@ -196,6 +196,11 @@
         return controlHandler;
     },
 
+    /**
+     * Bind all events with handlers. Calls _bindEvent.
+     * @param eventInstances
+     * @private
+     */
     _bindEvents: function (eventInstances) {
         var _this = this;
         if (!eventInstances) {
@@ -206,6 +211,11 @@
         });
     },
 
+    /**
+     * Bind event with its handled from meta-descriptions
+     * @param eventInstance
+     * @private
+     */
     _bindEvent: function (eventInstance) {
         var _this = this;
         var controlID = eventInstance.EventInstance.Event.ControlID;
@@ -214,6 +224,7 @@
         var eventTypeName = eventInstance.EventInstance.EventType.Name;
 
         _this._consoleLog('Generating form #' + _this._formID + ' event #' + eventID + '. ');
+        //get control's handler
         var control = _this.getControlByID(controlID);
         if (control == null) {
             throw 'Control for event not found (ControlID = ' + controlID +
@@ -222,9 +233,11 @@
         var extJsControlID = control.getVisualComponent().getId();
         _this._consoleLog('---Control ' + extJsControlID + ' event ' + eventTypeName);
 
+        //build function-handler
         var eventHandler = function () {
             var eventActions = [];
             $.each(eventInstance.EventActions, function (index, item) {
+                //create event action tree model
                 var eventAction = WebSystemsBuilder.utils.events.BaseAction.createEvent({
                     eventAction: item,
                     form: _this,
@@ -239,6 +252,7 @@
             });
         };
 
+        //create an event and bind it with handler
         switch (eventTypeID) {
             case EventTypes.Load:
                 control.bindLoad(eventHandler);

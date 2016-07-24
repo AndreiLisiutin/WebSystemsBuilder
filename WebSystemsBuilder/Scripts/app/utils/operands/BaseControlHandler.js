@@ -99,18 +99,38 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
         }
     },
     //----------------------------------EVENTS--------------------------------------------------------------------------
+    /**
+     * Bind handler to load (afterrender) event of the component
+     * @param handler
+     */
     bindLoad: function (handler) {
         throw 'Component ' + this._getComponentClass() + ' doesn\'t support event type Load.';
     },
+    /**
+     * Bind handler to click event of the component
+     * @param handler
+     */
     bindClick: function (handler) {
         throw 'Component ' + this._getComponentClass() + ' doesn\'t support event type Click.';
     },
+    /**
+     * Bind handler to close event of the component
+     * @param handler
+     */
     bindClose: function (handler) {
         throw 'Component ' + this._getComponentClass() + ' doesn\'t support event type Close.';
     },
+    /**
+     * Bind handler to change value event of the component
+     * @param handler
+     */
     bindChangeValue: function (handler) {
         throw 'Component ' + this._getComponentClass() + ' doesn\'t support event type ChangeValue.';
     },
+    /**
+     * Bind handler to change selection event of the component
+     * @param handler
+     */
     bindChangeSelection: function (handler) {
         throw 'Component ' + this._getComponentClass() + ' doesn\'t support event type ChangeSelection.';
     },

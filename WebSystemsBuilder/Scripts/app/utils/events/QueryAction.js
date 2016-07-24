@@ -100,10 +100,15 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
         return operandValues;
     },
 
+    /**
+     * Execute query action
+     * @param callback
+     */
     executeAction: function (callback) {
         var _this = this;
         var actionID = _this.getActionID();
         var formID = _this.getFormID();
+        //get list of {operand_id, serialized value} pairs
         var operandsScope = _this.getOperandsScope();
 
         var postData = {
@@ -112,6 +117,7 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
             operandID_Value: []
         };
 
+        //format parameters as C# Dictionary<> object
         for (var operandID in operandsScope) {
             postData.operandID_Value.push({
                 Key: operandID,
@@ -119,6 +125,7 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
             });
         }
 
+        //call server side to execute query
         Ext.Ajax.request({
             url: 'Query/ExecuteQueryAction',
             method: 'POST',
@@ -129,6 +136,7 @@ Ext.define('WebSystemsBuilder.utils.events.QueryAction', {
                 if (jsonResp.Code == 0) {
                     var data = jsonResp.Data;
                     if (data.OperandValues) {
+                        //set values ин operand_id's back
                         _this.setOperandValues(data.OperandValues);
                     }
 

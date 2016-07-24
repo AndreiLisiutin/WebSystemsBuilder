@@ -157,18 +157,38 @@ namespace WebSystemsBuilder.Server.Models
             }
         }
 
+        /// <summary> Execute query operation
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
         protected override bool Execute(ActionScope scope)
         {
-            int queryTypeID = this.QueryAction.QueryTypeID;
-            QueryTypeInstance queryType = new QueryTypeBLL().GetQueryTypeByID(queryTypeID);
-            Dictionary<int, string> queryTypeInID_value = this.GetQueryInParameters(scope, queryType);
-            Dictionary<int, bool> queryTypePartID_value = this.GetQueryParts(scope, queryType);
-            
-            var sql = queryType.ConstructSql(queryTypeInID_value, queryTypePartID_value);
-            DataTable resultData = new QueryBLL().ExecuteSql(sql.Item1, sql.Item2);
-            this.SetOperatorValues(scope, resultData);
-            //query executed
-            scope.ExecutedActionIDS.Add(this.EventAction.ActionID);
+            try
+            {
+                int queryTypeID = this.QueryAction.QueryTypeID;
+                //get meta-descriptions for query type
+                QueryTypeInstance queryType = new QueryTypeBLL().GetQueryTypeByID(queryTypeID);
+                //get query type in values
+                Dictionary<int, string> queryTypeInID_value = this.GetQueryInParameters(scope, queryType);
+                //get query type part values
+                Dictionary<int, bool> queryTypePartID_value = this.GetQueryParts(scope, queryType);
+                //construct query from metadata and parameters' values
+                var sql = queryType.ConstructSql(queryTypeInID_value, queryTypePartID_value);
+                //execute query
+                DataTable resultData = new QueryBLL().ExecuteSql(sql.Item1, sql.Item2);
+                //update operator_id-values
+                this.SetOperatorValues(scope, resultData);
+                //query executed - mark it as executed
+                scope.ExecutedActionIDS.Add(this.EventAction.ActionID);
+            }
+            catch (FormGenerationException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't execute query to user's data source.", ex);
+            }
 
             return true;
         }
