@@ -38,6 +38,7 @@ namespace WebSystemsBuilder.Server.Models
                 return false;
             }
 
+            //if fully executed on server, call next
             foreach (var action in this.ChildActions)
             {
                 if (scope.ExecutedActionIDS.Contains(action.EventAction.ActionID))

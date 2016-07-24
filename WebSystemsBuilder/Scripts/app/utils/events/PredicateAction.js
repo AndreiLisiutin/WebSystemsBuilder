@@ -41,19 +41,28 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
         return WebSystemsBuilder.utils.mapping.ValueTypes.executePredicate(operand_1.getValue(), operand_2.getValue(), operationID, valueType_1);
     },
 
+    /**
+     * Executing IF-THEN-ELSE
+     * @param callback
+     */
     executeAction: function (callback) {
         var _this = this;
+        //check predicate condition
         var predicateResult = _this.executePredicate();
         var actionIDTrue = _this.getEventAction().PredicateAction.ActionIDTrue;
         var actionIDFalse = _this.getEventAction().PredicateAction.ActionIDFalse;
 
         var actionIDNext = null;
         if (predicateResult) {
+            //if true, false-subtree of actions must be marked as executed - 
+            // it will never called
             actionIDNext = actionIDTrue;
             if (actionIDFalse) {
                 _this._markActionsSubtreeAsExecuted(actionIDFalse);
             }
         } else {
+            //if false, true-subtree of actions must be marked as executed - 
+            // it will never called
             actionIDNext = actionIDFalse;
             if (actionIDTrue) {
                 _this._markActionsSubtreeAsExecuted(actionIDTrue);
@@ -63,6 +72,7 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
             return item.EventAction.ActionID == actionIDNext;
         })[0];
         if (!actionNext) {
+            //if "condotioned action" doesn't exists, call next action
             if (callback) {
                 callback()
             }
@@ -74,6 +84,7 @@ Ext.define('WebSystemsBuilder.utils.events.PredicateAction', {
             form: _this.getForm(),
             executedActions: _this.getExecutedActions(),
             parentAction: _this,
+            //call next action after "conditioned action" subtree executed
             actionSubtreeExecutedCallback: callback
         });
         newAction.execute();
