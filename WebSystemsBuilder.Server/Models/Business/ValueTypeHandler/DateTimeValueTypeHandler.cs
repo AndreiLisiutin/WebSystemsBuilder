@@ -45,7 +45,14 @@ namespace WebSystemsBuilder.Server.Models
             try
             {
                 DateTime dateTime = (value is DateTime?) ? (value as DateTime?).Value : (DateTime)value;
-                return dateTime.ToString(CultureInfo.InvariantCulture);
+                if (!string.IsNullOrEmpty(format))
+                {
+                    return dateTime.ToString(format);
+                }
+                else
+                {
+                    return dateTime.ToString(CultureInfo.InvariantCulture);
+                }
             }
             catch (Exception ex)
             {

@@ -39,6 +39,9 @@ Ext.define('WebSystemsBuilder.utils.events.ClientAction', {
             case ClientActionTypes.SetNotReadOnly:
                 control.executeSetNotReadOnly();
                 break;
+            case ClientActionTypes.Close:
+                control.executeClose();
+                break;
             default:
                 throw 'Unknown client event action not found (ControlID = ' + controlID
                 + ',ActionID = ' + actionID + ', ClientActionTypeID = ' + clientActionTypeID + ' )';

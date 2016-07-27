@@ -5,6 +5,7 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
     ],
     requires: [
         'WebSystemsBuilder.utils.formGeneration.FormGenerationBase',
+        'WebSystemsBuilder.utils.formGeneration.Form',
         'WebSystemsBuilder.utils.mapping.ActionTypes',
         'WebSystemsBuilder.utils.mapping.ValueTypes',
         'WebSystemsBuilder.utils.mapping.ControlTypes',
@@ -54,6 +55,13 @@ Ext.define('WebSystemsBuilder.controller.main.MainForm', {
     },
 
     onTestSample: function () {
-        WebSystemsBuilder.utils.formGeneration.FormGenerationBase.createForm(1);
+        Ext.create('WebSystemsBuilder.utils.formGeneration.Form', {
+            formID: 87,
+            formParameters: {
+                1: -1,//1,
+                2: true,
+                3: -1
+            }
+        });
     }
 });

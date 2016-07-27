@@ -2,7 +2,8 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.TextFieldFactory', {
     extend: 'WebSystemsBuilder.utils.controlTypes.BaseComponentFactory',
     alternateClassName: ['TextFieldFactory'],
 
-    onRender: function (component) { },
+    onRender: function (component) {
+    },
 
     createComponent: function () {
         return Ext.create('Ext.form.field.Text', {
@@ -15,40 +16,38 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.TextFieldFactory', {
             width: 200
         });
     },
-
     //----------------------------------FORM GENERATOR------------------------------------------------------------------
-
     //----------------------------------OPERAND-------------------------------------------------------------------------
-    isOperand: function() {
+    isOperand: function () {
         return true;
     },
     getValue: function () {
-        return this._visualComponent.getValue();
+        return this.getVisualComponent().getValue();
     },
     setValue: function (value) {
-        return this._visualComponent.setValue(value);
+        return this.getVisualComponent().setValue(value);
     },
     //----------------------------------EVENTS--------------------------------------------------------------------------
     bindLoad: function (handler) {
-        this._visualComponent.on('afterrender', handler);
+        this.getVisualComponent().on('afterrender', handler);
     },
     bindClick: function (handler) {
-        this._visualComponent.on('click', handler);
+        this.getVisualComponent().on('click', handler);
     },
     bindChangeValue: function (handler) {
-        this._visualComponent.on('change', handler);
+        this.getVisualComponent().on('change', handler);
     },
     //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
     executeEnable: function (handler) {
-        this._visualComponent.enable();
+        this.getVisualComponent().enable();
     },
     executeDisable: function (handler) {
-        this._visualComponent.disable();
+        this.getVisualComponent().disable();
     },
     executeSetReadOnly: function (handler) {
-        this._visualComponent.setReadOnly(true);
+        this.getVisualComponent().setReadOnly(true);
     },
     executeSetNotReadOnly: function (handler) {
-        this._visualComponent.setReadOnly(false);
+        this.getVisualComponent().setReadOnly(false);
     }
 });
