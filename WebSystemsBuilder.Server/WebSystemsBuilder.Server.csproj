@@ -195,7 +195,10 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="BLLDiagram.cd" />
+    <None Include="DALDiagram.cd" />
     <None Include="packages.config" />
+    <None Include="ModelDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

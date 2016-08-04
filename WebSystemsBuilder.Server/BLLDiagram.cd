@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WebSystemsBuilder.Server.ConnectionFactory" Collapsed="true">
+    <Position X="20" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAQAAAACAAAA=</HashCode>
+      <FileName>BLL\ConnectionFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.EventsBLL" Collapsed="true">
+    <Position X="20" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACABBAAAAAAgAAAAAJCAAAAAAAAAAEAEAAAACACAA=</HashCode>
+      <FileName>BLL\FormGeneration\EventsBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.FormMetaBLL" Collapsed="true">
+    <Position X="21" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAEAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\FormGeneration\FormMetaBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.ParametersBLL" Collapsed="true">
+    <Position X="25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>BLL\FormGeneration\ParametersBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.QueryBLL" Collapsed="true">
+    <Position X="16" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\FormGeneration\QueryBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.QueryTypeBLL" Collapsed="true">
+    <Position X="18" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAgAAAQAAAAACAAAAAAAAAADAABAAAAAQCAAA=</HashCode>
+      <FileName>BLL\FormGeneration\QueryTypeBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.ValueTypesBLL" Collapsed="true">
+    <Position X="24" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\FormGeneration\ValueTypesBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.ClientActionTypeBll" Collapsed="true">
+    <Position X="26" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\IDE\ClientActionTypeBll.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.ColumnBLL" Collapsed="true">
+    <Position X="15" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\IDE\ColumnBll.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.ControlTypeBLL" Collapsed="true">
+    <Position X="17" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>BLL\IDE\ControlTypeBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.ControlTypeGroupBLL" Collapsed="true">
+    <Position X="23" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\IDE\ControlTypeGroupBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.EventTypeControlTypeBLL" Collapsed="true">
+    <Position X="22" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\IDE\EventTypeControlTypeBLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.FormBll" Collapsed="true">
+    <Position X="14" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAERgAAAAAAAAAAAAAAkCAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\IDE\FormBll.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.TableBLL" Collapsed="true">
+    <Position X="19" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BLL\IDE\TableBll.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="WebSystemsBuilder.Server.PredicateOperationEnum" Collapsed="true">
+    <Position X="18.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAgAAAAAAAAIAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>BLL\PredicateOperationEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="WebSystemsBuilder.Server.ValueTypeEnum" Collapsed="true">
+    <Position X="20.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAQAAAAAAAAAAAAgQAAAAAAAAgAAA=</HashCode>
+      <FileName>BLL\ValueTypeEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

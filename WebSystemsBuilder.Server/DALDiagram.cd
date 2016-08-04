@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WebSystemsBuilder.Server.DAL.GenericRepository&lt;T&gt;" Collapsed="true">
+    <Position X="36.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQCAEEAAAAAAABAAAAAQAAAAAEAAQAAAAEAgAAAAAA=</HashCode>
+      <FileName>DAL\DataContext\GenericRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ClientActionRepository" Collapsed="true">
+    <Position X="42.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ClientActionRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ClientActionTypeControlTypeRepository" Collapsed="true">
+    <Position X="42.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ClientActionTypeControlTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ClientActionTypeRepository" Collapsed="true">
+    <Position X="42.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ClientActionTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ColumnRepository" Collapsed="true">
+    <Position X="42.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ColumnRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ControlRepository" Collapsed="true">
+    <Position X="42.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ControlRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ControlTypeDependencyRepository" Collapsed="true">
+    <Position X="31.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ControlTypeDependencyRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ControlTypeGroupRepository" Collapsed="true">
+    <Position X="31.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ControlTypeGroupRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ControlTypePropertyTypeRepository" Collapsed="true">
+    <Position X="31.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ControlTypePropertyTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ControlTypeRepository" Collapsed="true">
+    <Position X="31.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ControlTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.EventActionRepository" Collapsed="true">
+    <Position X="31.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\EventActionRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.EventRepository" Collapsed="true">
+    <Position X="31.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\EventRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.EventTypeControlTypeRepository" Collapsed="true">
+    <Position X="33.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\EventTypeControlTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.EventTypeRepository" Collapsed="true">
+    <Position X="33.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\EventTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.FormParameterRepository" Collapsed="true">
+    <Position X="33.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\FormParameterRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.FormRepository" Collapsed="true">
+    <Position X="33.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\FormRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.OpenFormActionParameterRepository" Collapsed="true">
+    <Position X="33.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\OpenFormActionParameterRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.OpenFormActionRepository" Collapsed="true">
+    <Position X="33.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\OpenFormActionRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.PredicateActionRepository" Collapsed="true">
+    <Position X="35.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\PredicateActionRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.PredicateOperationRepository" Collapsed="true">
+    <Position X="35.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\PredicateOperationRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.PropertyRepository" Collapsed="true">
+    <Position X="35.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\PropertyRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.PropertyTypeRepository" Collapsed="true">
+    <Position X="35.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\PropertyTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.PropertyValueTypeRepository" Collapsed="true">
+    <Position X="35.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\PropertyValueTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryActionInRepository" Collapsed="true">
+    <Position X="35.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryActionInRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryActionOutRepository" Collapsed="true">
+    <Position X="38" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryActionOutRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryActionPartRepository" Collapsed="true">
+    <Position X="38" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryActionPartRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryActionRepository" Collapsed="true">
+    <Position X="38" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryActionRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryTypeColumnRepository" Collapsed="true">
+    <Position X="38" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryTypeColumnRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryTypeInRepository" Collapsed="true">
+    <Position X="38" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryTypeInRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryTypeOutRepository" Collapsed="true">
+    <Position X="38" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryTypeOutRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryTypePartRepository" Collapsed="true">
+    <Position X="40.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryTypePartRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryTypeRepository" Collapsed="true">
+    <Position X="40.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.QueryTypeTableRepository" Collapsed="true">
+    <Position X="40.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\QueryTypeTableRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.TableRepository" Collapsed="true">
+    <Position X="40.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\TableRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.DAL.ValueTypeRepository" Collapsed="true">
+    <Position X="40.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DAL\Repository\ValueTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.WebBuilderEFContext" Collapsed="true">
+    <Position X="41.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAgAAgjAAAAAgAAAgAAwQAIAjgCAoxAAACiAC4CggA=</HashCode>
+      <FileName>DAL\DataContext\WebBuilderEFContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

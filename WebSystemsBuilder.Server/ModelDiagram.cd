@@ -1,0 +1,506 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WebSystemsBuilder.Server.Models.ControlInstance" Collapsed="true">
+    <Position X="13.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAQAAAAAggAAAAAAAAIAAACAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\ControlInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.BaseActionInstance" Collapsed="true">
+    <Position X="15.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAgAAAAAAQAAAAAAAAAAAAAAAAAAAAAADBAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\BaseActionInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ClientActionInstance" Collapsed="true">
+    <Position X="12.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAgAAAAAAAAAQAAAAAAAQAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\ClientActionInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.OpenFormActionInstance" Collapsed="true">
+    <Position X="14.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAABAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\OpenFormActionInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PredicateActionInstance" Collapsed="true">
+    <Position X="17" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAQAAAAAAAAQAAAAAgAAAQAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\PredicateActionInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionInInstance" Collapsed="true">
+    <Position X="16.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\QueryActionInInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionInstance" Collapsed="true">
+    <Position X="19.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAgAAAAAEAQAAAAAAAAQgBAAAIBAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\QueryActionInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionOutInstance" Collapsed="true">
+    <Position X="20.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\QueryActionOutInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionPartInstance" Collapsed="true">
+    <Position X="9.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\QueryActionPartInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.EventInstance" Collapsed="true">
+    <Position X="15" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAiAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\EventInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.EventWithActionsInstance" Collapsed="true">
+    <Position X="22" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\EventInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ActionScope" Collapsed="true">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAIAAAAAAAAAAQAAAAAAAAAAAAAEAAAQ=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Execution\ActionScope.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ActionResultScope" Collapsed="true">
+    <Position X="9.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Execution\ActionScope.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.OperandValue" Collapsed="true">
+    <Position X="13.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAQAAAAAAAIEAgAAAAAAAACAAAgAAAAAAgAAAAEAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Execution\OperandValue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.FormInstance" Collapsed="true">
+    <Position X="13.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAIAAAAAAAAAAAAAAAAgAAAgAAAAAAAACAAAEAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\FormInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.FormParameterInstance" Collapsed="true">
+    <Position X="16.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\FormParameterInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeColumnInstance" Collapsed="true">
+    <Position X="15" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Query\QueryType\QueryTypeColumnInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeInInstance" Collapsed="true">
+    <Position X="18.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Query\QueryType\QueryTypeInInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeInstance" Collapsed="true">
+    <Position X="20.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAQAAAAAAACgQAAAAAAAAAAAAAAAAIAgAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Query\QueryType\QueryTypeInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeOutInstance" Collapsed="true">
+    <Position X="9.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Query\QueryType\QueryTypeOutInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeTableInstance" Collapsed="true">
+    <Position X="15" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\FormGeneration\Query\QueryType\QueryTypeTableInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlEventInstance" Collapsed="true">
+    <Position X="11.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAEAiAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\IDE\ControlEventInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlEventActionInstance" Collapsed="true">
+    <Position X="9.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAgAAAQAAAAAAAAAAQAQAAAAAQAAAAAACAAAAA=</HashCode>
+      <FileName>Models\Business\IDE\ControlEventInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.SomeAction" Collapsed="true">
+    <Position X="16.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAQAQAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\IDE\ControlEventInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlTypeInstance" Collapsed="true">
+    <Position X="20.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAABAAAQAAAAAAAgAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Models\Business\IDE\ControlTypeInctance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.EventTypeInstance" Collapsed="true">
+    <Position X="20.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\IDE\EventTypeInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.OperandInstance" Collapsed="true">
+    <Position X="11.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAQAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Business\IDE\OperandInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PropertyInstance" Collapsed="true">
+    <Position X="20.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAACAQAAEAA=</HashCode>
+      <FileName>Models\Business\IDE\PropertyInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PropertyTypeInstance" Collapsed="true">
+    <Position X="9.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAEAA=</HashCode>
+      <FileName>Models\Business\IDE\PropertyTypeInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.BooleanValueTypeHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAgAAAAAAAAKBAAAAAAAAAAAQAEAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\BooleanValueTypeHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.DateTimeValueTypeHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAgAAgAAAAAKBAAAAAAAAAAAQAEAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\DateTimeValueTypeHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.FloatValueTypeHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAgAAAAAAAAKBAAAAAAAAAAAQEEAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\FloatValueTypeHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.IntegerValueTypeHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACBAAAAAAAAAAAAAgAAAAAAAAKBAAAAAAAAAAAQAEAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\IntegerValueTypeHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.StringValueTypeHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAgAAAAAAAAKBAAAAAAAAAAAQAEAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\StringValueTypeHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ValueTypeConverter" Collapsed="true">
+    <Position X="22" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQgAAAACBACAAAAAACAAAAAAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\ValueTypeConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Control" Collapsed="true">
+    <Position X="22" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgYAAAAACCAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\Control.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlType" Collapsed="true">
+    <Position X="15" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAKAAAYAAAAAAAAAAQAAAAAABAA=</HashCode>
+      <FileName>Models\Domain\Controls\ControlType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlTypeDependency" Collapsed="true">
+    <Position X="16.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAQAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\ControlTypeDependency.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlTypeGroup" Collapsed="true">
+    <Position X="18.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\ControlTypeGroup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ControlTypePropertyType" Collapsed="true">
+    <Position X="22" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACIAAAAAABBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\ControlTypePropertyType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Form" Collapsed="true">
+    <Position X="11.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAQAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\Form.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.FormParameter" Collapsed="true">
+    <Position X="15" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAASAAAYACCAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\FormParameter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Property" Collapsed="true">
+    <Position X="18.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAoAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\Property.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PropertyType" Collapsed="true">
+    <Position X="22" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAYAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\PropertyType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PropertyValueType" Collapsed="true">
+    <Position X="11.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAYAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Controls\ValueType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ClientAction" Collapsed="true">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAACAAAAAAAAAAAAAAIABAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\ClientAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ClientActionType" Collapsed="true">
+    <Position X="16.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\ClientActionType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.ClientActionTypeControlType" Collapsed="true">
+    <Position X="18.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAgAAAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\ClientActionTypeControlType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.EventAction" Collapsed="true">
+    <Position X="13.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAQAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\EventAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.OpenFormAction" Collapsed="true">
+    <Position X="20.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\OpenFormAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.OpenFormActionParameter" Collapsed="true">
+    <Position X="22" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAEACAAAAAAAAAAAAAAAAEAAAAABA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\OpenFormActionParameter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PredicateAction" Collapsed="true">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAABAAAAgAAAIQAAAAAABAAAIAgAAAAAAAAACAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\PredicateAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.PredicateOperation" Collapsed="true">
+    <Position X="16.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\PredicateOperation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryAction" Collapsed="true">
+    <Position X="13.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\QueryAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionIn" Collapsed="true">
+    <Position X="15" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAIAAAEAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\Domain\Events\Actions\QueryActionIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionOut" Collapsed="true">
+    <Position X="18.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAEAAAAAAAAAACAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\QueryActionOut.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryActionPart" Collapsed="true">
+    <Position X="22" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAIAAIEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Actions\QueryActionPart.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Event" Collapsed="true">
+    <Position X="11.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\Event.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.EventType" Collapsed="true">
+    <Position X="16.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\EventType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.EventTypeControlType" Collapsed="true">
+    <Position X="18.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAIAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Events\EventTypeControlType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Operand" Collapsed="true">
+    <Position X="9.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Operand.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryType" Collapsed="true">
+    <Position X="11.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAAAQAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Queries\QueryTypes\QueryType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeColumn" Collapsed="true">
+    <Position X="13.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAIAAAAAAAAQQAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Queries\QueryTypes\QueryTypeColumn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeIn" Collapsed="true">
+    <Position X="16.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAQAAAYQAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Queries\QueryTypes\QueryTypeIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeOut" Collapsed="true">
+    <Position X="22" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAQAAAYQAAACAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Queries\QueryTypes\QueryTypeOut.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypePart" Collapsed="true">
+    <Position X="11.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAQAAAAAQQAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Queries\QueryTypes\QueryTypePart.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.QueryTypeTable" Collapsed="true">
+    <Position X="13.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAAAAQQAAAEAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Queries\QueryTypes\QueryTypeTable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Column" Collapsed="true">
+    <Position X="20.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAYCAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Tables\Column.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebSystemsBuilder.Server.Models.Table" Collapsed="true">
+    <Position X="20.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAQAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\Tables\Table.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="WebSystemsBuilder.Server.Models.IValueTypeHandler" Collapsed="true">
+    <Position X="9.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAgAAAAAAAAKBAAAAAAAAAAAQAEAA=</HashCode>
+      <FileName>Models\Business\ValueTypeHandler\IValueTypeHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="WebSystemsBuilder.Server.Models.ActionTypeEnum" Collapsed="true">
+    <Position X="9.75" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAgAAAAAAgAQAAQ=</HashCode>
+      <FileName>Models\Business\FormGeneration\Events\Actions\ActionTypeEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
