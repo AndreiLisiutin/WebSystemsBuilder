@@ -13,6 +13,11 @@ Ext.define('WebSystemsBuilder.utils.events.OpenFormAction', {
         var _this = this;
         return _this.getEventAction().OpenFormAction.FormID;
     },
+
+    /**
+     * Collecting a new form parameters
+     * @returns {object} object with a structure of { form_parameter_id: its value }
+     */
     getFormParameterValues: function () {
         var _this = this;
         var formParameters = {};
@@ -33,12 +38,18 @@ Ext.define('WebSystemsBuilder.utils.events.OpenFormAction', {
         return formParameters;
     },
 
+    /**
+     * Executing the action of the form opening
+     * @param callback
+     */
     executeAction: function (callback) {
         var _this = this;
         var formID = _this.getFormID();
         var actionID = _this.getActionID();
+        //collecting a new form parameter values
         var formParameters = _this.getFormParameterValues();
 
+        //creating a new instance of the form
         var newForm = Ext.create('WebSystemsBuilder.utils.formGeneration.Form', {
             formID: formID,
             formParameters: formParameters,

@@ -12,7 +12,7 @@ namespace WebSystemsBuilder.Server.Models
         {
 
         }
-        public FormInstance(Form Form, ControlInstance RootControl, 
+        public FormInstance(Form Form, ControlInstance RootControl,
             List<FormParameterInstance> FormParameters, List<EventWithActionsInstance> Events)
         {
             this.Form = Form;
@@ -27,19 +27,25 @@ namespace WebSystemsBuilder.Server.Models
 
         public BaseActionInstance GetEventAction(int actionID)
         {
+            BaseActionInstance search = null;
+
             foreach (var @event in this.Events)
             {
                 foreach (var action in @event.EventActions)
                 {
-                    if (action.EventAction.ActionID == actionID)
+                    BaseActionInstance.ByPassActionsTree(action, (_action) =>
                     {
-                        return action;
-                    }
+                        if (_action.EventAction.ActionID == actionID)
+                        {
+                            search = _action;
+                        };
+                    });
                 }
             }
 
-            return null;
+            return search;
         }
+
 
         public PropertyValueType GetOperandValueType(int operandID)
         {

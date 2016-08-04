@@ -45,7 +45,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.WindowFactory', {
                 }
             ]
         });
-        component.on('afterrender', function(c) {
+        component.on('afterrender', function (c) {
             c.tools['collapse-top'].hide();
         });
         return component;
@@ -64,4 +64,7 @@ Ext.define('WebSystemsBuilder.utils.controlTypes.WindowFactory', {
         this._visualComponent.on('close', handler);
     },
     //----------------------------------CLIENT ACTIONS------------------------------------------------------------------
+    executeClose: function (handler) {
+        this._visualComponent.close();
+    },
 });

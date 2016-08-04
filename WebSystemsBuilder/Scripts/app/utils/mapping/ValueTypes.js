@@ -1,7 +1,7 @@
 ﻿Ext.define('WebSystemsBuilder.utils.mapping.ValueTypes', {
     alternateClassName: 'ValueTypes',
     singleton: true,
-    requires:[
+    requires: [
         'WebSystemsBuilder.utils.mapping.PredicateOperations'
     ],
     init: function () {
@@ -63,7 +63,8 @@
                 return parseInt(object);
                 break;
             case ValueTypes.Date:
-                return Ext.Date.parse(object, valueType ? (valueType.Format || 'c') : 'c');
+                var format = _this._formatDateFormat(valueType.Format || 'c');
+                return Ext.Date.parse(object, valueType ? format : 'c');
                 break;
             case ValueTypes.Bool:
                 return object.toString().toLowerCase().trim() == 'true';
@@ -71,6 +72,15 @@
             default:
                 throw 'Unknown value type';
         }
+    },
+
+    _formatDateFormat: function (format) {
+        if (!format) {
+            return format;
+        }
+        return format.replace('dd', 'd')
+            .replace('MM', 'm')
+            .replace('yyyy', 'Y');
     },
 
     getStringFromValue: function (object, valueTypeID) {
@@ -90,7 +100,8 @@
                 return object.toString();
                 break;
             case ValueTypes.Date:
-                return Ext.Date.format(object, valueType ? (valueType.Format || 'c') : 'c');
+                var format = _this._formatDateFormat(valueType.Format || 'c');
+                return Ext.Date.format(object, valueType ? format : 'c');
                 break;
             case ValueTypes.Bool:
                 return object ? 'TRUE' : 'FALSE';
@@ -100,13 +111,13 @@
         }
     },
 
-    executePredicate: function(operand1, operand2, predicateOperationID, valueTypeID) {
+    executePredicate: function (operand1, operand2, predicateOperationID, valueTypeID) {
 
-        if (operand1 == null || typeof(operand1) == 'undefined' || 
+        if (operand1 == null || typeof(operand1) == 'undefined' ||
             operand2 == null || typeof(operand2) == 'undefined') {
             return false;
         }
-        
+
         switch (predicateOperationID) {
             case PredicateOperations.Equals:
                 return +operand1 == +operand2;

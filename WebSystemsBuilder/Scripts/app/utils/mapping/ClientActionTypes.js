@@ -7,10 +7,12 @@
         this.Disable = 2;
         this.SetReadOnly = 3;
         this.SetNotReadOnly = 4;
+        this.Close = 5;
     },
 
     Enable: null,
     Disable: null,
     SetReadOnly: null,
-    SetNotReadOnly: null
+    SetNotReadOnly: null,
+    Close: null
 });

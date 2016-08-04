@@ -32,10 +32,11 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
         $.each(controlInstance.Properties, function (i, item) {
             var serializedValue = item.Property ? item.Property.Value
                 : item.ControlTypePropertyType.DefaultValue;
+            var name = item.PropertyType.Name || '';
 
             var realValue = WebSystemsBuilder.utils.mapping.ValueTypes
                 .getValueFromString(serializedValue, item.PropertyType.ValueTypeID);
-            properties[item.PropertyType.Name] = realValue;
+            properties[name] = realValue;
         });
 
         if (innerHandlers && innerHandlers.length) {
@@ -48,6 +49,8 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
             });
         }
 
+        //ExtJS required it for work
+        delete properties.id;
         //generate visual representation of current control
         this._visualComponent = _this.generateVisualComponent(properties);
         return this;
@@ -59,10 +62,11 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
      * @returns {Ext.Component} ExtJS visual component object
      */
     generateVisualComponent: function (properties) {
-        if (!properties.xtype) {
+        var _class = this._controlInstance.ControlType.ExtJsClass;
+        if (!properties.xtype || !_class) {
             throw 'Unknown ExtJS visual component type.';
         }
-        var visualComponent = Ext.create(properties);
+        var visualComponent = Ext.create(_class, properties);
         return visualComponent;
     },
 
@@ -146,6 +150,9 @@ Ext.define('WebSystemsBuilder.utils.operands.BaseControlHandler', {
     },
     executeSetNotReadOnly: function (handler) {
         throw 'Component ' + this._getComponentClass() + ' doesn\'t support client action type SetNotReadOnly.';
+    },
+    executeClose: function (handler) {
+        throw 'Component ' + this._getComponentClass() + ' doesn\'t support client action type Close.';
     },
 
     _getComponentClass: function () {
